@@ -1,0 +1,1063 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FC Table Style Preview</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --fc-text-1: #0c1018;
+      --fc-text-2: #181c25;
+      --fc-text-3: #3f4856;
+      --fc-text-4: #657386;
+      --fc-text-5: rgb(101 115 134 / 0.4);
+      --fc-fill-1: #fcfcfd;
+      --fc-fill-2: #ffffff;
+      --fc-fill-2-5: #f9f9fa;
+      --fc-fill-3: #f4f4f6;
+      --fc-fill-4: #eaeaec;
+      --fc-fill-5: #e4e4e7;
+      --fc-fill-5-rgb: 228 228 231;
+      --fc-border-color: rgb(226 226 228 / 0.7);
+      --fc-violet-3: rgb(37 0 237 / 0.055);
+      --fc-violet-4: rgb(40 0 255 / 0.102);
+      --fc-violet-6: rgb(40 0 231 / 0.204);
+      --fc-violet-9: #6c53b1;
+      --fc-violet-11: #6b51af;
+      --fc-violet-12: #342659;
+      --fc-fill-error-rgb: 200 0 0;
+      --fc-fill-error: rgb(var(--fc-fill-error-rgb));
+      --fc-red-3: #ff0d0015;
+      --fc-red-11: rgb(204 46 57);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--fc-fill-1);
+      color: var(--fc-text-2);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 48px));
+      margin: 32px auto;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--fc-text-1);
+      font-size: 26px;
+      font-weight: 650;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      color: var(--fc-text-4);
+      font-size: 13px;
+    }
+
+    .panel {
+      overflow: visible;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 8px;
+      background: var(--fc-fill-2);
+      box-shadow: 0 16px 40px rgb(24 28 37 / 0.06);
+    }
+
+    .panel table {
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    thead th {
+      height: 40px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--fc-border-color);
+      background: var(--fc-fill-2-5);
+      color: var(--fc-text-3);
+      font-size: 12px;
+      font-weight: 500;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      height: 48px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--fc-border-color);
+      background: var(--fc-fill-2);
+      color: var(--fc-text-2);
+      font-size: 14px;
+      vertical-align: middle;
+      transition: background-color 0.2s ease;
+    }
+
+    tbody tr:hover td {
+      background: rgb(var(--fc-fill-5-rgb) / 0.2);
+    }
+
+    tbody tr.is-selected td {
+      background: rgb(var(--fc-fill-5-rgb) / 0.15);
+    }
+
+    tbody tr.is-selected:hover td {
+      background: rgb(var(--fc-fill-5-rgb) / 0.25);
+    }
+
+    .drag-col { width: 60px; text-align: center; padding: 0 14px; }
+    .name-col { width: 260px; }
+    .status-col { width: 160px; }
+    .filter-col { width: 150px; }
+    .sort-col { width: 190px; }
+    .action-col { width: 260px; }
+
+    .th-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      height: 100%;
+    }
+
+    .th-content .sort-entry,
+    .th-content .filter-entry {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    th:hover .sort-entry,
+    th:hover .filter-entry,
+    .filter-menu-wrap.is-open .filter-entry,
+    .th-content.is-sorted .sort-entry,
+    .th-content.is-filtered .filter-entry {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .divider {
+      display: inline-block;
+      width: 1px;
+      height: 18px;
+      margin-left: auto;
+      background: var(--fc-border-color);
+      vertical-align: middle;
+    }
+
+    .fc-ghost-quaternary-xs,
+    .fc-ghost-primary-xs {
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .fc-ghost-quaternary-xs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--fc-text-4);
+      line-height: 1;
+    }
+
+    .fc-ghost-quaternary-xs svg {
+      width: 14px;
+      height: 14px;
+      color: currentColor;
+      stroke-width: 2;
+    }
+
+    .fc-ghost-quaternary-xs:hover,
+    .fc-ghost-quaternary-xs.is-hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      color: var(--fc-text-2);
+    }
+
+    .fc-ghost-quaternary-xs:active,
+    .fc-ghost-quaternary-xs.is-active {
+      background: rgb(var(--fc-fill-5-rgb) / 0.7);
+      color: var(--fc-text-1);
+    }
+
+    .table-head-sort.is-active {
+      background: transparent;
+      color: var(--fc-text-3);
+    }
+
+    .table-head-sort.is-active:hover,
+    .table-head-sort.is-active.is-hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      color: var(--fc-text-2);
+    }
+
+    .table-head-filter.is-active {
+      background: transparent;
+      color: var(--fc-violet-9);
+    }
+
+    .table-head-filter.is-active:hover,
+    .table-head-filter.is-active.is-hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      color: var(--fc-violet-9);
+    }
+
+    .table-head-filter.is-active svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+    }
+
+    .fc-ghost-quaternary-xs:disabled {
+      background: transparent;
+      color: var(--fc-text-5);
+      cursor: not-allowed;
+    }
+
+    .fc-ghost-primary-xs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--fc-violet-11);
+      line-height: 1;
+    }
+
+    .fc-ghost-primary-xs svg {
+      color: currentColor;
+    }
+
+    .fc-ghost-primary-xs:hover,
+    .fc-ghost-primary-xs.is-hover {
+      background: var(--fc-violet-3);
+      color: var(--fc-violet-11);
+    }
+
+    .fc-ghost-primary-xs:active,
+    .fc-ghost-primary-xs.is-active {
+      background: var(--fc-violet-4);
+      color: var(--fc-violet-12);
+    }
+
+    .fc-ghost-primary-xs:disabled {
+      background: transparent;
+      color: var(--fc-violet-6);
+      cursor: not-allowed;
+    }
+
+    .row-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
+      padding: 0 7px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 999px;
+      background: var(--fc-fill-2-5);
+      color: var(--fc-text-3);
+      font-size: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .status-pill.is-normal {
+      background: rgb(23 146 77 / 0.1);
+      color: #168447;
+    }
+
+    .status-pill.is-warning {
+      background: rgb(245 158 11 / 0.14);
+      color: #a16207;
+    }
+
+    .status-pill.is-error {
+      background: var(--fc-red-3);
+      color: var(--fc-red-11);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--fc-violet-9);
+      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.04);
+      vertical-align: middle;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: white;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.22);
+    }
+
+    .actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-menu-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .filter-menu-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .action-menu-wrap:hover .table-dropdown,
+    .action-menu-wrap:focus-within .table-dropdown,
+    .action-menu-wrap.is-open .table-dropdown {
+      display: block;
+    }
+
+    .filter-menu-wrap:hover .filter-dropdown,
+    .filter-menu-wrap:focus-within .filter-dropdown,
+    .filter-menu-wrap.is-open .filter-dropdown {
+      display: block;
+    }
+
+    .danger-link {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 6px;
+      color: var(--fc-fill-error);
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .state-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .state-card {
+      min-height: 96px;
+      padding: 14px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .state-title {
+      margin-bottom: 12px;
+      color: var(--fc-text-4);
+      font-size: 12px;
+    }
+
+    .state-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .table-dropdown,
+    .shadcn-menu {
+      width: max-content;
+      min-width: 100px;
+      padding: 6px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 10px;
+      background: var(--fc-fill-2);
+      box-shadow: 0 10px 28px rgb(24 28 37 / 0.12), 0 2px 6px rgb(24 28 37 / 0.08);
+    }
+
+    .table-dropdown {
+      position: absolute;
+      z-index: 10;
+      top: calc(100% + 6px);
+      right: 0;
+      display: none;
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 6px);
+      right: 0;
+      display: none;
+      width: max-content;
+      min-width: 220px;
+      padding: 6px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 10px;
+      background: var(--fc-fill-2);
+      box-shadow: 0 10px 28px rgb(24 28 37 / 0.12), 0 2px 6px rgb(24 28 37 / 0.08);
+    }
+
+    .filter-search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      margin-bottom: 4px;
+      padding: 0 8px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 8px;
+      color: var(--fc-text-4);
+    }
+
+    .filter-search svg {
+      width: 14px;
+      height: 14px;
+      flex: none;
+      color: currentColor;
+    }
+
+    .filter-search input {
+      width: 150px;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--fc-text-2);
+      font: inherit;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .filter-search input::placeholder {
+      color: var(--fc-text-4);
+    }
+
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-height: 190px;
+      overflow: auto;
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      padding: 0 12px 0 8px;
+      border-radius: 8px;
+      color: var(--fc-text-2);
+      font-size: 12px;
+      line-height: 18px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .filter-option:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.2);
+    }
+
+    .filter-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .filter-checkbox {
+      position: relative;
+      display: inline-flex;
+      width: 14px;
+      height: 14px;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 4px;
+      background: var(--fc-fill-2);
+      color: white;
+    }
+
+    .filter-checkbox svg {
+      display: none;
+      width: 12px;
+      height: 12px;
+      stroke-width: 3;
+    }
+
+    .filter-option input:checked + .filter-checkbox {
+      border-color: var(--fc-violet-9);
+      background: var(--fc-violet-9);
+    }
+
+    .filter-option input:checked + .filter-checkbox svg {
+      display: block;
+    }
+
+    .filter-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      margin: 6px -6px 0;
+      padding: 8px 6px 0;
+      border-top: 1px solid var(--fc-border-color);
+    }
+
+    .fc-ghost-quaternary-text-xs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 24px;
+      padding: 0 8px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--fc-text-4);
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .fc-ghost-quaternary-text-xs:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      color: var(--fc-text-2);
+    }
+
+    .table-dropdown::before {
+      content: "";
+      position: absolute;
+      inset: -8px 0 auto;
+      height: 8px;
+    }
+
+    .shadcn-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      padding: 0 12px 0 8px;
+      border-radius: 8px;
+      color: var(--fc-text-2);
+      font-size: 12px;
+      line-height: 18px;
+      white-space: nowrap;
+    }
+
+    .shadcn-menu-item svg {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      color: currentColor;
+      stroke-width: 2;
+    }
+
+    .shadcn-menu-item:hover,
+    .shadcn-menu-item.is-hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.2);
+      color: var(--fc-text-2);
+    }
+
+    .shadcn-menu-item.is-danger {
+      color: var(--fc-red-11);
+    }
+
+    .shadcn-menu-item.is-danger:hover,
+    .shadcn-menu-item.is-danger.is-hover {
+      background: var(--fc-red-3);
+      color: var(--fc-red-11);
+    }
+
+    .shadcn-menu-separator {
+      display: block;
+      height: 1px;
+      margin: 4px -6px;
+      background: var(--fc-border-color);
+    }
+
+    .dropdown-demo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .demo-surface {
+      min-height: 280px;
+      padding: 28px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .surface-title {
+      margin: 0 0 8px;
+      color: var(--fc-text-1);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .surface-copy {
+      margin: 0;
+      color: var(--fc-text-4);
+      font-size: 13px;
+    }
+
+    .dropdown-stage {
+      display: flex;
+      min-height: 210px;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .menu-notes {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .note-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--fc-text-3);
+      font-size: 13px;
+    }
+
+    .note-value {
+      color: var(--fc-text-1);
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 820px) {
+      main { width: calc(100vw - 24px); margin: 18px auto; }
+      .page-title { align-items: flex-start; flex-direction: column; }
+      .panel { overflow-x: auto; }
+      table { min-width: 940px; }
+      .state-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dropdown-demo { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="page-title">
+      <div>
+        <h1>Table 操作样式预览</h1>
+        <div class="hint">ghost-primary-xs / ghost-quaternary-xs / 拖拽排序 / 表头排序入口</div>
+      </div>
+      <div class="hint">模拟最终页面效果</div>
+    </div>
+
+    <section class="panel">
+      <table aria-label="Table style preview">
+        <thead>
+          <tr>
+            <th class="drag-col"></th>
+            <th class="name-col">
+              <span class="th-content">分层<span class="divider"></span></span>
+            </th>
+            <th class="status-col">
+              <span class="th-content">是否可见<span class="divider"></span></span>
+            </th>
+            <th class="filter-col">
+              <span class="th-content">
+                状态
+                <span class="filter-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs table-head-icon table-head-filter filter-entry filter-trigger" aria-label="过滤状态" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="funnel"></i>
+                  </button>
+                  <span class="filter-dropdown" role="menu" aria-label="状态筛选">
+                    <span class="filter-search">
+                      <i data-lucide="search"></i>
+                      <input type="search" placeholder="搜索状态" aria-label="搜索状态" />
+                    </span>
+                    <span class="filter-options">
+                      <label class="filter-option" data-filter-option="正常">
+                        <input type="checkbox" value="正常" />
+                        <span class="filter-checkbox"><i data-lucide="check"></i></span>
+                        <span>正常</span>
+                      </label>
+                      <label class="filter-option" data-filter-option="警告">
+                        <input type="checkbox" value="警告" />
+                        <span class="filter-checkbox"><i data-lucide="check"></i></span>
+                        <span>警告</span>
+                      </label>
+                      <label class="filter-option" data-filter-option="异常">
+                        <input type="checkbox" value="异常" />
+                        <span class="filter-checkbox"><i data-lucide="check"></i></span>
+                        <span>异常</span>
+                      </label>
+                      <label class="filter-option" data-filter-option="维护中">
+                        <input type="checkbox" value="维护中" />
+                        <span class="filter-checkbox"><i data-lucide="check"></i></span>
+                        <span>维护中</span>
+                      </label>
+                      <label class="filter-option" data-filter-option="离线">
+                        <input type="checkbox" value="离线" />
+                        <span class="filter-checkbox"><i data-lucide="check"></i></span>
+                        <span>离线</span>
+                      </label>
+                      <label class="filter-option" data-filter-option="待确认">
+                        <input type="checkbox" value="待确认" />
+                        <span class="filter-checkbox"><i data-lucide="check"></i></span>
+                        <span>待确认</span>
+                      </label>
+                    </span>
+                    <span class="filter-footer">
+                      <button class="fc-ghost-quaternary-text-xs filter-reset" type="button">重置</button>
+                      <button class="fc-ghost-primary-xs filter-confirm" type="button">确定</button>
+                    </span>
+                  </span>
+                </span>
+                <span class="divider"></span>
+              </span>
+            </th>
+            <th class="sort-col">
+              <span class="th-content">
+                更新时间
+                <button class="fc-ghost-quaternary-xs table-head-icon table-head-sort sort-entry" aria-label="排序">
+                  <i data-lucide="arrow-up-down"></i>
+                </button>
+                <button class="fc-ghost-quaternary-xs table-head-icon table-head-filter filter-entry" aria-label="过滤">
+                  <i data-lucide="funnel"></i>
+                </button>
+                <span class="divider"></span>
+              </span>
+            </th>
+            <th class="action-col">
+              <span class="th-content is-sorted">
+                操作
+                <button class="fc-ghost-quaternary-xs table-head-icon table-head-sort sort-entry is-active" aria-label="降序">
+                  <i data-lucide="arrow-down"></i>
+                </button>
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button>
+            </td>
+            <td>
+              <span class="row-name">系统 <span class="tag">Deprecated</span></span>
+            </td>
+            <td><span class="switch" aria-hidden="true"></span></td>
+            <td><span class="status-pill is-normal">正常</span></td>
+            <td>2026-05-19 14:18</td>
+            <td>
+              <span class="actions">
+                <button class="fc-ghost-primary-xs">Edit</button>
+                <button class="fc-ghost-primary-xs is-hover">Clone</button>
+                <button class="fc-ghost-primary-xs">Preview</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item is-hover" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </td>
+          </tr>
+          <tr class="is-selected">
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs is-active" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button>
+            </td>
+            <td>中间件</td>
+            <td><span class="switch" aria-hidden="true"></span></td>
+            <td><span class="status-pill is-warning">警告</span></td>
+            <td>2026-05-18 09:42</td>
+            <td>
+              <span class="actions">
+                <button class="fc-ghost-primary-xs">Edit</button>
+                <button class="fc-ghost-primary-xs">Clone</button>
+                <button class="fc-ghost-primary-xs is-active">Preview</button>
+                <button class="fc-ghost-quaternary-xs is-hover" aria-label="更多">
+                  <i data-lucide="more-vertical"></i>
+                </button>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button>
+            </td>
+            <td>微服务</td>
+            <td><span class="switch" aria-hidden="true"></span></td>
+            <td><span class="status-pill is-error">异常</span></td>
+            <td>2026-05-16 21:03</td>
+            <td>
+              <span class="actions">
+                <button class="fc-ghost-primary-xs">Edit</button>
+                <button class="fc-ghost-primary-xs" disabled>Clone</button>
+                <a class="danger-link" href="#">删除</a>
+                <button class="fc-ghost-quaternary-xs" disabled aria-label="更多">
+                  <i data-lucide="more-vertical"></i>
+                </button>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button>
+            </td>
+            <td>应用</td>
+            <td><span class="switch" aria-hidden="true"></span></td>
+            <td><span class="status-pill is-normal">正常</span></td>
+            <td>2026-05-15 17:20</td>
+            <td>
+              <span class="actions">
+                <button class="fc-ghost-primary-xs">Edit</button>
+                <button class="fc-ghost-primary-xs">Clone</button>
+                <button class="fc-ghost-primary-xs">Preview</button>
+                <button class="fc-ghost-quaternary-xs" aria-label="更多">
+                  <i data-lucide="more-vertical"></i>
+                </button>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="state-strip" aria-label="Button states">
+      <div class="state-card">
+        <div class="state-title">default</div>
+        <div class="state-actions">
+          <button class="fc-ghost-primary-xs">Clone</button>
+          <button class="fc-ghost-quaternary-xs" aria-label="更多"><i data-lucide="more-vertical"></i></button>
+          <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
+        </div>
+      </div>
+      <div class="state-card">
+        <div class="state-title">hover</div>
+        <div class="state-actions">
+          <button class="fc-ghost-primary-xs is-hover">Clone</button>
+          <button class="fc-ghost-quaternary-xs is-hover" aria-label="更多"><i data-lucide="more-vertical"></i></button>
+          <button class="fc-ghost-quaternary-xs is-hover" aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
+        </div>
+      </div>
+      <div class="state-card">
+        <div class="state-title">pressed</div>
+        <div class="state-actions">
+          <button class="fc-ghost-primary-xs is-active">Clone</button>
+          <button class="fc-ghost-quaternary-xs is-active" aria-label="更多"><i data-lucide="more-vertical"></i></button>
+          <button class="fc-ghost-quaternary-xs is-active" aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
+        </div>
+      </div>
+      <div class="state-card">
+        <div class="state-title">disabled</div>
+        <div class="state-actions">
+          <button class="fc-ghost-primary-xs" disabled>Clone</button>
+          <button class="fc-ghost-quaternary-xs" disabled aria-label="更多"><i data-lucide="more-vertical"></i></button>
+          <button class="fc-ghost-quaternary-xs" disabled aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="dropdown-demo" aria-label="Dropdown menu preview">
+      <div class="demo-surface">
+        <p class="surface-title">Dropdown Menu - shadcn Icons skeleton</p>
+        <p class="surface-copy">先看结构：左 icon、右 label、item hover、separator、danger 分组。</p>
+        <div class="dropdown-stage">
+          <div class="shadcn-menu" role="menu" aria-label="Table action menu">
+            <div class="shadcn-menu-item is-hover" role="menuitem">
+              <i data-lucide="user"></i>
+              <span>Profile</span>
+            </div>
+            <div class="shadcn-menu-item" role="menuitem">
+              <i data-lucide="credit-card"></i>
+              <span>Billing</span>
+            </div>
+            <div class="shadcn-menu-item" role="menuitem">
+              <i data-lucide="settings"></i>
+              <span>Settings</span>
+            </div>
+            <div class="shadcn-menu-separator" role="separator"></div>
+            <div class="shadcn-menu-item is-danger is-hover" role="menuitem">
+              <i data-lucide="log-out"></i>
+              <span>Log out</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-notes">
+        <div class="note-row"><span>Content</span><span class="note-value">floating panel</span></div>
+        <div class="note-row"><span>Item</span><span class="note-value">icon + label</span></div>
+        <div class="note-row"><span>Icon</span><span class="note-value">lucide 16px</span></div>
+        <div class="note-row"><span>Danger</span><span class="note-value">separator group</span></div>
+        <div class="note-row"><span>具体颜色</span><span class="note-value">等你给 token</span></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+
+    document.querySelectorAll('.menu-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const wrap = trigger.closest('.action-menu-wrap');
+        const nextOpen = !wrap.classList.contains('is-open');
+        document.querySelectorAll('.action-menu-wrap.is-open').forEach((node) => {
+          if (node !== wrap) {
+            node.classList.remove('is-open');
+            node.querySelector('.menu-trigger')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        wrap.classList.toggle('is-open', nextOpen);
+        trigger.setAttribute('aria-expanded', String(nextOpen));
+      });
+    });
+
+    document.querySelectorAll('.filter-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const wrap = trigger.closest('.filter-menu-wrap');
+        const nextOpen = !wrap.classList.contains('is-open');
+        document.querySelectorAll('.filter-menu-wrap.is-open').forEach((node) => {
+          if (node !== wrap) {
+            node.classList.remove('is-open');
+            node.querySelector('.filter-trigger')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        wrap.classList.toggle('is-open', nextOpen);
+        trigger.setAttribute('aria-expanded', String(nextOpen));
+        if (nextOpen) {
+          wrap.querySelector('.filter-search input')?.focus();
+        }
+      });
+    });
+
+    document.querySelectorAll('.filter-search input').forEach((input) => {
+      input.addEventListener('click', (event) => event.stopPropagation());
+      input.addEventListener('input', () => {
+        const wrap = input.closest('.filter-dropdown');
+        const keyword = input.value.trim().toLowerCase();
+        wrap.querySelectorAll('.filter-option').forEach((option) => {
+          const label = option.getAttribute('data-filter-option').toLowerCase();
+          option.hidden = keyword.length > 0 && !label.includes(keyword);
+        });
+      });
+    });
+
+    document.querySelectorAll('.filter-option').forEach((option) => {
+      option.addEventListener('click', (event) => event.stopPropagation());
+    });
+
+    document.querySelectorAll('.filter-reset').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const dropdown = button.closest('.filter-dropdown');
+        dropdown.querySelectorAll('input[type=\"checkbox\"]').forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+        const search = dropdown.querySelector('.filter-search input');
+        if (search) search.value = '';
+        dropdown.querySelectorAll('.filter-option').forEach((option) => {
+          option.hidden = false;
+        });
+      });
+    });
+
+    document.querySelectorAll('.filter-confirm').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const wrap = button.closest('.filter-menu-wrap');
+        wrap.classList.remove('is-open');
+        wrap.querySelector('.filter-trigger')?.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.action-menu-wrap.is-open').forEach((node) => {
+        node.classList.remove('is-open');
+        node.querySelector('.menu-trigger')?.setAttribute('aria-expanded', 'false');
+      });
+      document.querySelectorAll('.filter-menu-wrap.is-open').forEach((node) => {
+        node.classList.remove('is-open');
+        node.querySelector('.filter-trigger')?.setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+</body>
+</html>
