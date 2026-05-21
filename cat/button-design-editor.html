@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FC 按钮 · 设计调参稿</title>
+  <style>
+    :root {
+      --btn-height-xs: 24px;
+      --btn-height-sm: 28px;
+      --btn-height-default: 32px;
+      --btn-height-lg: 40px;
+      --btn-padding-x-xs: 8px;
+      --btn-padding-x-sm: 12px;
+      --btn-padding-x-default: 16px;
+      --btn-padding-x-lg: 20px;
+      --btn-padding-y-xs: 0px;
+      --btn-padding-y-sm: 0px;
+      --btn-padding-y-default: 0px;
+      --btn-padding-y-lg: 0px;
+      --btn-radius-xs: 6px;
+      --btn-radius-sm: 6px;
+      --btn-radius-default: 8px;
+      --btn-radius-lg: 8px;
+      --btn-font-size-xs: 12px;
+      --btn-font-size-sm: 12px;
+      --btn-font-size-default: 14px;
+      --btn-font-size-lg: 16px;
+      --btn-line-height-xs: 22px;
+      --btn-line-height-sm: 26px;
+      --btn-line-height-default: 30px;
+      --btn-line-height-lg: 38px;
+      --btn-icon-size-xs: 14px;
+      --btn-icon-size-sm: 14px;
+      --btn-icon-size-default: 16px;
+      --btn-icon-size-lg: 18px;
+      --btn-gap: 4px;
+      --btn-border-width: 1px;
+      --btn-font-weight: 400;
+      --btn-font-weight-solid: 500;
+      --btn-transition: 0.2s ease;
+      --btn-focus-ring-width: 2px;
+      --btn-focus-ring-color: rgb(var(--fc-fill-5-rgb) / 0.35);
+      --btn-solid-primary-default-bg: var(--fc-violet-9);
+      --btn-solid-primary-default-border: transparent;
+      --btn-solid-primary-default-text: #fff;
+      --btn-solid-primary-hover-bg: var(--fc-violet-10);
+      --btn-solid-primary-hover-border: transparent;
+      --btn-solid-primary-hover-text: #fff;
+      --btn-solid-primary-pressed-bg: var(--fc-violet-11);
+      --btn-solid-primary-pressed-border: transparent;
+      --btn-solid-primary-pressed-text: #fff;
+      --btn-solid-primary-disabled-bg: var(--fc-fill-3);
+      --btn-solid-primary-disabled-border: transparent;
+      --btn-solid-primary-disabled-text: var(--fc-text-5);
+      --btn-solid-primary-focus-bg: transparent;
+      --btn-solid-primary-focus-border: var(--fc-violet-9);
+      --btn-solid-primary-focus-text: var(--fc-violet-9);
+      --btn-solid-primary-destructive-default-bg: var(--fc-red-9);
+      --btn-solid-primary-destructive-default-border: transparent;
+      --btn-solid-primary-destructive-default-text: #fff;
+      --btn-solid-primary-destructive-hover-bg: var(--fc-red-10);
+      --btn-solid-primary-destructive-hover-border: transparent;
+      --btn-solid-primary-destructive-hover-text: #fff;
+      --btn-solid-primary-destructive-pressed-bg: var(--fc-red-11);
+      --btn-solid-primary-destructive-pressed-border: transparent;
+      --btn-solid-primary-destructive-pressed-text: #fff;
+      --btn-solid-primary-destructive-disabled-bg: var(--fc-red-3);
+      --btn-solid-primary-destructive-disabled-border: transparent;
+      --btn-solid-primary-destructive-disabled-text: var(--fc-red-6);
+      --btn-solid-primary-destructive-focus-bg: transparent;
+      --btn-solid-primary-destructive-focus-border: var(--fc-red-9);
+      --btn-solid-primary-destructive-focus-text: var(--fc-red-9);
+      --btn-soft-primary-default-bg: var(--fc-violet-3);
+      --btn-soft-primary-default-border: var(--fc-border-color2);
+      --btn-soft-primary-default-text: var(--fc-violet-11);
+      --btn-soft-primary-hover-bg: var(--fc-violet-4);
+      --btn-soft-primary-hover-border: var(--fc-violet-8);
+      --btn-soft-primary-hover-text: var(--fc-violet-12);
+      --btn-soft-primary-pressed-bg: var(--fc-violet-5);
+      --btn-soft-primary-pressed-border: var(--fc-violet-9);
+      --btn-soft-primary-pressed-text: var(--fc-violet-12);
+      --btn-soft-primary-disabled-bg: transparent;
+      --btn-soft-primary-disabled-border: var(--fc-border-color);
+      --btn-soft-primary-disabled-text: var(--fc-text-5);
+      --btn-soft-primary-focus-bg: transparent;
+      --btn-soft-primary-focus-border: var(--fc-violet-9);
+      --btn-soft-primary-focus-text: var(--fc-violet-11);
+      --btn-soft-primary-destructive-default-bg: var(--fc-red-3);
+      --btn-soft-primary-destructive-default-border: var(--fc-red-8);
+      --btn-soft-primary-destructive-default-text: var(--fc-red-11);
+      --btn-soft-primary-destructive-hover-bg: var(--fc-red-4);
+      --btn-soft-primary-destructive-hover-border: var(--fc-red-9);
+      --btn-soft-primary-destructive-hover-text: var(--fc-red-12);
+      --btn-soft-primary-destructive-pressed-bg: var(--fc-red-5);
+      --btn-soft-primary-destructive-pressed-border: var(--fc-red-9);
+      --btn-soft-primary-destructive-pressed-text: var(--fc-red-12);
+      --btn-soft-primary-destructive-disabled-bg: transparent;
+      --btn-soft-primary-destructive-disabled-border: var(--fc-border-color);
+      --btn-soft-primary-destructive-disabled-text: var(--fc-text-5);
+      --btn-soft-primary-destructive-focus-bg: transparent;
+      --btn-soft-primary-destructive-focus-border: var(--fc-red-9);
+      --btn-soft-primary-destructive-focus-text: var(--fc-red-11);
+      --btn-soft-secondary-default-bg: var(--fc-fill-2);
+      --btn-soft-secondary-default-border: var(--fc-border-color2);
+      --btn-soft-secondary-default-text: var(--fc-text-2);
+      --btn-soft-secondary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-soft-secondary-hover-border: var(--fc-border-color2);
+      --btn-soft-secondary-hover-text: var(--fc-text-1);
+      --btn-soft-secondary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-soft-secondary-pressed-border: var(--fc-border-color2);
+      --btn-soft-secondary-pressed-text: var(--fc-text-1);
+      --btn-soft-secondary-disabled-bg: transparent;
+      --btn-soft-secondary-disabled-border: var(--fc-border-color);
+      --btn-soft-secondary-disabled-text: var(--fc-text-5);
+      --btn-soft-secondary-focus-bg: transparent;
+      --btn-soft-secondary-focus-border: var(--fc-border-color2);
+      --btn-soft-secondary-focus-text: var(--fc-text-2);
+      --btn-soft-secondary-destructive-default-bg: var(--fc-red-3);
+      --btn-soft-secondary-destructive-default-border: var(--fc-red-8);
+      --btn-soft-secondary-destructive-default-text: var(--fc-red-11);
+      --btn-soft-secondary-destructive-hover-bg: var(--fc-red-4);
+      --btn-soft-secondary-destructive-hover-border: var(--fc-red-9);
+      --btn-soft-secondary-destructive-hover-text: var(--fc-red-12);
+      --btn-soft-secondary-destructive-pressed-bg: var(--fc-red-5);
+      --btn-soft-secondary-destructive-pressed-border: var(--fc-red-9);
+      --btn-soft-secondary-destructive-pressed-text: var(--fc-red-12);
+      --btn-soft-secondary-destructive-disabled-bg: transparent;
+      --btn-soft-secondary-destructive-disabled-border: var(--fc-border-color);
+      --btn-soft-secondary-destructive-disabled-text: var(--fc-text-5);
+      --btn-soft-secondary-destructive-focus-bg: transparent;
+      --btn-soft-secondary-destructive-focus-border: var(--fc-red-9);
+      --btn-soft-secondary-destructive-focus-text: var(--fc-red-11);
+      --btn-surface-primary-default-bg: var(--fc-fill-2);
+      --btn-surface-primary-default-border: var(--fc-border-color2);
+      --btn-surface-primary-default-text: var(--fc-violet-11);
+      --btn-surface-primary-hover-bg: var(--fc-violet-4);
+      --btn-surface-primary-hover-border: var(--fc-violet-8);
+      --btn-surface-primary-hover-text: var(--fc-violet-12);
+      --btn-surface-primary-pressed-bg: var(--fc-violet-5);
+      --btn-surface-primary-pressed-border: var(--fc-violet-9);
+      --btn-surface-primary-pressed-text: var(--fc-violet-12);
+      --btn-surface-primary-disabled-bg: transparent;
+      --btn-surface-primary-disabled-border: var(--fc-border-color);
+      --btn-surface-primary-disabled-text: var(--fc-text-5);
+      --btn-surface-primary-focus-bg: transparent;
+      --btn-surface-primary-focus-border: var(--fc-violet-9);
+      --btn-surface-primary-focus-text: var(--fc-violet-11);
+      --btn-surface-primary-destructive-default-bg: var(--fc-red-3);
+      --btn-surface-primary-destructive-default-border: var(--fc-red-8);
+      --btn-surface-primary-destructive-default-text: var(--fc-red-11);
+      --btn-surface-primary-destructive-hover-bg: var(--fc-red-4);
+      --btn-surface-primary-destructive-hover-border: var(--fc-red-9);
+      --btn-surface-primary-destructive-hover-text: var(--fc-red-12);
+      --btn-surface-primary-destructive-pressed-bg: var(--fc-red-5);
+      --btn-surface-primary-destructive-pressed-border: var(--fc-red-9);
+      --btn-surface-primary-destructive-pressed-text: var(--fc-red-12);
+      --btn-surface-primary-destructive-disabled-bg: transparent;
+      --btn-surface-primary-destructive-disabled-border: var(--fc-border-color);
+      --btn-surface-primary-destructive-disabled-text: var(--fc-text-5);
+      --btn-surface-primary-destructive-focus-bg: transparent;
+      --btn-surface-primary-destructive-focus-border: var(--fc-red-9);
+      --btn-surface-primary-destructive-focus-text: var(--fc-red-11);
+      --btn-surface-secondary-default-bg: var(--fc-fill-2);
+      --btn-surface-secondary-default-border: var(--fc-border-color2);
+      --btn-surface-secondary-default-text: var(--fc-text-2);
+      --btn-surface-secondary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-surface-secondary-hover-border: var(--fc-border-color2);
+      --btn-surface-secondary-hover-text: var(--fc-text-1);
+      --btn-surface-secondary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-surface-secondary-pressed-border: var(--fc-border-color2);
+      --btn-surface-secondary-pressed-text: var(--fc-text-1);
+      --btn-surface-secondary-disabled-bg: transparent;
+      --btn-surface-secondary-disabled-border: var(--fc-border-color);
+      --btn-surface-secondary-disabled-text: var(--fc-text-5);
+      --btn-surface-secondary-focus-bg: transparent;
+      --btn-surface-secondary-focus-border: var(--fc-border-color2);
+      --btn-surface-secondary-focus-text: var(--fc-text-2);
+      --btn-surface-secondary-destructive-default-bg: var(--fc-red-3);
+      --btn-surface-secondary-destructive-default-border: var(--fc-red-8);
+      --btn-surface-secondary-destructive-default-text: var(--fc-red-11);
+      --btn-surface-secondary-destructive-hover-bg: var(--fc-red-4);
+      --btn-surface-secondary-destructive-hover-border: var(--fc-red-9);
+      --btn-surface-secondary-destructive-hover-text: var(--fc-red-12);
+      --btn-surface-secondary-destructive-pressed-bg: var(--fc-red-5);
+      --btn-surface-secondary-destructive-pressed-border: var(--fc-red-9);
+      --btn-surface-secondary-destructive-pressed-text: var(--fc-red-12);
+      --btn-surface-secondary-destructive-disabled-bg: transparent;
+      --btn-surface-secondary-destructive-disabled-border: var(--fc-border-color);
+      --btn-surface-secondary-destructive-disabled-text: var(--fc-text-5);
+      --btn-surface-secondary-destructive-focus-bg: transparent;
+      --btn-surface-secondary-destructive-focus-border: var(--fc-red-9);
+      --btn-surface-secondary-destructive-focus-text: var(--fc-red-11);
+      --btn-outline-primary-default-bg: transparent;
+      --btn-outline-primary-default-border: var(--fc-violet-8);
+      --btn-outline-primary-default-text: var(--fc-violet-11);
+      --btn-outline-primary-hover-bg: var(--fc-violet-3);
+      --btn-outline-primary-hover-border: var(--fc-violet-9);
+      --btn-outline-primary-hover-text: var(--fc-violet-12);
+      --btn-outline-primary-pressed-bg: var(--fc-violet-4);
+      --btn-outline-primary-pressed-border: var(--fc-violet-9);
+      --btn-outline-primary-pressed-text: var(--fc-violet-12);
+      --btn-outline-primary-disabled-bg: transparent;
+      --btn-outline-primary-disabled-border: var(--fc-border-color);
+      --btn-outline-primary-disabled-text: var(--fc-text-5);
+      --btn-outline-primary-focus-bg: transparent;
+      --btn-outline-primary-focus-border: var(--fc-violet-9);
+      --btn-outline-primary-focus-text: var(--fc-violet-11);
+      --btn-outline-primary-destructive-default-bg: transparent;
+      --btn-outline-primary-destructive-default-border: var(--fc-red-8);
+      --btn-outline-primary-destructive-default-text: var(--fc-red-11);
+      --btn-outline-primary-destructive-hover-bg: var(--fc-red-3);
+      --btn-outline-primary-destructive-hover-border: var(--fc-red-9);
+      --btn-outline-primary-destructive-hover-text: var(--fc-red-12);
+      --btn-outline-primary-destructive-pressed-bg: var(--fc-red-4);
+      --btn-outline-primary-destructive-pressed-border: var(--fc-red-9);
+      --btn-outline-primary-destructive-pressed-text: var(--fc-red-12);
+      --btn-outline-primary-destructive-disabled-bg: transparent;
+      --btn-outline-primary-destructive-disabled-border: var(--fc-border-color);
+      --btn-outline-primary-destructive-disabled-text: var(--fc-text-5);
+      --btn-outline-primary-destructive-focus-bg: transparent;
+      --btn-outline-primary-destructive-focus-border: var(--fc-red-9);
+      --btn-outline-primary-destructive-focus-text: var(--fc-red-11);
+      --btn-outline-secondary-default-bg: transparent;
+      --btn-outline-secondary-default-border: var(--fc-border-color2);
+      --btn-outline-secondary-default-text: var(--fc-text-2);
+      --btn-outline-secondary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-outline-secondary-hover-border: var(--fc-border-color2);
+      --btn-outline-secondary-hover-text: var(--fc-text-1);
+      --btn-outline-secondary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-outline-secondary-pressed-border: var(--fc-border-color2);
+      --btn-outline-secondary-pressed-text: var(--fc-text-1);
+      --btn-outline-secondary-disabled-bg: transparent;
+      --btn-outline-secondary-disabled-border: var(--fc-border-color);
+      --btn-outline-secondary-disabled-text: var(--fc-text-5);
+      --btn-outline-secondary-focus-bg: transparent;
+      --btn-outline-secondary-focus-border: var(--fc-border-color2);
+      --btn-outline-secondary-focus-text: var(--fc-text-2);
+      --btn-outline-secondary-destructive-default-bg: transparent;
+      --btn-outline-secondary-destructive-default-border: var(--fc-red-8);
+      --btn-outline-secondary-destructive-default-text: var(--fc-red-11);
+      --btn-outline-secondary-destructive-hover-bg: var(--fc-red-3);
+      --btn-outline-secondary-destructive-hover-border: var(--fc-red-9);
+      --btn-outline-secondary-destructive-hover-text: var(--fc-red-12);
+      --btn-outline-secondary-destructive-pressed-bg: var(--fc-red-4);
+      --btn-outline-secondary-destructive-pressed-border: var(--fc-red-9);
+      --btn-outline-secondary-destructive-pressed-text: var(--fc-red-12);
+      --btn-outline-secondary-destructive-disabled-bg: transparent;
+      --btn-outline-secondary-destructive-disabled-border: var(--fc-border-color);
+      --btn-outline-secondary-destructive-disabled-text: var(--fc-text-5);
+      --btn-outline-secondary-destructive-focus-bg: transparent;
+      --btn-outline-secondary-destructive-focus-border: var(--fc-red-9);
+      --btn-outline-secondary-destructive-focus-text: var(--fc-red-11);
+      --btn-ghost-primary-default-bg: transparent;
+      --btn-ghost-primary-default-border: transparent;
+      --btn-ghost-primary-default-text: var(--fc-violet-11);
+      --btn-ghost-primary-hover-bg: var(--fc-violet-3);
+      --btn-ghost-primary-hover-border: transparent;
+      --btn-ghost-primary-hover-text: var(--fc-violet-11);
+      --btn-ghost-primary-pressed-bg: var(--fc-violet-4);
+      --btn-ghost-primary-pressed-border: transparent;
+      --btn-ghost-primary-pressed-text: var(--fc-violet-12);
+      --btn-ghost-primary-disabled-bg: transparent;
+      --btn-ghost-primary-disabled-border: transparent;
+      --btn-ghost-primary-disabled-text: var(--fc-violet-6);
+      --btn-ghost-primary-focus-bg: transparent;
+      --btn-ghost-primary-focus-border: var(--fc-violet-9);
+      --btn-ghost-primary-focus-text: var(--fc-violet-11);
+      --btn-ghost-primary-destructive-default-bg: transparent;
+      --btn-ghost-primary-destructive-default-border: transparent;
+      --btn-ghost-primary-destructive-default-text: var(--fc-red-11);
+      --btn-ghost-primary-destructive-hover-bg: var(--fc-red-3);
+      --btn-ghost-primary-destructive-hover-border: transparent;
+      --btn-ghost-primary-destructive-hover-text: var(--fc-red-11);
+      --btn-ghost-primary-destructive-pressed-bg: var(--fc-red-4);
+      --btn-ghost-primary-destructive-pressed-border: transparent;
+      --btn-ghost-primary-destructive-pressed-text: var(--fc-red-12);
+      --btn-ghost-primary-destructive-disabled-bg: transparent;
+      --btn-ghost-primary-destructive-disabled-border: transparent;
+      --btn-ghost-primary-destructive-disabled-text: var(--fc-red-6);
+      --btn-ghost-primary-destructive-focus-bg: transparent;
+      --btn-ghost-primary-destructive-focus-border: var(--fc-red-9);
+      --btn-ghost-primary-destructive-focus-text: var(--fc-red-11);
+      --btn-ghost-secondary-default-bg: transparent;
+      --btn-ghost-secondary-default-border: transparent;
+      --btn-ghost-secondary-default-text: var(--fc-text-2);
+      --btn-ghost-secondary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-ghost-secondary-hover-border: transparent;
+      --btn-ghost-secondary-hover-text: var(--fc-text-1);
+      --btn-ghost-secondary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-ghost-secondary-pressed-border: transparent;
+      --btn-ghost-secondary-pressed-text: var(--fc-text-1);
+      --btn-ghost-secondary-disabled-bg: transparent;
+      --btn-ghost-secondary-disabled-border: transparent;
+      --btn-ghost-secondary-disabled-text: var(--fc-text-5);
+      --btn-ghost-secondary-focus-bg: transparent;
+      --btn-ghost-secondary-focus-border: var(--fc-border-color2);
+      --btn-ghost-secondary-focus-text: var(--fc-text-2);
+      --btn-ghost-secondary-destructive-default-bg: transparent;
+      --btn-ghost-secondary-destructive-default-border: transparent;
+      --btn-ghost-secondary-destructive-default-text: var(--fc-text-2);
+      --btn-ghost-secondary-destructive-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-ghost-secondary-destructive-hover-border: transparent;
+      --btn-ghost-secondary-destructive-hover-text: var(--fc-text-1);
+      --btn-ghost-secondary-destructive-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-ghost-secondary-destructive-pressed-border: transparent;
+      --btn-ghost-secondary-destructive-pressed-text: var(--fc-text-1);
+      --btn-ghost-secondary-destructive-disabled-bg: transparent;
+      --btn-ghost-secondary-destructive-disabled-border: transparent;
+      --btn-ghost-secondary-destructive-disabled-text: var(--fc-text-5);
+      --btn-ghost-secondary-destructive-focus-bg: transparent;
+      --btn-ghost-secondary-destructive-focus-border: var(--fc-border-color2);
+      --btn-ghost-secondary-destructive-focus-text: var(--fc-text-2);
+      --btn-ghost-tertiary-default-bg: transparent;
+      --btn-ghost-tertiary-default-border: transparent;
+      --btn-ghost-tertiary-default-text: var(--fc-text-3);
+      --btn-ghost-tertiary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-ghost-tertiary-hover-border: transparent;
+      --btn-ghost-tertiary-hover-text: var(--fc-text-2);
+      --btn-ghost-tertiary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-ghost-tertiary-pressed-border: transparent;
+      --btn-ghost-tertiary-pressed-text: var(--fc-text-1);
+      --btn-ghost-tertiary-disabled-bg: transparent;
+      --btn-ghost-tertiary-disabled-border: transparent;
+      --btn-ghost-tertiary-disabled-text: var(--fc-text-5);
+      --btn-ghost-tertiary-focus-bg: transparent;
+      --btn-ghost-tertiary-focus-border: var(--fc-border-color2);
+      --btn-ghost-tertiary-focus-text: var(--fc-text-3);
+      --btn-ghost-quaternary-default-bg: transparent;
+      --btn-ghost-quaternary-default-border: transparent;
+      --btn-ghost-quaternary-default-text: var(--fc-text-4);
+      --btn-ghost-quaternary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-ghost-quaternary-hover-border: transparent;
+      --btn-ghost-quaternary-hover-text: var(--fc-text-2);
+      --btn-ghost-quaternary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.7);
+      --btn-ghost-quaternary-pressed-border: transparent;
+      --btn-ghost-quaternary-pressed-text: var(--fc-text-1);
+      --btn-ghost-quaternary-disabled-bg: transparent;
+      --btn-ghost-quaternary-disabled-border: transparent;
+      --btn-ghost-quaternary-disabled-text: var(--fc-text-5);
+      --btn-ghost-quaternary-focus-bg: transparent;
+      --btn-ghost-quaternary-focus-border: var(--fc-border-color2);
+      --btn-ghost-quaternary-focus-text: var(--fc-text-4);
+      --btn-text-primary-default-bg: transparent;
+      --btn-text-primary-default-border: transparent;
+      --btn-text-primary-default-text: var(--fc-violet-11);
+      --btn-text-primary-hover-bg: var(--fc-violet-3);
+      --btn-text-primary-hover-border: transparent;
+      --btn-text-primary-hover-text: var(--fc-violet-11);
+      --btn-text-primary-pressed-bg: var(--fc-violet-4);
+      --btn-text-primary-pressed-border: transparent;
+      --btn-text-primary-pressed-text: var(--fc-violet-12);
+      --btn-text-primary-disabled-bg: transparent;
+      --btn-text-primary-disabled-border: transparent;
+      --btn-text-primary-disabled-text: var(--fc-violet-6);
+      --btn-text-primary-focus-bg: transparent;
+      --btn-text-primary-focus-border: var(--fc-violet-9);
+      --btn-text-primary-focus-text: var(--fc-violet-11);
+      --btn-text-primary-destructive-default-bg: transparent;
+      --btn-text-primary-destructive-default-border: transparent;
+      --btn-text-primary-destructive-default-text: var(--fc-red-11);
+      --btn-text-primary-destructive-hover-bg: var(--fc-red-3);
+      --btn-text-primary-destructive-hover-border: transparent;
+      --btn-text-primary-destructive-hover-text: var(--fc-red-11);
+      --btn-text-primary-destructive-pressed-bg: var(--fc-red-4);
+      --btn-text-primary-destructive-pressed-border: transparent;
+      --btn-text-primary-destructive-pressed-text: var(--fc-red-12);
+      --btn-text-primary-destructive-disabled-bg: transparent;
+      --btn-text-primary-destructive-disabled-border: transparent;
+      --btn-text-primary-destructive-disabled-text: var(--fc-red-6);
+      --btn-text-primary-destructive-focus-bg: transparent;
+      --btn-text-primary-destructive-focus-border: var(--fc-red-9);
+      --btn-text-primary-destructive-focus-text: var(--fc-red-11);
+      --btn-text-secondary-default-bg: transparent;
+      --btn-text-secondary-default-border: transparent;
+      --btn-text-secondary-default-text: var(--fc-text-2);
+      --btn-text-secondary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-text-secondary-hover-border: transparent;
+      --btn-text-secondary-hover-text: var(--fc-text-1);
+      --btn-text-secondary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-text-secondary-pressed-border: transparent;
+      --btn-text-secondary-pressed-text: var(--fc-text-1);
+      --btn-text-secondary-disabled-bg: transparent;
+      --btn-text-secondary-disabled-border: transparent;
+      --btn-text-secondary-disabled-text: var(--fc-text-5);
+      --btn-text-secondary-focus-bg: transparent;
+      --btn-text-secondary-focus-border: var(--fc-border-color2);
+      --btn-text-secondary-focus-text: var(--fc-text-2);
+      --btn-text-secondary-destructive-default-bg: transparent;
+      --btn-text-secondary-destructive-default-border: transparent;
+      --btn-text-secondary-destructive-default-text: var(--fc-text-2);
+      --btn-text-secondary-destructive-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-text-secondary-destructive-hover-border: transparent;
+      --btn-text-secondary-destructive-hover-text: var(--fc-text-1);
+      --btn-text-secondary-destructive-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-text-secondary-destructive-pressed-border: transparent;
+      --btn-text-secondary-destructive-pressed-text: var(--fc-text-1);
+      --btn-text-secondary-destructive-disabled-bg: transparent;
+      --btn-text-secondary-destructive-disabled-border: transparent;
+      --btn-text-secondary-destructive-disabled-text: var(--fc-text-5);
+      --btn-text-secondary-destructive-focus-bg: transparent;
+      --btn-text-secondary-destructive-focus-border: var(--fc-border-color2);
+      --btn-text-secondary-destructive-focus-text: var(--fc-text-2);
+      --btn-text-tertiary-default-bg: transparent;
+      --btn-text-tertiary-default-border: transparent;
+      --btn-text-tertiary-default-text: var(--fc-text-3);
+      --btn-text-tertiary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --btn-text-tertiary-hover-border: transparent;
+      --btn-text-tertiary-hover-text: var(--fc-text-2);
+      --btn-text-tertiary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-text-tertiary-pressed-border: transparent;
+      --btn-text-tertiary-pressed-text: var(--fc-text-1);
+      --btn-text-tertiary-disabled-bg: transparent;
+      --btn-text-tertiary-disabled-border: transparent;
+      --btn-text-tertiary-disabled-text: var(--fc-text-5);
+      --btn-text-tertiary-focus-bg: transparent;
+      --btn-text-tertiary-focus-border: var(--fc-border-color2);
+      --btn-text-tertiary-focus-text: var(--fc-text-3);
+      --btn-text-quaternary-default-bg: transparent;
+      --btn-text-quaternary-default-border: transparent;
+      --btn-text-quaternary-default-text: var(--fc-text-4);
+      --btn-text-quaternary-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --btn-text-quaternary-hover-border: transparent;
+      --btn-text-quaternary-hover-text: var(--fc-text-2);
+      --btn-text-quaternary-pressed-bg: rgb(var(--fc-fill-5-rgb) / 0.7);
+      --btn-text-quaternary-pressed-border: transparent;
+      --btn-text-quaternary-pressed-text: var(--fc-text-1);
+      --btn-text-quaternary-disabled-bg: transparent;
+      --btn-text-quaternary-disabled-border: transparent;
+      --btn-text-quaternary-disabled-text: var(--fc-text-5);
+      --btn-text-quaternary-focus-bg: transparent;
+      --btn-text-quaternary-focus-border: var(--fc-border-color2);
+      --btn-text-quaternary-focus-text: var(--fc-text-4);
+      --btn-link-primary-default-text: var(--fc-violet-11);
+      --btn-link-primary-hover-text: var(--fc-violet-12);
+      --btn-link-primary-pressed-text: var(--fc-violet-12);
+      --btn-link-primary-disabled-text: var(--fc-violet-6);
+      --btn-link-primary-default-underline: transparent;
+      --btn-link-primary-hover-underline: currentColor;
+      --btn-link-primary-always-underline: currentColor;
+      --btn-link-secondary-default-text: var(--fc-text-2);
+      --btn-link-secondary-hover-text: var(--fc-text-1);
+      --btn-link-secondary-pressed-text: var(--fc-text-1);
+      --btn-link-secondary-disabled-text: var(--fc-text-5);
+      --btn-link-secondary-default-underline: transparent;
+      --btn-link-secondary-hover-underline: currentColor;
+      --btn-link-secondary-always-underline: currentColor;
+      --btn-link-tertiary-default-text: var(--fc-text-3);
+      --btn-link-tertiary-hover-text: var(--fc-text-2);
+      --btn-link-tertiary-pressed-text: var(--fc-text-2);
+      --btn-link-tertiary-disabled-text: var(--fc-text-5);
+      --btn-link-tertiary-default-underline: transparent;
+      --btn-link-tertiary-hover-underline: currentColor;
+      --btn-link-tertiary-always-underline: currentColor;
+      --btn-link-quaternary-default-text: var(--fc-text-4);
+      --btn-link-quaternary-hover-text: var(--fc-text-2);
+      --btn-link-quaternary-pressed-text: var(--fc-text-2);
+      --btn-link-quaternary-disabled-text: var(--fc-text-5);
+      --btn-link-quaternary-default-underline: transparent;
+      --btn-link-quaternary-hover-underline: currentColor;
+      --btn-link-quaternary-always-underline: currentColor;
+    }
+    html[data-theme="light"], html:not([data-theme]) {
+      --fc-fill-1-rgb: 252 252 253; --fc-fill-1: rgb(var(--fc-fill-1-rgb));
+      --fc-fill-2-rgb: 255 255 255; --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+      --fc-fill-3-rgb: 244 244 246; --fc-fill-3: rgb(var(--fc-fill-3-rgb));
+      --fc-fill-5-rgb: 228 228 231; --fc-fill-5: rgb(var(--fc-fill-5-rgb));
+      --fc-text-1: #0c1018; --fc-text-2: #181c25; --fc-text-3: #3f4856;
+      --fc-text-4: #657386; --fc-text-5: #65738666;
+      --fc-border-color: hsla(240, 5%, 89%, 0.7); --fc-border-color2: hsla(240, 5%, 89%);
+      --fc-violet-3: #2500ed0e; --fc-violet-4: #2800ff1a; --fc-violet-5: #2a00ff25;
+      --fc-violet-8: #2700bd64; --fc-violet-9-rgb: 108, 83, 177; --fc-violet-9: rgb(var(--fc-violet-9-rgb));
+      --fc-violet-10-rgb: 95, 69, 161; --fc-violet-10: rgb(var(--fc-violet-10-rgb));
+      --fc-violet-11-rgb: 107, 81, 175; --fc-violet-11: rgb(var(--fc-violet-11-rgb));
+      --fc-violet-12-rgb: 52, 38, 89; --fc-violet-12: rgb(var(--fc-violet-12-rgb));
+      --fc-red-3: #ff00000e; --fc-red-4: #ff0d001a; --fc-red-5: #ff150025;
+      --fc-red-6: #ff0f0034; --fc-red-8: #ff4d4d64; --fc-red-9: #e5484d;
+      --fc-red-10: #dc3e43; --fc-red-11: #ce2c31; --fc-red-12: #641723;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --fc-fill-1-rgb: 12 12 14; --fc-fill-2-rgb: 22 22 24; --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+      --fc-fill-5-rgb: 44 44 48; --fc-text-1: rgb(242,242,242); --fc-text-2: rgb(201,201,207);
+      --fc-text-3: rgb(135,135,146); --fc-text-4: rgb(109,109,120); --fc-text-5: rgb(68,68,75);
+      --fc-border-color: rgba(255,255,255,0.06); --fc-border-color2: rgba(255,255,255,0.08);
+      --fc-violet-3: #683bfc38; --fc-violet-4: #7138ff54; --fc-violet-5: #7a49fd64;
+      --fc-violet-8: #8f6cffb2; --fc-violet-9-rgb: 148,112,255; --fc-violet-9: rgb(var(--fc-violet-9-rgb));
+      --fc-violet-10-rgb: 136,99,241; --fc-violet-10: rgb(var(--fc-violet-10-rgb));
+      --fc-violet-11-rgb: 184,164,255; --fc-violet-11: rgb(var(--fc-violet-11-rgb));
+      --fc-violet-12-rgb: 225,220,255; --fc-violet-12: rgb(var(--fc-violet-12-rgb));
+      --fc-red-9: #ff6b6b; --fc-red-10: #ff5252; --fc-red-11: #ff8a8a;
+      --btn-focus-ring-color: rgb(var(--fc-fill-5-rgb) / 0.5);
+    }
+    [data-theme="gold"] {
+      --preview-page-bg: #fcfcfd; --preview-panel-bg: #fff; --preview-text: #181c25; --preview-muted: #657386;
+      --btn-solid-primary-default-bg: #ffbc0d; --btn-solid-primary-hover-bg: #ffcd36;
+      --btn-solid-primary-default-text: rgba(0,0,0,0.85); --btn-link-primary-default-text: #db0007;
+    }
+    html[data-theme="light"] body, html:not([data-theme]) body {
+      --preview-page-bg: var(--fc-fill-1); --preview-panel-bg: var(--fc-fill-2);
+      --preview-text: var(--fc-text-2); --preview-muted: var(--fc-text-4); --preview-border: var(--fc-border-color2);
+    }
+    html[data-theme="dark"] body {
+      --preview-page-bg: var(--fc-fill-1); --preview-panel-bg: var(--fc-fill-2);
+      --preview-text: var(--fc-text-2); --preview-muted: var(--fc-text-4); --preview-border: var(--fc-border-color2);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--preview-page-bg); color: var(--preview-text);
+      font-family: "PingFang SC", -apple-system, sans-serif; font-size: 12px; }
+    main { width: min(1100px, calc(100vw - 48px)); margin: 32px auto 64px; }
+    h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; }
+    .intro { margin: 0 0 20px; color: var(--preview-muted); font-size: 13px; line-height: 1.65; }
+    .intro code { padding: 1px 6px; border-radius: 4px; background: var(--fc-fill-3); }
+    section { margin-bottom: 24px; padding: 20px 24px; border: 1px solid var(--preview-border);
+      border-radius: 8px; background: var(--preview-panel-bg); }
+    section h2 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+    section .desc { margin: 0 0 14px; color: var(--preview-muted); font-size: 12px; line-height: 1.5; }
+    .theme-toggle, .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+    .theme-toggle button, .filter-row button, .filter-row select {
+      padding: 6px 12px; border: 1px solid var(--preview-border); border-radius: 6px;
+      background: var(--preview-panel-bg); color: var(--preview-muted); font: inherit; font-size: 12px; cursor: pointer;
+    }
+    .theme-toggle button.is-on, .filter-row button.is-on {
+      border-color: var(--fc-violet-9); color: var(--fc-violet-11);
+      background: color-mix(in srgb, var(--fc-violet-9) 8%, var(--preview-panel-bg));
+    }
+    .filter-row label { color: var(--preview-muted); font-size: 12px; }
+    .filter-row select { min-width: 110px; }
+    .theme-note { margin: 0 0 12px; padding: 10px 12px; border-radius: 6px;
+      background: color-mix(in srgb, var(--fc-violet-9) 6%, var(--preview-panel-bg));
+      color: var(--preview-muted); font-size: 12px; }
+    .fc-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--btn-gap);
+      border: var(--btn-border-width) solid transparent; font: inherit; font-weight: var(--btn-font-weight);
+      line-height: 1; cursor: pointer; white-space: nowrap;
+      transition: background var(--btn-transition), border-color var(--btn-transition), color var(--btn-transition);
+    }
+    .fc-btn[data-variant="solid"] { font-weight: var(--btn-font-weight-solid); }
+    .fc-btn[data-size="xs"] { height: var(--btn-height-xs); padding: var(--btn-padding-y-xs) var(--btn-padding-x-xs);
+      border-radius: var(--btn-radius-xs); font-size: var(--btn-font-size-xs); line-height: var(--btn-line-height-xs); }
+    .fc-btn[data-size="sm"] { height: var(--btn-height-sm); padding: var(--btn-padding-y-sm) var(--btn-padding-x-sm);
+      border-radius: var(--btn-radius-sm); font-size: var(--btn-font-size-sm); line-height: var(--btn-line-height-sm); }
+    .fc-btn[data-size="default"] { height: var(--btn-height-default); padding: var(--btn-padding-y-default) var(--btn-padding-x-default);
+      border-radius: var(--btn-radius-default); font-size: var(--btn-font-size-default); line-height: var(--btn-line-height-default); }
+    .fc-btn[data-size="lg"] { height: var(--btn-height-lg); padding: var(--btn-padding-y-lg) var(--btn-padding-x-lg);
+      border-radius: var(--btn-radius-lg); font-size: var(--btn-font-size-lg); line-height: var(--btn-line-height-lg); }
+    .fc-btn .lucide { width: var(--btn-icon-size-default); height: var(--btn-icon-size-default); flex: none; }
+    .fc-btn[data-size="xs"] .lucide { width: var(--btn-icon-size-xs); height: var(--btn-icon-size-xs); }
+    .fc-btn[data-variant="text"] { background: transparent !important; border-color: transparent !important; }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]) {
+      background: var(--btn-solid-primary-default-bg);
+      border-color: var(--btn-solid-primary-default-border);
+      color: var(--btn-solid-primary-default-text);
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-solid-primary-hover-bg);
+      border-color: var(--btn-solid-primary-hover-border);
+      color: var(--btn-solid-primary-hover-text);
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-solid-primary-pressed-bg);
+      border-color: var(--btn-solid-primary-pressed-border);
+      color: var(--btn-solid-primary-pressed-text);
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-solid-primary-disabled-bg);
+      border-color: var(--btn-solid-primary-disabled-border);
+      color: var(--btn-solid-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="solid"][data-hierarchy="primary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"] {
+      background: var(--btn-solid-primary-destructive-default-bg);
+      border-color: var(--btn-solid-primary-destructive-default-border);
+      color: var(--btn-solid-primary-destructive-default-text);
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"].is-hover {
+      background: var(--btn-solid-primary-destructive-hover-bg);
+      border-color: var(--btn-solid-primary-destructive-hover-border);
+      color: var(--btn-solid-primary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"].is-pressed {
+      background: var(--btn-solid-primary-destructive-pressed-bg);
+      border-color: var(--btn-solid-primary-destructive-pressed-border);
+      color: var(--btn-solid-primary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"]:disabled, .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"].is-disabled {
+      background: var(--btn-solid-primary-destructive-disabled-bg);
+      border-color: var(--btn-solid-primary-destructive-disabled-border);
+      color: var(--btn-solid-primary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="solid"][data-hierarchy="primary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]) {
+      background: var(--btn-soft-primary-default-bg);
+      border-color: var(--btn-soft-primary-default-border);
+      color: var(--btn-soft-primary-default-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-soft-primary-hover-bg);
+      border-color: var(--btn-soft-primary-hover-border);
+      color: var(--btn-soft-primary-hover-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-soft-primary-pressed-bg);
+      border-color: var(--btn-soft-primary-pressed-border);
+      color: var(--btn-soft-primary-pressed-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-soft-primary-disabled-bg);
+      border-color: var(--btn-soft-primary-disabled-border);
+      color: var(--btn-soft-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="soft"][data-hierarchy="primary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"] {
+      background: var(--btn-soft-primary-destructive-default-bg);
+      border-color: var(--btn-soft-primary-destructive-default-border);
+      color: var(--btn-soft-primary-destructive-default-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"].is-hover {
+      background: var(--btn-soft-primary-destructive-hover-bg);
+      border-color: var(--btn-soft-primary-destructive-hover-border);
+      color: var(--btn-soft-primary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"].is-pressed {
+      background: var(--btn-soft-primary-destructive-pressed-bg);
+      border-color: var(--btn-soft-primary-destructive-pressed-border);
+      color: var(--btn-soft-primary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"]:disabled, .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"].is-disabled {
+      background: var(--btn-soft-primary-destructive-disabled-bg);
+      border-color: var(--btn-soft-primary-destructive-disabled-border);
+      color: var(--btn-soft-primary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="soft"][data-hierarchy="primary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]) {
+      background: var(--btn-soft-secondary-default-bg);
+      border-color: var(--btn-soft-secondary-default-border);
+      color: var(--btn-soft-secondary-default-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-soft-secondary-hover-bg);
+      border-color: var(--btn-soft-secondary-hover-border);
+      color: var(--btn-soft-secondary-hover-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-soft-secondary-pressed-bg);
+      border-color: var(--btn-soft-secondary-pressed-border);
+      color: var(--btn-soft-secondary-pressed-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-soft-secondary-disabled-bg);
+      border-color: var(--btn-soft-secondary-disabled-border);
+      color: var(--btn-soft-secondary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="soft"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"] {
+      background: var(--btn-soft-secondary-destructive-default-bg);
+      border-color: var(--btn-soft-secondary-destructive-default-border);
+      color: var(--btn-soft-secondary-destructive-default-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"].is-hover {
+      background: var(--btn-soft-secondary-destructive-hover-bg);
+      border-color: var(--btn-soft-secondary-destructive-hover-border);
+      color: var(--btn-soft-secondary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"].is-pressed {
+      background: var(--btn-soft-secondary-destructive-pressed-bg);
+      border-color: var(--btn-soft-secondary-destructive-pressed-border);
+      color: var(--btn-soft-secondary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"]:disabled, .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"].is-disabled {
+      background: var(--btn-soft-secondary-destructive-disabled-bg);
+      border-color: var(--btn-soft-secondary-destructive-disabled-border);
+      color: var(--btn-soft-secondary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="soft"][data-hierarchy="secondary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]) {
+      background: var(--btn-surface-primary-default-bg);
+      border-color: var(--btn-surface-primary-default-border);
+      color: var(--btn-surface-primary-default-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-surface-primary-hover-bg);
+      border-color: var(--btn-surface-primary-hover-border);
+      color: var(--btn-surface-primary-hover-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-surface-primary-pressed-bg);
+      border-color: var(--btn-surface-primary-pressed-border);
+      color: var(--btn-surface-primary-pressed-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-surface-primary-disabled-bg);
+      border-color: var(--btn-surface-primary-disabled-border);
+      color: var(--btn-surface-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="surface"][data-hierarchy="primary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"] {
+      background: var(--btn-surface-primary-destructive-default-bg);
+      border-color: var(--btn-surface-primary-destructive-default-border);
+      color: var(--btn-surface-primary-destructive-default-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"].is-hover {
+      background: var(--btn-surface-primary-destructive-hover-bg);
+      border-color: var(--btn-surface-primary-destructive-hover-border);
+      color: var(--btn-surface-primary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"].is-pressed {
+      background: var(--btn-surface-primary-destructive-pressed-bg);
+      border-color: var(--btn-surface-primary-destructive-pressed-border);
+      color: var(--btn-surface-primary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"]:disabled, .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"].is-disabled {
+      background: var(--btn-surface-primary-destructive-disabled-bg);
+      border-color: var(--btn-surface-primary-destructive-disabled-border);
+      color: var(--btn-surface-primary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="surface"][data-hierarchy="primary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]) {
+      background: var(--btn-surface-secondary-default-bg);
+      border-color: var(--btn-surface-secondary-default-border);
+      color: var(--btn-surface-secondary-default-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-surface-secondary-hover-bg);
+      border-color: var(--btn-surface-secondary-hover-border);
+      color: var(--btn-surface-secondary-hover-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-surface-secondary-pressed-bg);
+      border-color: var(--btn-surface-secondary-pressed-border);
+      color: var(--btn-surface-secondary-pressed-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-surface-secondary-disabled-bg);
+      border-color: var(--btn-surface-secondary-disabled-border);
+      color: var(--btn-surface-secondary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="surface"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"] {
+      background: var(--btn-surface-secondary-destructive-default-bg);
+      border-color: var(--btn-surface-secondary-destructive-default-border);
+      color: var(--btn-surface-secondary-destructive-default-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"].is-hover {
+      background: var(--btn-surface-secondary-destructive-hover-bg);
+      border-color: var(--btn-surface-secondary-destructive-hover-border);
+      color: var(--btn-surface-secondary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"].is-pressed {
+      background: var(--btn-surface-secondary-destructive-pressed-bg);
+      border-color: var(--btn-surface-secondary-destructive-pressed-border);
+      color: var(--btn-surface-secondary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"]:disabled, .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"].is-disabled {
+      background: var(--btn-surface-secondary-destructive-disabled-bg);
+      border-color: var(--btn-surface-secondary-destructive-disabled-border);
+      color: var(--btn-surface-secondary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="surface"][data-hierarchy="secondary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]) {
+      background: var(--btn-outline-primary-default-bg);
+      border-color: var(--btn-outline-primary-default-border);
+      color: var(--btn-outline-primary-default-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-outline-primary-hover-bg);
+      border-color: var(--btn-outline-primary-hover-border);
+      color: var(--btn-outline-primary-hover-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-outline-primary-pressed-bg);
+      border-color: var(--btn-outline-primary-pressed-border);
+      color: var(--btn-outline-primary-pressed-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-outline-primary-disabled-bg);
+      border-color: var(--btn-outline-primary-disabled-border);
+      color: var(--btn-outline-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="outline"][data-hierarchy="primary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"] {
+      background: var(--btn-outline-primary-destructive-default-bg);
+      border-color: var(--btn-outline-primary-destructive-default-border);
+      color: var(--btn-outline-primary-destructive-default-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"].is-hover {
+      background: var(--btn-outline-primary-destructive-hover-bg);
+      border-color: var(--btn-outline-primary-destructive-hover-border);
+      color: var(--btn-outline-primary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"].is-pressed {
+      background: var(--btn-outline-primary-destructive-pressed-bg);
+      border-color: var(--btn-outline-primary-destructive-pressed-border);
+      color: var(--btn-outline-primary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"]:disabled, .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"].is-disabled {
+      background: var(--btn-outline-primary-destructive-disabled-bg);
+      border-color: var(--btn-outline-primary-destructive-disabled-border);
+      color: var(--btn-outline-primary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="outline"][data-hierarchy="primary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]) {
+      background: var(--btn-outline-secondary-default-bg);
+      border-color: var(--btn-outline-secondary-default-border);
+      color: var(--btn-outline-secondary-default-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-outline-secondary-hover-bg);
+      border-color: var(--btn-outline-secondary-hover-border);
+      color: var(--btn-outline-secondary-hover-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-outline-secondary-pressed-bg);
+      border-color: var(--btn-outline-secondary-pressed-border);
+      color: var(--btn-outline-secondary-pressed-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-outline-secondary-disabled-bg);
+      border-color: var(--btn-outline-secondary-disabled-border);
+      color: var(--btn-outline-secondary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="outline"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"] {
+      background: var(--btn-outline-secondary-destructive-default-bg);
+      border-color: var(--btn-outline-secondary-destructive-default-border);
+      color: var(--btn-outline-secondary-destructive-default-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"].is-hover {
+      background: var(--btn-outline-secondary-destructive-hover-bg);
+      border-color: var(--btn-outline-secondary-destructive-hover-border);
+      color: var(--btn-outline-secondary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"].is-pressed {
+      background: var(--btn-outline-secondary-destructive-pressed-bg);
+      border-color: var(--btn-outline-secondary-destructive-pressed-border);
+      color: var(--btn-outline-secondary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"]:disabled, .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"].is-disabled {
+      background: var(--btn-outline-secondary-destructive-disabled-bg);
+      border-color: var(--btn-outline-secondary-destructive-disabled-border);
+      color: var(--btn-outline-secondary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="outline"][data-hierarchy="secondary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]) {
+      background: var(--btn-ghost-primary-default-bg);
+      border-color: var(--btn-ghost-primary-default-border);
+      color: var(--btn-ghost-primary-default-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-ghost-primary-hover-bg);
+      border-color: var(--btn-ghost-primary-hover-border);
+      color: var(--btn-ghost-primary-hover-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-ghost-primary-pressed-bg);
+      border-color: var(--btn-ghost-primary-pressed-border);
+      color: var(--btn-ghost-primary-pressed-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-ghost-primary-disabled-bg);
+      border-color: var(--btn-ghost-primary-disabled-border);
+      color: var(--btn-ghost-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="ghost"][data-hierarchy="primary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"] {
+      background: var(--btn-ghost-primary-destructive-default-bg);
+      border-color: var(--btn-ghost-primary-destructive-default-border);
+      color: var(--btn-ghost-primary-destructive-default-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"].is-hover {
+      background: var(--btn-ghost-primary-destructive-hover-bg);
+      border-color: var(--btn-ghost-primary-destructive-hover-border);
+      color: var(--btn-ghost-primary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"].is-pressed {
+      background: var(--btn-ghost-primary-destructive-pressed-bg);
+      border-color: var(--btn-ghost-primary-destructive-pressed-border);
+      color: var(--btn-ghost-primary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"]:disabled, .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"].is-disabled {
+      background: var(--btn-ghost-primary-destructive-disabled-bg);
+      border-color: var(--btn-ghost-primary-destructive-disabled-border);
+      color: var(--btn-ghost-primary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="ghost"][data-hierarchy="primary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]) {
+      background: var(--btn-ghost-secondary-default-bg);
+      border-color: var(--btn-ghost-secondary-default-border);
+      color: var(--btn-ghost-secondary-default-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-ghost-secondary-hover-bg);
+      border-color: var(--btn-ghost-secondary-hover-border);
+      color: var(--btn-ghost-secondary-hover-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-ghost-secondary-pressed-bg);
+      border-color: var(--btn-ghost-secondary-pressed-border);
+      color: var(--btn-ghost-secondary-pressed-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-ghost-secondary-disabled-bg);
+      border-color: var(--btn-ghost-secondary-disabled-border);
+      color: var(--btn-ghost-secondary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="ghost"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"] {
+      background: var(--btn-ghost-secondary-destructive-default-bg);
+      border-color: var(--btn-ghost-secondary-destructive-default-border);
+      color: var(--btn-ghost-secondary-destructive-default-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"].is-hover {
+      background: var(--btn-ghost-secondary-destructive-hover-bg);
+      border-color: var(--btn-ghost-secondary-destructive-hover-border);
+      color: var(--btn-ghost-secondary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"].is-pressed {
+      background: var(--btn-ghost-secondary-destructive-pressed-bg);
+      border-color: var(--btn-ghost-secondary-destructive-pressed-border);
+      color: var(--btn-ghost-secondary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"]:disabled, .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"].is-disabled {
+      background: var(--btn-ghost-secondary-destructive-disabled-bg);
+      border-color: var(--btn-ghost-secondary-destructive-disabled-border);
+      color: var(--btn-ghost-secondary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="ghost"][data-hierarchy="secondary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]) {
+      background: var(--btn-ghost-tertiary-default-bg);
+      border-color: var(--btn-ghost-tertiary-default-border);
+      color: var(--btn-ghost-tertiary-default-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-ghost-tertiary-hover-bg);
+      border-color: var(--btn-ghost-tertiary-hover-border);
+      color: var(--btn-ghost-tertiary-hover-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-ghost-tertiary-pressed-bg);
+      border-color: var(--btn-ghost-tertiary-pressed-border);
+      color: var(--btn-ghost-tertiary-pressed-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-ghost-tertiary-disabled-bg);
+      border-color: var(--btn-ghost-tertiary-disabled-border);
+      color: var(--btn-ghost-tertiary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="ghost"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]) {
+      background: var(--btn-ghost-quaternary-default-bg);
+      border-color: var(--btn-ghost-quaternary-default-border);
+      color: var(--btn-ghost-quaternary-default-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-ghost-quaternary-hover-bg);
+      border-color: var(--btn-ghost-quaternary-hover-border);
+      color: var(--btn-ghost-quaternary-hover-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-ghost-quaternary-pressed-bg);
+      border-color: var(--btn-ghost-quaternary-pressed-border);
+      color: var(--btn-ghost-quaternary-pressed-text);
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-ghost-quaternary-disabled-bg);
+      border-color: var(--btn-ghost-quaternary-disabled-border);
+      color: var(--btn-ghost-quaternary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="ghost"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]) {
+      background: var(--btn-text-primary-default-bg);
+      border-color: var(--btn-text-primary-default-border);
+      color: var(--btn-text-primary-default-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-text-primary-hover-bg);
+      border-color: var(--btn-text-primary-hover-border);
+      color: var(--btn-text-primary-hover-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-text-primary-pressed-bg);
+      border-color: var(--btn-text-primary-pressed-border);
+      color: var(--btn-text-primary-pressed-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-text-primary-disabled-bg);
+      border-color: var(--btn-text-primary-disabled-border);
+      color: var(--btn-text-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="text"][data-hierarchy="primary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"] {
+      background: var(--btn-text-primary-destructive-default-bg);
+      border-color: var(--btn-text-primary-destructive-default-border);
+      color: var(--btn-text-primary-destructive-default-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"].is-hover {
+      background: var(--btn-text-primary-destructive-hover-bg);
+      border-color: var(--btn-text-primary-destructive-hover-border);
+      color: var(--btn-text-primary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"].is-pressed {
+      background: var(--btn-text-primary-destructive-pressed-bg);
+      border-color: var(--btn-text-primary-destructive-pressed-border);
+      color: var(--btn-text-primary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"]:disabled, .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"].is-disabled {
+      background: var(--btn-text-primary-destructive-disabled-bg);
+      border-color: var(--btn-text-primary-destructive-disabled-border);
+      color: var(--btn-text-primary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="text"][data-hierarchy="primary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]) {
+      background: var(--btn-text-secondary-default-bg);
+      border-color: var(--btn-text-secondary-default-border);
+      color: var(--btn-text-secondary-default-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-text-secondary-hover-bg);
+      border-color: var(--btn-text-secondary-hover-border);
+      color: var(--btn-text-secondary-hover-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-text-secondary-pressed-bg);
+      border-color: var(--btn-text-secondary-pressed-border);
+      color: var(--btn-text-secondary-pressed-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-text-secondary-disabled-bg);
+      border-color: var(--btn-text-secondary-disabled-border);
+      color: var(--btn-text-secondary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="text"][data-hierarchy="secondary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"] {
+      background: var(--btn-text-secondary-destructive-default-bg);
+      border-color: var(--btn-text-secondary-destructive-default-border);
+      color: var(--btn-text-secondary-destructive-default-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"]:hover:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"].is-hover {
+      background: var(--btn-text-secondary-destructive-hover-bg);
+      border-color: var(--btn-text-secondary-destructive-hover-border);
+      color: var(--btn-text-secondary-destructive-hover-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"]:active:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"].is-pressed {
+      background: var(--btn-text-secondary-destructive-pressed-bg);
+      border-color: var(--btn-text-secondary-destructive-pressed-border);
+      color: var(--btn-text-secondary-destructive-pressed-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"]:disabled, .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"].is-disabled {
+      background: var(--btn-text-secondary-destructive-disabled-bg);
+      border-color: var(--btn-text-secondary-destructive-disabled-border);
+      color: var(--btn-text-secondary-destructive-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"]:focus-visible, .fc-btn[data-variant="text"][data-hierarchy="secondary"][data-destructive="true"].is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]) {
+      background: var(--btn-text-tertiary-default-bg);
+      border-color: var(--btn-text-tertiary-default-border);
+      color: var(--btn-text-tertiary-default-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-text-tertiary-hover-bg);
+      border-color: var(--btn-text-tertiary-hover-border);
+      color: var(--btn-text-tertiary-hover-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-text-tertiary-pressed-bg);
+      border-color: var(--btn-text-tertiary-pressed-border);
+      color: var(--btn-text-tertiary-pressed-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-text-tertiary-disabled-bg);
+      border-color: var(--btn-text-tertiary-disabled-border);
+      color: var(--btn-text-tertiary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="text"][data-hierarchy="tertiary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]) {
+      background: var(--btn-text-quaternary-default-bg);
+      border-color: var(--btn-text-quaternary-default-border);
+      color: var(--btn-text-quaternary-default-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]):hover:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-hover {
+      background: var(--btn-text-quaternary-hover-bg);
+      border-color: var(--btn-text-quaternary-hover-border);
+      color: var(--btn-text-quaternary-hover-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]):active:not(:disabled), .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-pressed {
+      background: var(--btn-text-quaternary-pressed-bg);
+      border-color: var(--btn-text-quaternary-pressed-border);
+      color: var(--btn-text-quaternary-pressed-text);
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]):disabled, .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-disabled {
+      background: var(--btn-text-quaternary-disabled-bg);
+      border-color: var(--btn-text-quaternary-disabled-border);
+      color: var(--btn-text-quaternary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]):focus-visible, .fc-btn[data-variant="text"][data-hierarchy="quaternary"]:not([data-destructive="true"]).is-focus {
+      outline: var(--btn-focus-ring-width) solid var(--btn-focus-ring-color);
+      outline-offset: 1px;
+    }
+    .fc-link[data-hierarchy="primary"] {
+      color: var(--btn-link-primary-default-text);
+      text-decoration-color: var(--btn-link-primary-default-underline);
+    }
+    .fc-link[data-hierarchy="primary"][data-underline="always"] {
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-primary-always-underline);
+    }
+    .fc-link[data-hierarchy="primary"][data-underline="hover"]:hover,
+    .fc-link[data-hierarchy="primary"].is-hover {
+      color: var(--btn-link-primary-hover-text);
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-primary-hover-underline);
+    }
+    .fc-link[data-hierarchy="primary"]:disabled, .fc-link[data-hierarchy="primary"].is-disabled {
+      color: var(--btn-link-primary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-link[data-hierarchy="secondary"] {
+      color: var(--btn-link-secondary-default-text);
+      text-decoration-color: var(--btn-link-secondary-default-underline);
+    }
+    .fc-link[data-hierarchy="secondary"][data-underline="always"] {
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-secondary-always-underline);
+    }
+    .fc-link[data-hierarchy="secondary"][data-underline="hover"]:hover,
+    .fc-link[data-hierarchy="secondary"].is-hover {
+      color: var(--btn-link-secondary-hover-text);
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-secondary-hover-underline);
+    }
+    .fc-link[data-hierarchy="secondary"]:disabled, .fc-link[data-hierarchy="secondary"].is-disabled {
+      color: var(--btn-link-secondary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-link[data-hierarchy="tertiary"] {
+      color: var(--btn-link-tertiary-default-text);
+      text-decoration-color: var(--btn-link-tertiary-default-underline);
+    }
+    .fc-link[data-hierarchy="tertiary"][data-underline="always"] {
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-tertiary-always-underline);
+    }
+    .fc-link[data-hierarchy="tertiary"][data-underline="hover"]:hover,
+    .fc-link[data-hierarchy="tertiary"].is-hover {
+      color: var(--btn-link-tertiary-hover-text);
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-tertiary-hover-underline);
+    }
+    .fc-link[data-hierarchy="tertiary"]:disabled, .fc-link[data-hierarchy="tertiary"].is-disabled {
+      color: var(--btn-link-tertiary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-link[data-hierarchy="quaternary"] {
+      color: var(--btn-link-quaternary-default-text);
+      text-decoration-color: var(--btn-link-quaternary-default-underline);
+    }
+    .fc-link[data-hierarchy="quaternary"][data-underline="always"] {
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-quaternary-always-underline);
+    }
+    .fc-link[data-hierarchy="quaternary"][data-underline="hover"]:hover,
+    .fc-link[data-hierarchy="quaternary"].is-hover {
+      color: var(--btn-link-quaternary-hover-text);
+      text-decoration: underline;
+      text-decoration-color: var(--btn-link-quaternary-hover-underline);
+    }
+    .fc-link[data-hierarchy="quaternary"]:disabled, .fc-link[data-hierarchy="quaternary"].is-disabled {
+      color: var(--btn-link-quaternary-disabled-text);
+      cursor: not-allowed;
+    }
+    .fc-link { display: inline-flex; align-items: center; gap: var(--btn-gap); border: none; background: none;
+      font: inherit; font-size: var(--btn-font-size-default); cursor: pointer; text-decoration: none; padding: 0; }
+    .state-grid { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+    .state-cell { display: flex; flex-direction: column; gap: 6px; }
+    .state-label { color: var(--preview-muted); font-size: 11px; }
+    .matrix-title { margin: 14px 0 8px; font-size: 13px; font-weight: 600; color: var(--preview-muted); }
+    .matrix-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .spec-table th, .spec-table td { border-bottom: 1px solid var(--preview-border); padding: 8px 10px; vertical-align: top; }
+    .value-editor { display: flex; align-items: center; gap: 8px; }
+    .spec-input { flex: 1; min-width: 140px; padding: 6px 8px; border: 1px solid var(--preview-border);
+      border-radius: 6px; background: var(--preview-panel-bg); font: inherit; font-size: 12px; }
+    .spec-color-picker { width: 28px; height: 28px; padding: 0; border-radius: 6px; cursor: pointer; }
+    .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,.08); }
+    .action-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 20px;
+      padding: 14px 16px; border: 1px solid var(--preview-border); border-radius: 8px; background: var(--preview-panel-bg); }
+    .btn-primary-action { padding: 8px 18px; border: none; border-radius: 6px; background: var(--fc-violet-9);
+      color: #fff; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .btn-secondary-action { padding: 8px 14px; border: 1px solid var(--preview-border); border-radius: 6px;
+      background: var(--preview-panel-bg); font: inherit; font-size: 13px; cursor: pointer; }
+    .copy-hint { color: var(--preview-muted); font-size: 12px; }
+    .code-output { width: 100%; min-height: 220px; margin-top: 10px; padding: 12px; border-radius: 8px;
+      background: #1e1e22; color: #e8e8ed; font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+    #output-section { display: none; } #output-section.is-visible { display: block; }
+    #color-probe { position: fixed; left: -9999px; visibility: hidden; }
+    .taxonomy-table td { padding: 4px 12px 4px 0; color: var(--preview-muted); font-size: 12px; }
+  </style>
+</head>
+<body data-theme="light">
+  <main>
+    <h1>FC 按钮 · 设计调参稿</h1>
+    <p class="intro">
+      分类以 <strong>Figma「设计规范 - 按钮」</strong> 为准：<code>variant</code> × <code>hierarchy</code> × <code>size</code> × <code>icon</code> × <code>destructive</code>；Link 单独。<br />
+      初值来自 <code>fe/src/theme/table-design-system.less</code>（ghost 24px）与 Meow UI（default/primary/outline/ghost/link/danger）。填表 → <strong>预览</strong> → <strong>生效</strong> 出代码。
+    </p>
+    <div class="action-bar">
+      <button type="button" class="btn-primary-action" id="btn-preview">预览</button>
+      <button type="button" class="btn-primary-action" id="btn-apply-code">生效（生成样式代码）</button>
+      <button type="button" class="btn-secondary-action" id="btn-reset-vars">恢复本模式默认</button>
+      <button type="button" class="btn-secondary-action" id="btn-filter-all">显示全部参数</button>
+      <button type="button" class="btn-secondary-action" id="btn-filter-focus">仅当前组合</button>
+      <span class="copy-hint" id="copy-hint"></span>
+    </div>
+    <div id="preview-scope">
+      <div id="color-probe" aria-hidden="true"></div>
+      <section>
+        <h2>1. 分类与单按钮预览</h2>
+        <table class="taxonomy-table">
+          <tr><td><strong>variant</strong></td><td>soft · solid · surface · outline · ghost · text</td></tr>
+          <tr><td><strong>hierarchy</strong></td><td>tertiary/quaternary 仅 ghost & text；solid 仅 primary</td></tr>
+          <tr><td><strong>size</strong></td><td>xs(24) · sm(28) · default(32) · lg(40)</td></tr>
+          <tr><td><strong>icon</strong></td><td>none · inline-start · inline-end</td></tr>
+        </table>
+        <div class="theme-toggle">
+          <button type="button" id="theme-light" class="is-on">浅色</button>
+          <button type="button" id="theme-dark">深色</button>
+          <button type="button" id="theme-gold">金拱门</button>
+        </div>
+        <p class="theme-note" id="theme-note"></p>
+        <div class="filter-row">
+          <label>variant <select id="sel-variant"></select></label>
+          <label>hierarchy <select id="sel-hierarchy"></select></label>
+          <label>size <select id="sel-size"><option value="xs">xs</option><option value="sm">sm</option>
+            <option value="default" selected>default</option><option value="lg">lg</option></select></label>
+          <label>icon <select id="sel-icon"><option value="none">none</option>
+            <option value="inline-start">inline-start</option><option value="inline-end">inline-end</option></select></label>
+          <label><input type="checkbox" id="chk-destructive" /> destructive</label>
+        </div>
+        <p class="desc" id="combo-hint"></p>
+        <div id="live-btn-wrap"></div>
+      </section>
+      <section>
+        <h2>2. 状态条（当前组合）</h2>
+        <div class="state-grid" id="state-strip"></div>
+      </section>
+      <section>
+        <h2>3. 全量变体矩阵</h2>
+        <div id="matrix-all"></div>
+      </section>
+      <section>
+        <h2>4. Link</h2>
+        <div class="matrix-row" id="link-strip"></div>
+        <div class="state-grid" id="link-state-strip" style="margin-top:12px"></div>
+      </section>
+    </div>
+    <section>
+      <h2>5. 参数表</h2>
+      <p class="desc">支持 <code>var(--fc-violet-11)</code>、<code>rgb(var(--fc-fill-5-rgb) / 0.4)</code>。默认「仅当前组合」便于逐项调。</p>
+      <table class="spec-table" id="spec-table"></table>
+      <div id="output-section">
+        <h2>6. 生成代码</h2>
+        <textarea class="code-output" id="code-output" readonly></textarea>
+        <button type="button" class="btn-secondary-action" id="btn-copy-output" style="margin-top:10px">复制</button>
+      </div>
+    </section>
+  </main>
+  <style id="runtime-preview-styles"></style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+  <script>
+    const VARIANTS = {"solid": ["primary"], "soft": ["primary", "secondary"], "surface": ["primary", "secondary"], "outline": ["primary", "secondary"], "ghost": ["primary", "secondary", "tertiary", "quaternary"], "text": ["primary", "secondary", "tertiary", "quaternary"]};
+    const LINK_HIERARCHIES = ["primary", "secondary", "tertiary", "quaternary"];
+    const SPEC_ROWS = [["尺寸", "--btn-height-xs", "height-xs"], ["尺寸", "--btn-height-sm", "height-sm"], ["尺寸", "--btn-height-default", "height-default"], ["尺寸", "--btn-height-lg", "height-lg"], ["尺寸", "--btn-padding-x-xs", "padding-x-xs"], ["尺寸", "--btn-padding-x-sm", "padding-x-sm"], ["尺寸", "--btn-padding-x-default", "padding-x-default"], ["尺寸", "--btn-padding-x-lg", "padding-x-lg"], ["尺寸", "--btn-padding-y-xs", "padding-y-xs"], ["尺寸", "--btn-padding-y-sm", "padding-y-sm"], ["尺寸", "--btn-padding-y-default", "padding-y-default"], ["尺寸", "--btn-padding-y-lg", "padding-y-lg"], ["尺寸", "--btn-radius-xs", "radius-xs"], ["尺寸", "--btn-radius-sm", "radius-sm"], ["尺寸", "--btn-radius-default", "radius-default"], ["尺寸", "--btn-radius-lg", "radius-lg"], ["尺寸", "--btn-font-size-xs", "font-size-xs"], ["尺寸", "--btn-font-size-sm", "font-size-sm"], ["尺寸", "--btn-font-size-default", "font-size-default"], ["尺寸", "--btn-font-size-lg", "font-size-lg"], ["尺寸", "--btn-line-height-xs", "line-height-xs"], ["尺寸", "--btn-line-height-sm", "line-height-sm"], ["尺寸", "--btn-line-height-default", "line-height-default"], ["尺寸", "--btn-line-height-lg", "line-height-lg"], ["尺寸", "--btn-icon-size-xs", "icon-size-xs"], ["尺寸", "--btn-icon-size-sm", "icon-size-sm"], ["尺寸", "--btn-icon-size-default", "icon-size-default"], ["尺寸", "--btn-icon-size-lg", "icon-size-lg"], ["尺寸", "--btn-gap", "gap"], ["尺寸", "--btn-border-width", "border-width"], ["尺寸", "--btn-font-weight", "font-weight"], ["尺寸", "--btn-font-weight-solid", "font-weight-solid"], ["尺寸", "--btn-transition", "transition"], ["尺寸", "--btn-focus-ring-width", "focus-ring-width"], ["尺寸", "--btn-focus-ring-color", "focus-ring-color"], ["solid · primary", "--btn-solid-primary-default-bg", "default · bg"], ["solid · primary", "--btn-solid-primary-default-border", "default · border"], ["solid · primary", "--btn-solid-primary-default-text", "default · text"], ["solid · primary", "--btn-solid-primary-hover-bg", "hover · bg"], ["solid · primary", "--btn-solid-primary-hover-border", "hover · border"], ["solid · primary", "--btn-solid-primary-hover-text", "hover · text"], ["solid · primary", "--btn-solid-primary-pressed-bg", "pressed · bg"], ["solid · primary", "--btn-solid-primary-pressed-border", "pressed · border"], ["solid · primary", "--btn-solid-primary-pressed-text", "pressed · text"], ["solid · primary", "--btn-solid-primary-disabled-bg", "disabled · bg"], ["solid · primary", "--btn-solid-primary-disabled-border", "disabled · border"], ["solid · primary", "--btn-solid-primary-disabled-text", "disabled · text"], ["solid · primary", "--btn-solid-primary-focus-bg", "focus · bg"], ["solid · primary", "--btn-solid-primary-focus-border", "focus · border"], ["solid · primary", "--btn-solid-primary-focus-text", "focus · text"], ["solid · primary · destructive", "--btn-solid-primary-destructive-default-bg", "default · bg"], ["solid · primary · destructive", "--btn-solid-primary-destructive-default-border", "default · border"], ["solid · primary · destructive", "--btn-solid-primary-destructive-default-text", "default · text"], ["solid · primary · destructive", "--btn-solid-primary-destructive-hover-bg", "hover · bg"], ["solid · primary · destructive", "--btn-solid-primary-destructive-hover-border", "hover · border"], ["solid · primary · destructive", "--btn-solid-primary-destructive-hover-text", "hover · text"], ["solid · primary · destructive", "--btn-solid-primary-destructive-pressed-bg", "pressed · bg"], ["solid · primary · destructive", "--btn-solid-primary-destructive-pressed-border", "pressed · border"], ["solid · primary · destructive", "--btn-solid-primary-destructive-pressed-text", "pressed · text"], ["solid · primary · destructive", "--btn-solid-primary-destructive-disabled-bg", "disabled · bg"], ["solid · primary · destructive", "--btn-solid-primary-destructive-disabled-border", "disabled · border"], ["solid · primary · destructive", "--btn-solid-primary-destructive-disabled-text", "disabled · text"], ["solid · primary · destructive", "--btn-solid-primary-destructive-focus-bg", "focus · bg"], ["solid · primary · destructive", "--btn-solid-primary-destructive-focus-border", "focus · border"], ["solid · primary · destructive", "--btn-solid-primary-destructive-focus-text", "focus · text"], ["soft · primary", "--btn-soft-primary-default-bg", "default · bg"], ["soft · primary", "--btn-soft-primary-default-border", "default · border"], ["soft · primary", "--btn-soft-primary-default-text", "default · text"], ["soft · primary", "--btn-soft-primary-hover-bg", "hover · bg"], ["soft · primary", "--btn-soft-primary-hover-border", "hover · border"], ["soft · primary", "--btn-soft-primary-hover-text", "hover · text"], ["soft · primary", "--btn-soft-primary-pressed-bg", "pressed · bg"], ["soft · primary", "--btn-soft-primary-pressed-border", "pressed · border"], ["soft · primary", "--btn-soft-primary-pressed-text", "pressed · text"], ["soft · primary", "--btn-soft-primary-disabled-bg", "disabled · bg"], ["soft · primary", "--btn-soft-primary-disabled-border", "disabled · border"], ["soft · primary", "--btn-soft-primary-disabled-text", "disabled · text"], ["soft · primary", "--btn-soft-primary-focus-bg", "focus · bg"], ["soft · primary", "--btn-soft-primary-focus-border", "focus · border"], ["soft · primary", "--btn-soft-primary-focus-text", "focus · text"], ["soft · primary · destructive", "--btn-soft-primary-destructive-default-bg", "default · bg"], ["soft · primary · destructive", "--btn-soft-primary-destructive-default-border", "default · border"], ["soft · primary · destructive", "--btn-soft-primary-destructive-default-text", "default · text"], ["soft · primary · destructive", "--btn-soft-primary-destructive-hover-bg", "hover · bg"], ["soft · primary · destructive", "--btn-soft-primary-destructive-hover-border", "hover · border"], ["soft · primary · destructive", "--btn-soft-primary-destructive-hover-text", "hover · text"], ["soft · primary · destructive", "--btn-soft-primary-destructive-pressed-bg", "pressed · bg"], ["soft · primary · destructive", "--btn-soft-primary-destructive-pressed-border", "pressed · border"], ["soft · primary · destructive", "--btn-soft-primary-destructive-pressed-text", "pressed · text"], ["soft · primary · destructive", "--btn-soft-primary-destructive-disabled-bg", "disabled · bg"], ["soft · primary · destructive", "--btn-soft-primary-destructive-disabled-border", "disabled · border"], ["soft · primary · destructive", "--btn-soft-primary-destructive-disabled-text", "disabled · text"], ["soft · primary · destructive", "--btn-soft-primary-destructive-focus-bg", "focus · bg"], ["soft · primary · destructive", "--btn-soft-primary-destructive-focus-border", "focus · border"], ["soft · primary · destructive", "--btn-soft-primary-destructive-focus-text", "focus · text"], ["soft · secondary", "--btn-soft-secondary-default-bg", "default · bg"], ["soft · secondary", "--btn-soft-secondary-default-border", "default · border"], ["soft · secondary", "--btn-soft-secondary-default-text", "default · text"], ["soft · secondary", "--btn-soft-secondary-hover-bg", "hover · bg"], ["soft · secondary", "--btn-soft-secondary-hover-border", "hover · border"], ["soft · secondary", "--btn-soft-secondary-hover-text", "hover · text"], ["soft · secondary", "--btn-soft-secondary-pressed-bg", "pressed · bg"], ["soft · secondary", "--btn-soft-secondary-pressed-border", "pressed · border"], ["soft · secondary", "--btn-soft-secondary-pressed-text", "pressed · text"], ["soft · secondary", "--btn-soft-secondary-disabled-bg", "disabled · bg"], ["soft · secondary", "--btn-soft-secondary-disabled-border", "disabled · border"], ["soft · secondary", "--btn-soft-secondary-disabled-text", "disabled · text"], ["soft · secondary", "--btn-soft-secondary-focus-bg", "focus · bg"], ["soft · secondary", "--btn-soft-secondary-focus-border", "focus · border"], ["soft · secondary", "--btn-soft-secondary-focus-text", "focus · text"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-default-bg", "default · bg"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-default-border", "default · border"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-default-text", "default · text"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-hover-bg", "hover · bg"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-hover-border", "hover · border"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-hover-text", "hover · text"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-pressed-bg", "pressed · bg"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-pressed-border", "pressed · border"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-pressed-text", "pressed · text"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-disabled-bg", "disabled · bg"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-disabled-border", "disabled · border"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-disabled-text", "disabled · text"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-focus-bg", "focus · bg"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-focus-border", "focus · border"], ["soft · secondary · destructive", "--btn-soft-secondary-destructive-focus-text", "focus · text"], ["surface · primary", "--btn-surface-primary-default-bg", "default · bg"], ["surface · primary", "--btn-surface-primary-default-border", "default · border"], ["surface · primary", "--btn-surface-primary-default-text", "default · text"], ["surface · primary", "--btn-surface-primary-hover-bg", "hover · bg"], ["surface · primary", "--btn-surface-primary-hover-border", "hover · border"], ["surface · primary", "--btn-surface-primary-hover-text", "hover · text"], ["surface · primary", "--btn-surface-primary-pressed-bg", "pressed · bg"], ["surface · primary", "--btn-surface-primary-pressed-border", "pressed · border"], ["surface · primary", "--btn-surface-primary-pressed-text", "pressed · text"], ["surface · primary", "--btn-surface-primary-disabled-bg", "disabled · bg"], ["surface · primary", "--btn-surface-primary-disabled-border", "disabled · border"], ["surface · primary", "--btn-surface-primary-disabled-text", "disabled · text"], ["surface · primary", "--btn-surface-primary-focus-bg", "focus · bg"], ["surface · primary", "--btn-surface-primary-focus-border", "focus · border"], ["surface · primary", "--btn-surface-primary-focus-text", "focus · text"], ["surface · primary · destructive", "--btn-surface-primary-destructive-default-bg", "default · bg"], ["surface · primary · destructive", "--btn-surface-primary-destructive-default-border", "default · border"], ["surface · primary · destructive", "--btn-surface-primary-destructive-default-text", "default · text"], ["surface · primary · destructive", "--btn-surface-primary-destructive-hover-bg", "hover · bg"], ["surface · primary · destructive", "--btn-surface-primary-destructive-hover-border", "hover · border"], ["surface · primary · destructive", "--btn-surface-primary-destructive-hover-text", "hover · text"], ["surface · primary · destructive", "--btn-surface-primary-destructive-pressed-bg", "pressed · bg"], ["surface · primary · destructive", "--btn-surface-primary-destructive-pressed-border", "pressed · border"], ["surface · primary · destructive", "--btn-surface-primary-destructive-pressed-text", "pressed · text"], ["surface · primary · destructive", "--btn-surface-primary-destructive-disabled-bg", "disabled · bg"], ["surface · primary · destructive", "--btn-surface-primary-destructive-disabled-border", "disabled · border"], ["surface · primary · destructive", "--btn-surface-primary-destructive-disabled-text", "disabled · text"], ["surface · primary · destructive", "--btn-surface-primary-destructive-focus-bg", "focus · bg"], ["surface · primary · destructive", "--btn-surface-primary-destructive-focus-border", "focus · border"], ["surface · primary · destructive", "--btn-surface-primary-destructive-focus-text", "focus · text"], ["surface · secondary", "--btn-surface-secondary-default-bg", "default · bg"], ["surface · secondary", "--btn-surface-secondary-default-border", "default · border"], ["surface · secondary", "--btn-surface-secondary-default-text", "default · text"], ["surface · secondary", "--btn-surface-secondary-hover-bg", "hover · bg"], ["surface · secondary", "--btn-surface-secondary-hover-border", "hover · border"], ["surface · secondary", "--btn-surface-secondary-hover-text", "hover · text"], ["surface · secondary", "--btn-surface-secondary-pressed-bg", "pressed · bg"], ["surface · secondary", "--btn-surface-secondary-pressed-border", "pressed · border"], ["surface · secondary", "--btn-surface-secondary-pressed-text", "pressed · text"], ["surface · secondary", "--btn-surface-secondary-disabled-bg", "disabled · bg"], ["surface · secondary", "--btn-surface-secondary-disabled-border", "disabled · border"], ["surface · secondary", "--btn-surface-secondary-disabled-text", "disabled · text"], ["surface · secondary", "--btn-surface-secondary-focus-bg", "focus · bg"], ["surface · secondary", "--btn-surface-secondary-focus-border", "focus · border"], ["surface · secondary", "--btn-surface-secondary-focus-text", "focus · text"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-default-bg", "default · bg"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-default-border", "default · border"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-default-text", "default · text"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-hover-bg", "hover · bg"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-hover-border", "hover · border"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-hover-text", "hover · text"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-pressed-bg", "pressed · bg"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-pressed-border", "pressed · border"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-pressed-text", "pressed · text"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-disabled-bg", "disabled · bg"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-disabled-border", "disabled · border"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-disabled-text", "disabled · text"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-focus-bg", "focus · bg"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-focus-border", "focus · border"], ["surface · secondary · destructive", "--btn-surface-secondary-destructive-focus-text", "focus · text"], ["outline · primary", "--btn-outline-primary-default-bg", "default · bg"], ["outline · primary", "--btn-outline-primary-default-border", "default · border"], ["outline · primary", "--btn-outline-primary-default-text", "default · text"], ["outline · primary", "--btn-outline-primary-hover-bg", "hover · bg"], ["outline · primary", "--btn-outline-primary-hover-border", "hover · border"], ["outline · primary", "--btn-outline-primary-hover-text", "hover · text"], ["outline · primary", "--btn-outline-primary-pressed-bg", "pressed · bg"], ["outline · primary", "--btn-outline-primary-pressed-border", "pressed · border"], ["outline · primary", "--btn-outline-primary-pressed-text", "pressed · text"], ["outline · primary", "--btn-outline-primary-disabled-bg", "disabled · bg"], ["outline · primary", "--btn-outline-primary-disabled-border", "disabled · border"], ["outline · primary", "--btn-outline-primary-disabled-text", "disabled · text"], ["outline · primary", "--btn-outline-primary-focus-bg", "focus · bg"], ["outline · primary", "--btn-outline-primary-focus-border", "focus · border"], ["outline · primary", "--btn-outline-primary-focus-text", "focus · text"], ["outline · primary · destructive", "--btn-outline-primary-destructive-default-bg", "default · bg"], ["outline · primary · destructive", "--btn-outline-primary-destructive-default-border", "default · border"], ["outline · primary · destructive", "--btn-outline-primary-destructive-default-text", "default · text"], ["outline · primary · destructive", "--btn-outline-primary-destructive-hover-bg", "hover · bg"], ["outline · primary · destructive", "--btn-outline-primary-destructive-hover-border", "hover · border"], ["outline · primary · destructive", "--btn-outline-primary-destructive-hover-text", "hover · text"], ["outline · primary · destructive", "--btn-outline-primary-destructive-pressed-bg", "pressed · bg"], ["outline · primary · destructive", "--btn-outline-primary-destructive-pressed-border", "pressed · border"], ["outline · primary · destructive", "--btn-outline-primary-destructive-pressed-text", "pressed · text"], ["outline · primary · destructive", "--btn-outline-primary-destructive-disabled-bg", "disabled · bg"], ["outline · primary · destructive", "--btn-outline-primary-destructive-disabled-border", "disabled · border"], ["outline · primary · destructive", "--btn-outline-primary-destructive-disabled-text", "disabled · text"], ["outline · primary · destructive", "--btn-outline-primary-destructive-focus-bg", "focus · bg"], ["outline · primary · destructive", "--btn-outline-primary-destructive-focus-border", "focus · border"], ["outline · primary · destructive", "--btn-outline-primary-destructive-focus-text", "focus · text"], ["outline · secondary", "--btn-outline-secondary-default-bg", "default · bg"], ["outline · secondary", "--btn-outline-secondary-default-border", "default · border"], ["outline · secondary", "--btn-outline-secondary-default-text", "default · text"], ["outline · secondary", "--btn-outline-secondary-hover-bg", "hover · bg"], ["outline · secondary", "--btn-outline-secondary-hover-border", "hover · border"], ["outline · secondary", "--btn-outline-secondary-hover-text", "hover · text"], ["outline · secondary", "--btn-outline-secondary-pressed-bg", "pressed · bg"], ["outline · secondary", "--btn-outline-secondary-pressed-border", "pressed · border"], ["outline · secondary", "--btn-outline-secondary-pressed-text", "pressed · text"], ["outline · secondary", "--btn-outline-secondary-disabled-bg", "disabled · bg"], ["outline · secondary", "--btn-outline-secondary-disabled-border", "disabled · border"], ["outline · secondary", "--btn-outline-secondary-disabled-text", "disabled · text"], ["outline · secondary", "--btn-outline-secondary-focus-bg", "focus · bg"], ["outline · secondary", "--btn-outline-secondary-focus-border", "focus · border"], ["outline · secondary", "--btn-outline-secondary-focus-text", "focus · text"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-default-bg", "default · bg"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-default-border", "default · border"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-default-text", "default · text"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-hover-bg", "hover · bg"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-hover-border", "hover · border"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-hover-text", "hover · text"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-pressed-bg", "pressed · bg"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-pressed-border", "pressed · border"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-pressed-text", "pressed · text"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-disabled-bg", "disabled · bg"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-disabled-border", "disabled · border"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-disabled-text", "disabled · text"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-focus-bg", "focus · bg"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-focus-border", "focus · border"], ["outline · secondary · destructive", "--btn-outline-secondary-destructive-focus-text", "focus · text"], ["ghost · primary", "--btn-ghost-primary-default-bg", "default · bg"], ["ghost · primary", "--btn-ghost-primary-default-border", "default · border"], ["ghost · primary", "--btn-ghost-primary-default-text", "default · text"], ["ghost · primary", "--btn-ghost-primary-hover-bg", "hover · bg"], ["ghost · primary", "--btn-ghost-primary-hover-border", "hover · border"], ["ghost · primary", "--btn-ghost-primary-hover-text", "hover · text"], ["ghost · primary", "--btn-ghost-primary-pressed-bg", "pressed · bg"], ["ghost · primary", "--btn-ghost-primary-pressed-border", "pressed · border"], ["ghost · primary", "--btn-ghost-primary-pressed-text", "pressed · text"], ["ghost · primary", "--btn-ghost-primary-disabled-bg", "disabled · bg"], ["ghost · primary", "--btn-ghost-primary-disabled-border", "disabled · border"], ["ghost · primary", "--btn-ghost-primary-disabled-text", "disabled · text"], ["ghost · primary", "--btn-ghost-primary-focus-bg", "focus · bg"], ["ghost · primary", "--btn-ghost-primary-focus-border", "focus · border"], ["ghost · primary", "--btn-ghost-primary-focus-text", "focus · text"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-default-bg", "default · bg"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-default-border", "default · border"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-default-text", "default · text"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-hover-bg", "hover · bg"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-hover-border", "hover · border"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-hover-text", "hover · text"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-pressed-bg", "pressed · bg"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-pressed-border", "pressed · border"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-pressed-text", "pressed · text"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-disabled-bg", "disabled · bg"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-disabled-border", "disabled · border"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-disabled-text", "disabled · text"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-focus-bg", "focus · bg"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-focus-border", "focus · border"], ["ghost · primary · destructive", "--btn-ghost-primary-destructive-focus-text", "focus · text"], ["ghost · secondary", "--btn-ghost-secondary-default-bg", "default · bg"], ["ghost · secondary", "--btn-ghost-secondary-default-border", "default · border"], ["ghost · secondary", "--btn-ghost-secondary-default-text", "default · text"], ["ghost · secondary", "--btn-ghost-secondary-hover-bg", "hover · bg"], ["ghost · secondary", "--btn-ghost-secondary-hover-border", "hover · border"], ["ghost · secondary", "--btn-ghost-secondary-hover-text", "hover · text"], ["ghost · secondary", "--btn-ghost-secondary-pressed-bg", "pressed · bg"], ["ghost · secondary", "--btn-ghost-secondary-pressed-border", "pressed · border"], ["ghost · secondary", "--btn-ghost-secondary-pressed-text", "pressed · text"], ["ghost · secondary", "--btn-ghost-secondary-disabled-bg", "disabled · bg"], ["ghost · secondary", "--btn-ghost-secondary-disabled-border", "disabled · border"], ["ghost · secondary", "--btn-ghost-secondary-disabled-text", "disabled · text"], ["ghost · secondary", "--btn-ghost-secondary-focus-bg", "focus · bg"], ["ghost · secondary", "--btn-ghost-secondary-focus-border", "focus · border"], ["ghost · secondary", "--btn-ghost-secondary-focus-text", "focus · text"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-default-bg", "default · bg"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-default-border", "default · border"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-default-text", "default · text"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-hover-bg", "hover · bg"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-hover-border", "hover · border"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-hover-text", "hover · text"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-pressed-bg", "pressed · bg"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-pressed-border", "pressed · border"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-pressed-text", "pressed · text"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-disabled-bg", "disabled · bg"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-disabled-border", "disabled · border"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-disabled-text", "disabled · text"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-focus-bg", "focus · bg"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-focus-border", "focus · border"], ["ghost · secondary · destructive", "--btn-ghost-secondary-destructive-focus-text", "focus · text"], ["ghost · tertiary", "--btn-ghost-tertiary-default-bg", "default · bg"], ["ghost · tertiary", "--btn-ghost-tertiary-default-border", "default · border"], ["ghost · tertiary", "--btn-ghost-tertiary-default-text", "default · text"], ["ghost · tertiary", "--btn-ghost-tertiary-hover-bg", "hover · bg"], ["ghost · tertiary", "--btn-ghost-tertiary-hover-border", "hover · border"], ["ghost · tertiary", "--btn-ghost-tertiary-hover-text", "hover · text"], ["ghost · tertiary", "--btn-ghost-tertiary-pressed-bg", "pressed · bg"], ["ghost · tertiary", "--btn-ghost-tertiary-pressed-border", "pressed · border"], ["ghost · tertiary", "--btn-ghost-tertiary-pressed-text", "pressed · text"], ["ghost · tertiary", "--btn-ghost-tertiary-disabled-bg", "disabled · bg"], ["ghost · tertiary", "--btn-ghost-tertiary-disabled-border", "disabled · border"], ["ghost · tertiary", "--btn-ghost-tertiary-disabled-text", "disabled · text"], ["ghost · tertiary", "--btn-ghost-tertiary-focus-bg", "focus · bg"], ["ghost · tertiary", "--btn-ghost-tertiary-focus-border", "focus · border"], ["ghost · tertiary", "--btn-ghost-tertiary-focus-text", "focus · text"], ["ghost · quaternary", "--btn-ghost-quaternary-default-bg", "default · bg"], ["ghost · quaternary", "--btn-ghost-quaternary-default-border", "default · border"], ["ghost · quaternary", "--btn-ghost-quaternary-default-text", "default · text"], ["ghost · quaternary", "--btn-ghost-quaternary-hover-bg", "hover · bg"], ["ghost · quaternary", "--btn-ghost-quaternary-hover-border", "hover · border"], ["ghost · quaternary", "--btn-ghost-quaternary-hover-text", "hover · text"], ["ghost · quaternary", "--btn-ghost-quaternary-pressed-bg", "pressed · bg"], ["ghost · quaternary", "--btn-ghost-quaternary-pressed-border", "pressed · border"], ["ghost · quaternary", "--btn-ghost-quaternary-pressed-text", "pressed · text"], ["ghost · quaternary", "--btn-ghost-quaternary-disabled-bg", "disabled · bg"], ["ghost · quaternary", "--btn-ghost-quaternary-disabled-border", "disabled · border"], ["ghost · quaternary", "--btn-ghost-quaternary-disabled-text", "disabled · text"], ["ghost · quaternary", "--btn-ghost-quaternary-focus-bg", "focus · bg"], ["ghost · quaternary", "--btn-ghost-quaternary-focus-border", "focus · border"], ["ghost · quaternary", "--btn-ghost-quaternary-focus-text", "focus · text"], ["text · primary", "--btn-text-primary-default-bg", "default · bg"], ["text · primary", "--btn-text-primary-default-border", "default · border"], ["text · primary", "--btn-text-primary-default-text", "default · text"], ["text · primary", "--btn-text-primary-hover-bg", "hover · bg"], ["text · primary", "--btn-text-primary-hover-border", "hover · border"], ["text · primary", "--btn-text-primary-hover-text", "hover · text"], ["text · primary", "--btn-text-primary-pressed-bg", "pressed · bg"], ["text · primary", "--btn-text-primary-pressed-border", "pressed · border"], ["text · primary", "--btn-text-primary-pressed-text", "pressed · text"], ["text · primary", "--btn-text-primary-disabled-bg", "disabled · bg"], ["text · primary", "--btn-text-primary-disabled-border", "disabled · border"], ["text · primary", "--btn-text-primary-disabled-text", "disabled · text"], ["text · primary", "--btn-text-primary-focus-bg", "focus · bg"], ["text · primary", "--btn-text-primary-focus-border", "focus · border"], ["text · primary", "--btn-text-primary-focus-text", "focus · text"], ["text · primary · destructive", "--btn-text-primary-destructive-default-bg", "default · bg"], ["text · primary · destructive", "--btn-text-primary-destructive-default-border", "default · border"], ["text · primary · destructive", "--btn-text-primary-destructive-default-text", "default · text"], ["text · primary · destructive", "--btn-text-primary-destructive-hover-bg", "hover · bg"], ["text · primary · destructive", "--btn-text-primary-destructive-hover-border", "hover · border"], ["text · primary · destructive", "--btn-text-primary-destructive-hover-text", "hover · text"], ["text · primary · destructive", "--btn-text-primary-destructive-pressed-bg", "pressed · bg"], ["text · primary · destructive", "--btn-text-primary-destructive-pressed-border", "pressed · border"], ["text · primary · destructive", "--btn-text-primary-destructive-pressed-text", "pressed · text"], ["text · primary · destructive", "--btn-text-primary-destructive-disabled-bg", "disabled · bg"], ["text · primary · destructive", "--btn-text-primary-destructive-disabled-border", "disabled · border"], ["text · primary · destructive", "--btn-text-primary-destructive-disabled-text", "disabled · text"], ["text · primary · destructive", "--btn-text-primary-destructive-focus-bg", "focus · bg"], ["text · primary · destructive", "--btn-text-primary-destructive-focus-border", "focus · border"], ["text · primary · destructive", "--btn-text-primary-destructive-focus-text", "focus · text"], ["text · secondary", "--btn-text-secondary-default-bg", "default · bg"], ["text · secondary", "--btn-text-secondary-default-border", "default · border"], ["text · secondary", "--btn-text-secondary-default-text", "default · text"], ["text · secondary", "--btn-text-secondary-hover-bg", "hover · bg"], ["text · secondary", "--btn-text-secondary-hover-border", "hover · border"], ["text · secondary", "--btn-text-secondary-hover-text", "hover · text"], ["text · secondary", "--btn-text-secondary-pressed-bg", "pressed · bg"], ["text · secondary", "--btn-text-secondary-pressed-border", "pressed · border"], ["text · secondary", "--btn-text-secondary-pressed-text", "pressed · text"], ["text · secondary", "--btn-text-secondary-disabled-bg", "disabled · bg"], ["text · secondary", "--btn-text-secondary-disabled-border", "disabled · border"], ["text · secondary", "--btn-text-secondary-disabled-text", "disabled · text"], ["text · secondary", "--btn-text-secondary-focus-bg", "focus · bg"], ["text · secondary", "--btn-text-secondary-focus-border", "focus · border"], ["text · secondary", "--btn-text-secondary-focus-text", "focus · text"], ["text · secondary · destructive", "--btn-text-secondary-destructive-default-bg", "default · bg"], ["text · secondary · destructive", "--btn-text-secondary-destructive-default-border", "default · border"], ["text · secondary · destructive", "--btn-text-secondary-destructive-default-text", "default · text"], ["text · secondary · destructive", "--btn-text-secondary-destructive-hover-bg", "hover · bg"], ["text · secondary · destructive", "--btn-text-secondary-destructive-hover-border", "hover · border"], ["text · secondary · destructive", "--btn-text-secondary-destructive-hover-text", "hover · text"], ["text · secondary · destructive", "--btn-text-secondary-destructive-pressed-bg", "pressed · bg"], ["text · secondary · destructive", "--btn-text-secondary-destructive-pressed-border", "pressed · border"], ["text · secondary · destructive", "--btn-text-secondary-destructive-pressed-text", "pressed · text"], ["text · secondary · destructive", "--btn-text-secondary-destructive-disabled-bg", "disabled · bg"], ["text · secondary · destructive", "--btn-text-secondary-destructive-disabled-border", "disabled · border"], ["text · secondary · destructive", "--btn-text-secondary-destructive-disabled-text", "disabled · text"], ["text · secondary · destructive", "--btn-text-secondary-destructive-focus-bg", "focus · bg"], ["text · secondary · destructive", "--btn-text-secondary-destructive-focus-border", "focus · border"], ["text · secondary · destructive", "--btn-text-secondary-destructive-focus-text", "focus · text"], ["text · tertiary", "--btn-text-tertiary-default-bg", "default · bg"], ["text · tertiary", "--btn-text-tertiary-default-border", "default · border"], ["text · tertiary", "--btn-text-tertiary-default-text", "default · text"], ["text · tertiary", "--btn-text-tertiary-hover-bg", "hover · bg"], ["text · tertiary", "--btn-text-tertiary-hover-border", "hover · border"], ["text · tertiary", "--btn-text-tertiary-hover-text", "hover · text"], ["text · tertiary", "--btn-text-tertiary-pressed-bg", "pressed · bg"], ["text · tertiary", "--btn-text-tertiary-pressed-border", "pressed · border"], ["text · tertiary", "--btn-text-tertiary-pressed-text", "pressed · text"], ["text · tertiary", "--btn-text-tertiary-disabled-bg", "disabled · bg"], ["text · tertiary", "--btn-text-tertiary-disabled-border", "disabled · border"], ["text · tertiary", "--btn-text-tertiary-disabled-text", "disabled · text"], ["text · tertiary", "--btn-text-tertiary-focus-bg", "focus · bg"], ["text · tertiary", "--btn-text-tertiary-focus-border", "focus · border"], ["text · tertiary", "--btn-text-tertiary-focus-text", "focus · text"], ["text · quaternary", "--btn-text-quaternary-default-bg", "default · bg"], ["text · quaternary", "--btn-text-quaternary-default-border", "default · border"], ["text · quaternary", "--btn-text-quaternary-default-text", "default · text"], ["text · quaternary", "--btn-text-quaternary-hover-bg", "hover · bg"], ["text · quaternary", "--btn-text-quaternary-hover-border", "hover · border"], ["text · quaternary", "--btn-text-quaternary-hover-text", "hover · text"], ["text · quaternary", "--btn-text-quaternary-pressed-bg", "pressed · bg"], ["text · quaternary", "--btn-text-quaternary-pressed-border", "pressed · border"], ["text · quaternary", "--btn-text-quaternary-pressed-text", "pressed · text"], ["text · quaternary", "--btn-text-quaternary-disabled-bg", "disabled · bg"], ["text · quaternary", "--btn-text-quaternary-disabled-border", "disabled · border"], ["text · quaternary", "--btn-text-quaternary-disabled-text", "disabled · text"], ["text · quaternary", "--btn-text-quaternary-focus-bg", "focus · bg"], ["text · quaternary", "--btn-text-quaternary-focus-border", "focus · border"], ["text · quaternary", "--btn-text-quaternary-focus-text", "focus · text"], ["link · primary", "--btn-link-primary-default-text", "default-text"], ["link · primary", "--btn-link-primary-hover-text", "hover-text"], ["link · primary", "--btn-link-primary-pressed-text", "pressed-text"], ["link · primary", "--btn-link-primary-disabled-text", "disabled-text"], ["link · primary", "--btn-link-primary-default-underline", "default-underline"], ["link · primary", "--btn-link-primary-hover-underline", "hover-underline"], ["link · primary", "--btn-link-primary-always-underline", "always-underline"], ["link · secondary", "--btn-link-secondary-default-text", "default-text"], ["link · secondary", "--btn-link-secondary-hover-text", "hover-text"], ["link · secondary", "--btn-link-secondary-pressed-text", "pressed-text"], ["link · secondary", "--btn-link-secondary-disabled-text", "disabled-text"], ["link · secondary", "--btn-link-secondary-default-underline", "default-underline"], ["link · secondary", "--btn-link-secondary-hover-underline", "hover-underline"], ["link · secondary", "--btn-link-secondary-always-underline", "always-underline"], ["link · tertiary", "--btn-link-tertiary-default-text", "default-text"], ["link · tertiary", "--btn-link-tertiary-hover-text", "hover-text"], ["link · tertiary", "--btn-link-tertiary-pressed-text", "pressed-text"], ["link · tertiary", "--btn-link-tertiary-disabled-text", "disabled-text"], ["link · tertiary", "--btn-link-tertiary-default-underline", "default-underline"], ["link · tertiary", "--btn-link-tertiary-hover-underline", "hover-underline"], ["link · tertiary", "--btn-link-tertiary-always-underline", "always-underline"], ["link · quaternary", "--btn-link-quaternary-default-text", "default-text"], ["link · quaternary", "--btn-link-quaternary-hover-text", "hover-text"], ["link · quaternary", "--btn-link-quaternary-pressed-text", "pressed-text"], ["link · quaternary", "--btn-link-quaternary-disabled-text", "disabled-text"], ["link · quaternary", "--btn-link-quaternary-default-underline", "default-underline"], ["link · quaternary", "--btn-link-quaternary-hover-underline", "hover-underline"], ["link · quaternary", "--btn-link-quaternary-always-underline", "always-underline"]];
+    const COLOR_DEFAULTS = {"--btn-height-xs": "24px", "--btn-height-sm": "28px", "--btn-height-default": "32px", "--btn-height-lg": "40px", "--btn-padding-x-xs": "8px", "--btn-padding-x-sm": "12px", "--btn-padding-x-default": "16px", "--btn-padding-x-lg": "20px", "--btn-padding-y-xs": "0px", "--btn-padding-y-sm": "0px", "--btn-padding-y-default": "0px", "--btn-padding-y-lg": "0px", "--btn-radius-xs": "6px", "--btn-radius-sm": "6px", "--btn-radius-default": "8px", "--btn-radius-lg": "8px", "--btn-font-size-xs": "12px", "--btn-font-size-sm": "12px", "--btn-font-size-default": "14px", "--btn-font-size-lg": "16px", "--btn-line-height-xs": "22px", "--btn-line-height-sm": "26px", "--btn-line-height-default": "30px", "--btn-line-height-lg": "38px", "--btn-icon-size-xs": "14px", "--btn-icon-size-sm": "14px", "--btn-icon-size-default": "16px", "--btn-icon-size-lg": "18px", "--btn-gap": "4px", "--btn-border-width": "1px", "--btn-font-weight": "400", "--btn-font-weight-solid": "500", "--btn-transition": "0.2s ease", "--btn-focus-ring-width": "2px", "--btn-focus-ring-color": "rgb(var(--fc-fill-5-rgb) / 0.35)", "--btn-solid-primary-default-bg": "var(--fc-violet-9)", "--btn-solid-primary-default-border": "transparent", "--btn-solid-primary-default-text": "#fff", "--btn-solid-primary-hover-bg": "var(--fc-violet-10)", "--btn-solid-primary-hover-border": "transparent", "--btn-solid-primary-hover-text": "#fff", "--btn-solid-primary-pressed-bg": "var(--fc-violet-11)", "--btn-solid-primary-pressed-border": "transparent", "--btn-solid-primary-pressed-text": "#fff", "--btn-solid-primary-disabled-bg": "var(--fc-fill-3)", "--btn-solid-primary-disabled-border": "transparent", "--btn-solid-primary-disabled-text": "var(--fc-text-5)", "--btn-solid-primary-focus-bg": "transparent", "--btn-solid-primary-focus-border": "var(--fc-violet-9)", "--btn-solid-primary-focus-text": "var(--fc-violet-9)", "--btn-solid-primary-destructive-default-bg": "var(--fc-red-9)", "--btn-solid-primary-destructive-default-border": "transparent", "--btn-solid-primary-destructive-default-text": "#fff", "--btn-solid-primary-destructive-hover-bg": "var(--fc-red-10)", "--btn-solid-primary-destructive-hover-border": "transparent", "--btn-solid-primary-destructive-hover-text": "#fff", "--btn-solid-primary-destructive-pressed-bg": "var(--fc-red-11)", "--btn-solid-primary-destructive-pressed-border": "transparent", "--btn-solid-primary-destructive-pressed-text": "#fff", "--btn-solid-primary-destructive-disabled-bg": "var(--fc-red-3)", "--btn-solid-primary-destructive-disabled-border": "transparent", "--btn-solid-primary-destructive-disabled-text": "var(--fc-red-6)", "--btn-solid-primary-destructive-focus-bg": "transparent", "--btn-solid-primary-destructive-focus-border": "var(--fc-red-9)", "--btn-solid-primary-destructive-focus-text": "var(--fc-red-9)", "--btn-soft-primary-default-bg": "var(--fc-violet-3)", "--btn-soft-primary-default-border": "var(--fc-border-color2)", "--btn-soft-primary-default-text": "var(--fc-violet-11)", "--btn-soft-primary-hover-bg": "var(--fc-violet-4)", "--btn-soft-primary-hover-border": "var(--fc-violet-8)", "--btn-soft-primary-hover-text": "var(--fc-violet-12)", "--btn-soft-primary-pressed-bg": "var(--fc-violet-5)", "--btn-soft-primary-pressed-border": "var(--fc-violet-9)", "--btn-soft-primary-pressed-text": "var(--fc-violet-12)", "--btn-soft-primary-disabled-bg": "transparent", "--btn-soft-primary-disabled-border": "var(--fc-border-color)", "--btn-soft-primary-disabled-text": "var(--fc-text-5)", "--btn-soft-primary-focus-bg": "transparent", "--btn-soft-primary-focus-border": "var(--fc-violet-9)", "--btn-soft-primary-focus-text": "var(--fc-violet-11)", "--btn-soft-primary-destructive-default-bg": "var(--fc-red-3)", "--btn-soft-primary-destructive-default-border": "var(--fc-red-8)", "--btn-soft-primary-destructive-default-text": "var(--fc-red-11)", "--btn-soft-primary-destructive-hover-bg": "var(--fc-red-4)", "--btn-soft-primary-destructive-hover-border": "var(--fc-red-9)", "--btn-soft-primary-destructive-hover-text": "var(--fc-red-12)", "--btn-soft-primary-destructive-pressed-bg": "var(--fc-red-5)", "--btn-soft-primary-destructive-pressed-border": "var(--fc-red-9)", "--btn-soft-primary-destructive-pressed-text": "var(--fc-red-12)", "--btn-soft-primary-destructive-disabled-bg": "transparent", "--btn-soft-primary-destructive-disabled-border": "var(--fc-border-color)", "--btn-soft-primary-destructive-disabled-text": "var(--fc-text-5)", "--btn-soft-primary-destructive-focus-bg": "transparent", "--btn-soft-primary-destructive-focus-border": "var(--fc-red-9)", "--btn-soft-primary-destructive-focus-text": "var(--fc-red-11)", "--btn-soft-secondary-default-bg": "var(--fc-fill-2)", "--btn-soft-secondary-default-border": "var(--fc-border-color2)", "--btn-soft-secondary-default-text": "var(--fc-text-2)", "--btn-soft-secondary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-soft-secondary-hover-border": "var(--fc-border-color2)", "--btn-soft-secondary-hover-text": "var(--fc-text-1)", "--btn-soft-secondary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-soft-secondary-pressed-border": "var(--fc-border-color2)", "--btn-soft-secondary-pressed-text": "var(--fc-text-1)", "--btn-soft-secondary-disabled-bg": "transparent", "--btn-soft-secondary-disabled-border": "var(--fc-border-color)", "--btn-soft-secondary-disabled-text": "var(--fc-text-5)", "--btn-soft-secondary-focus-bg": "transparent", "--btn-soft-secondary-focus-border": "var(--fc-border-color2)", "--btn-soft-secondary-focus-text": "var(--fc-text-2)", "--btn-soft-secondary-destructive-default-bg": "var(--fc-red-3)", "--btn-soft-secondary-destructive-default-border": "var(--fc-red-8)", "--btn-soft-secondary-destructive-default-text": "var(--fc-red-11)", "--btn-soft-secondary-destructive-hover-bg": "var(--fc-red-4)", "--btn-soft-secondary-destructive-hover-border": "var(--fc-red-9)", "--btn-soft-secondary-destructive-hover-text": "var(--fc-red-12)", "--btn-soft-secondary-destructive-pressed-bg": "var(--fc-red-5)", "--btn-soft-secondary-destructive-pressed-border": "var(--fc-red-9)", "--btn-soft-secondary-destructive-pressed-text": "var(--fc-red-12)", "--btn-soft-secondary-destructive-disabled-bg": "transparent", "--btn-soft-secondary-destructive-disabled-border": "var(--fc-border-color)", "--btn-soft-secondary-destructive-disabled-text": "var(--fc-text-5)", "--btn-soft-secondary-destructive-focus-bg": "transparent", "--btn-soft-secondary-destructive-focus-border": "var(--fc-red-9)", "--btn-soft-secondary-destructive-focus-text": "var(--fc-red-11)", "--btn-surface-primary-default-bg": "var(--fc-fill-2)", "--btn-surface-primary-default-border": "var(--fc-border-color2)", "--btn-surface-primary-default-text": "var(--fc-violet-11)", "--btn-surface-primary-hover-bg": "var(--fc-violet-4)", "--btn-surface-primary-hover-border": "var(--fc-violet-8)", "--btn-surface-primary-hover-text": "var(--fc-violet-12)", "--btn-surface-primary-pressed-bg": "var(--fc-violet-5)", "--btn-surface-primary-pressed-border": "var(--fc-violet-9)", "--btn-surface-primary-pressed-text": "var(--fc-violet-12)", "--btn-surface-primary-disabled-bg": "transparent", "--btn-surface-primary-disabled-border": "var(--fc-border-color)", "--btn-surface-primary-disabled-text": "var(--fc-text-5)", "--btn-surface-primary-focus-bg": "transparent", "--btn-surface-primary-focus-border": "var(--fc-violet-9)", "--btn-surface-primary-focus-text": "var(--fc-violet-11)", "--btn-surface-primary-destructive-default-bg": "var(--fc-red-3)", "--btn-surface-primary-destructive-default-border": "var(--fc-red-8)", "--btn-surface-primary-destructive-default-text": "var(--fc-red-11)", "--btn-surface-primary-destructive-hover-bg": "var(--fc-red-4)", "--btn-surface-primary-destructive-hover-border": "var(--fc-red-9)", "--btn-surface-primary-destructive-hover-text": "var(--fc-red-12)", "--btn-surface-primary-destructive-pressed-bg": "var(--fc-red-5)", "--btn-surface-primary-destructive-pressed-border": "var(--fc-red-9)", "--btn-surface-primary-destructive-pressed-text": "var(--fc-red-12)", "--btn-surface-primary-destructive-disabled-bg": "transparent", "--btn-surface-primary-destructive-disabled-border": "var(--fc-border-color)", "--btn-surface-primary-destructive-disabled-text": "var(--fc-text-5)", "--btn-surface-primary-destructive-focus-bg": "transparent", "--btn-surface-primary-destructive-focus-border": "var(--fc-red-9)", "--btn-surface-primary-destructive-focus-text": "var(--fc-red-11)", "--btn-surface-secondary-default-bg": "var(--fc-fill-2)", "--btn-surface-secondary-default-border": "var(--fc-border-color2)", "--btn-surface-secondary-default-text": "var(--fc-text-2)", "--btn-surface-secondary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-surface-secondary-hover-border": "var(--fc-border-color2)", "--btn-surface-secondary-hover-text": "var(--fc-text-1)", "--btn-surface-secondary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-surface-secondary-pressed-border": "var(--fc-border-color2)", "--btn-surface-secondary-pressed-text": "var(--fc-text-1)", "--btn-surface-secondary-disabled-bg": "transparent", "--btn-surface-secondary-disabled-border": "var(--fc-border-color)", "--btn-surface-secondary-disabled-text": "var(--fc-text-5)", "--btn-surface-secondary-focus-bg": "transparent", "--btn-surface-secondary-focus-border": "var(--fc-border-color2)", "--btn-surface-secondary-focus-text": "var(--fc-text-2)", "--btn-surface-secondary-destructive-default-bg": "var(--fc-red-3)", "--btn-surface-secondary-destructive-default-border": "var(--fc-red-8)", "--btn-surface-secondary-destructive-default-text": "var(--fc-red-11)", "--btn-surface-secondary-destructive-hover-bg": "var(--fc-red-4)", "--btn-surface-secondary-destructive-hover-border": "var(--fc-red-9)", "--btn-surface-secondary-destructive-hover-text": "var(--fc-red-12)", "--btn-surface-secondary-destructive-pressed-bg": "var(--fc-red-5)", "--btn-surface-secondary-destructive-pressed-border": "var(--fc-red-9)", "--btn-surface-secondary-destructive-pressed-text": "var(--fc-red-12)", "--btn-surface-secondary-destructive-disabled-bg": "transparent", "--btn-surface-secondary-destructive-disabled-border": "var(--fc-border-color)", "--btn-surface-secondary-destructive-disabled-text": "var(--fc-text-5)", "--btn-surface-secondary-destructive-focus-bg": "transparent", "--btn-surface-secondary-destructive-focus-border": "var(--fc-red-9)", "--btn-surface-secondary-destructive-focus-text": "var(--fc-red-11)", "--btn-outline-primary-default-bg": "transparent", "--btn-outline-primary-default-border": "var(--fc-violet-8)", "--btn-outline-primary-default-text": "var(--fc-violet-11)", "--btn-outline-primary-hover-bg": "var(--fc-violet-3)", "--btn-outline-primary-hover-border": "var(--fc-violet-9)", "--btn-outline-primary-hover-text": "var(--fc-violet-12)", "--btn-outline-primary-pressed-bg": "var(--fc-violet-4)", "--btn-outline-primary-pressed-border": "var(--fc-violet-9)", "--btn-outline-primary-pressed-text": "var(--fc-violet-12)", "--btn-outline-primary-disabled-bg": "transparent", "--btn-outline-primary-disabled-border": "var(--fc-border-color)", "--btn-outline-primary-disabled-text": "var(--fc-text-5)", "--btn-outline-primary-focus-bg": "transparent", "--btn-outline-primary-focus-border": "var(--fc-violet-9)", "--btn-outline-primary-focus-text": "var(--fc-violet-11)", "--btn-outline-primary-destructive-default-bg": "transparent", "--btn-outline-primary-destructive-default-border": "var(--fc-red-8)", "--btn-outline-primary-destructive-default-text": "var(--fc-red-11)", "--btn-outline-primary-destructive-hover-bg": "var(--fc-red-3)", "--btn-outline-primary-destructive-hover-border": "var(--fc-red-9)", "--btn-outline-primary-destructive-hover-text": "var(--fc-red-12)", "--btn-outline-primary-destructive-pressed-bg": "var(--fc-red-4)", "--btn-outline-primary-destructive-pressed-border": "var(--fc-red-9)", "--btn-outline-primary-destructive-pressed-text": "var(--fc-red-12)", "--btn-outline-primary-destructive-disabled-bg": "transparent", "--btn-outline-primary-destructive-disabled-border": "var(--fc-border-color)", "--btn-outline-primary-destructive-disabled-text": "var(--fc-text-5)", "--btn-outline-primary-destructive-focus-bg": "transparent", "--btn-outline-primary-destructive-focus-border": "var(--fc-red-9)", "--btn-outline-primary-destructive-focus-text": "var(--fc-red-11)", "--btn-outline-secondary-default-bg": "transparent", "--btn-outline-secondary-default-border": "var(--fc-border-color2)", "--btn-outline-secondary-default-text": "var(--fc-text-2)", "--btn-outline-secondary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-outline-secondary-hover-border": "var(--fc-border-color2)", "--btn-outline-secondary-hover-text": "var(--fc-text-1)", "--btn-outline-secondary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-outline-secondary-pressed-border": "var(--fc-border-color2)", "--btn-outline-secondary-pressed-text": "var(--fc-text-1)", "--btn-outline-secondary-disabled-bg": "transparent", "--btn-outline-secondary-disabled-border": "var(--fc-border-color)", "--btn-outline-secondary-disabled-text": "var(--fc-text-5)", "--btn-outline-secondary-focus-bg": "transparent", "--btn-outline-secondary-focus-border": "var(--fc-border-color2)", "--btn-outline-secondary-focus-text": "var(--fc-text-2)", "--btn-outline-secondary-destructive-default-bg": "transparent", "--btn-outline-secondary-destructive-default-border": "var(--fc-red-8)", "--btn-outline-secondary-destructive-default-text": "var(--fc-red-11)", "--btn-outline-secondary-destructive-hover-bg": "var(--fc-red-3)", "--btn-outline-secondary-destructive-hover-border": "var(--fc-red-9)", "--btn-outline-secondary-destructive-hover-text": "var(--fc-red-12)", "--btn-outline-secondary-destructive-pressed-bg": "var(--fc-red-4)", "--btn-outline-secondary-destructive-pressed-border": "var(--fc-red-9)", "--btn-outline-secondary-destructive-pressed-text": "var(--fc-red-12)", "--btn-outline-secondary-destructive-disabled-bg": "transparent", "--btn-outline-secondary-destructive-disabled-border": "var(--fc-border-color)", "--btn-outline-secondary-destructive-disabled-text": "var(--fc-text-5)", "--btn-outline-secondary-destructive-focus-bg": "transparent", "--btn-outline-secondary-destructive-focus-border": "var(--fc-red-9)", "--btn-outline-secondary-destructive-focus-text": "var(--fc-red-11)", "--btn-ghost-primary-default-bg": "transparent", "--btn-ghost-primary-default-border": "transparent", "--btn-ghost-primary-default-text": "var(--fc-violet-11)", "--btn-ghost-primary-hover-bg": "var(--fc-violet-3)", "--btn-ghost-primary-hover-border": "transparent", "--btn-ghost-primary-hover-text": "var(--fc-violet-11)", "--btn-ghost-primary-pressed-bg": "var(--fc-violet-4)", "--btn-ghost-primary-pressed-border": "transparent", "--btn-ghost-primary-pressed-text": "var(--fc-violet-12)", "--btn-ghost-primary-disabled-bg": "transparent", "--btn-ghost-primary-disabled-border": "transparent", "--btn-ghost-primary-disabled-text": "var(--fc-violet-6)", "--btn-ghost-primary-focus-bg": "transparent", "--btn-ghost-primary-focus-border": "var(--fc-violet-9)", "--btn-ghost-primary-focus-text": "var(--fc-violet-11)", "--btn-ghost-primary-destructive-default-bg": "transparent", "--btn-ghost-primary-destructive-default-border": "transparent", "--btn-ghost-primary-destructive-default-text": "var(--fc-red-11)", "--btn-ghost-primary-destructive-hover-bg": "var(--fc-red-3)", "--btn-ghost-primary-destructive-hover-border": "transparent", "--btn-ghost-primary-destructive-hover-text": "var(--fc-red-11)", "--btn-ghost-primary-destructive-pressed-bg": "var(--fc-red-4)", "--btn-ghost-primary-destructive-pressed-border": "transparent", "--btn-ghost-primary-destructive-pressed-text": "var(--fc-red-12)", "--btn-ghost-primary-destructive-disabled-bg": "transparent", "--btn-ghost-primary-destructive-disabled-border": "transparent", "--btn-ghost-primary-destructive-disabled-text": "var(--fc-red-6)", "--btn-ghost-primary-destructive-focus-bg": "transparent", "--btn-ghost-primary-destructive-focus-border": "var(--fc-red-9)", "--btn-ghost-primary-destructive-focus-text": "var(--fc-red-11)", "--btn-ghost-secondary-default-bg": "transparent", "--btn-ghost-secondary-default-border": "transparent", "--btn-ghost-secondary-default-text": "var(--fc-text-2)", "--btn-ghost-secondary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-ghost-secondary-hover-border": "transparent", "--btn-ghost-secondary-hover-text": "var(--fc-text-1)", "--btn-ghost-secondary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-ghost-secondary-pressed-border": "transparent", "--btn-ghost-secondary-pressed-text": "var(--fc-text-1)", "--btn-ghost-secondary-disabled-bg": "transparent", "--btn-ghost-secondary-disabled-border": "transparent", "--btn-ghost-secondary-disabled-text": "var(--fc-text-5)", "--btn-ghost-secondary-focus-bg": "transparent", "--btn-ghost-secondary-focus-border": "var(--fc-border-color2)", "--btn-ghost-secondary-focus-text": "var(--fc-text-2)", "--btn-ghost-secondary-destructive-default-bg": "transparent", "--btn-ghost-secondary-destructive-default-border": "transparent", "--btn-ghost-secondary-destructive-default-text": "var(--fc-text-2)", "--btn-ghost-secondary-destructive-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-ghost-secondary-destructive-hover-border": "transparent", "--btn-ghost-secondary-destructive-hover-text": "var(--fc-text-1)", "--btn-ghost-secondary-destructive-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-ghost-secondary-destructive-pressed-border": "transparent", "--btn-ghost-secondary-destructive-pressed-text": "var(--fc-text-1)", "--btn-ghost-secondary-destructive-disabled-bg": "transparent", "--btn-ghost-secondary-destructive-disabled-border": "transparent", "--btn-ghost-secondary-destructive-disabled-text": "var(--fc-text-5)", "--btn-ghost-secondary-destructive-focus-bg": "transparent", "--btn-ghost-secondary-destructive-focus-border": "var(--fc-border-color2)", "--btn-ghost-secondary-destructive-focus-text": "var(--fc-text-2)", "--btn-ghost-tertiary-default-bg": "transparent", "--btn-ghost-tertiary-default-border": "transparent", "--btn-ghost-tertiary-default-text": "var(--fc-text-3)", "--btn-ghost-tertiary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-ghost-tertiary-hover-border": "transparent", "--btn-ghost-tertiary-hover-text": "var(--fc-text-2)", "--btn-ghost-tertiary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-ghost-tertiary-pressed-border": "transparent", "--btn-ghost-tertiary-pressed-text": "var(--fc-text-1)", "--btn-ghost-tertiary-disabled-bg": "transparent", "--btn-ghost-tertiary-disabled-border": "transparent", "--btn-ghost-tertiary-disabled-text": "var(--fc-text-5)", "--btn-ghost-tertiary-focus-bg": "transparent", "--btn-ghost-tertiary-focus-border": "var(--fc-border-color2)", "--btn-ghost-tertiary-focus-text": "var(--fc-text-3)", "--btn-ghost-quaternary-default-bg": "transparent", "--btn-ghost-quaternary-default-border": "transparent", "--btn-ghost-quaternary-default-text": "var(--fc-text-4)", "--btn-ghost-quaternary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-ghost-quaternary-hover-border": "transparent", "--btn-ghost-quaternary-hover-text": "var(--fc-text-2)", "--btn-ghost-quaternary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.7)", "--btn-ghost-quaternary-pressed-border": "transparent", "--btn-ghost-quaternary-pressed-text": "var(--fc-text-1)", "--btn-ghost-quaternary-disabled-bg": "transparent", "--btn-ghost-quaternary-disabled-border": "transparent", "--btn-ghost-quaternary-disabled-text": "var(--fc-text-5)", "--btn-ghost-quaternary-focus-bg": "transparent", "--btn-ghost-quaternary-focus-border": "var(--fc-border-color2)", "--btn-ghost-quaternary-focus-text": "var(--fc-text-4)", "--btn-text-primary-default-bg": "transparent", "--btn-text-primary-default-border": "transparent", "--btn-text-primary-default-text": "var(--fc-violet-11)", "--btn-text-primary-hover-bg": "var(--fc-violet-3)", "--btn-text-primary-hover-border": "transparent", "--btn-text-primary-hover-text": "var(--fc-violet-11)", "--btn-text-primary-pressed-bg": "var(--fc-violet-4)", "--btn-text-primary-pressed-border": "transparent", "--btn-text-primary-pressed-text": "var(--fc-violet-12)", "--btn-text-primary-disabled-bg": "transparent", "--btn-text-primary-disabled-border": "transparent", "--btn-text-primary-disabled-text": "var(--fc-violet-6)", "--btn-text-primary-focus-bg": "transparent", "--btn-text-primary-focus-border": "var(--fc-violet-9)", "--btn-text-primary-focus-text": "var(--fc-violet-11)", "--btn-text-primary-destructive-default-bg": "transparent", "--btn-text-primary-destructive-default-border": "transparent", "--btn-text-primary-destructive-default-text": "var(--fc-red-11)", "--btn-text-primary-destructive-hover-bg": "var(--fc-red-3)", "--btn-text-primary-destructive-hover-border": "transparent", "--btn-text-primary-destructive-hover-text": "var(--fc-red-11)", "--btn-text-primary-destructive-pressed-bg": "var(--fc-red-4)", "--btn-text-primary-destructive-pressed-border": "transparent", "--btn-text-primary-destructive-pressed-text": "var(--fc-red-12)", "--btn-text-primary-destructive-disabled-bg": "transparent", "--btn-text-primary-destructive-disabled-border": "transparent", "--btn-text-primary-destructive-disabled-text": "var(--fc-red-6)", "--btn-text-primary-destructive-focus-bg": "transparent", "--btn-text-primary-destructive-focus-border": "var(--fc-red-9)", "--btn-text-primary-destructive-focus-text": "var(--fc-red-11)", "--btn-text-secondary-default-bg": "transparent", "--btn-text-secondary-default-border": "transparent", "--btn-text-secondary-default-text": "var(--fc-text-2)", "--btn-text-secondary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-text-secondary-hover-border": "transparent", "--btn-text-secondary-hover-text": "var(--fc-text-1)", "--btn-text-secondary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-text-secondary-pressed-border": "transparent", "--btn-text-secondary-pressed-text": "var(--fc-text-1)", "--btn-text-secondary-disabled-bg": "transparent", "--btn-text-secondary-disabled-border": "transparent", "--btn-text-secondary-disabled-text": "var(--fc-text-5)", "--btn-text-secondary-focus-bg": "transparent", "--btn-text-secondary-focus-border": "var(--fc-border-color2)", "--btn-text-secondary-focus-text": "var(--fc-text-2)", "--btn-text-secondary-destructive-default-bg": "transparent", "--btn-text-secondary-destructive-default-border": "transparent", "--btn-text-secondary-destructive-default-text": "var(--fc-text-2)", "--btn-text-secondary-destructive-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-text-secondary-destructive-hover-border": "transparent", "--btn-text-secondary-destructive-hover-text": "var(--fc-text-1)", "--btn-text-secondary-destructive-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-text-secondary-destructive-pressed-border": "transparent", "--btn-text-secondary-destructive-pressed-text": "var(--fc-text-1)", "--btn-text-secondary-destructive-disabled-bg": "transparent", "--btn-text-secondary-destructive-disabled-border": "transparent", "--btn-text-secondary-destructive-disabled-text": "var(--fc-text-5)", "--btn-text-secondary-destructive-focus-bg": "transparent", "--btn-text-secondary-destructive-focus-border": "var(--fc-border-color2)", "--btn-text-secondary-destructive-focus-text": "var(--fc-text-2)", "--btn-text-tertiary-default-bg": "transparent", "--btn-text-tertiary-default-border": "transparent", "--btn-text-tertiary-default-text": "var(--fc-text-3)", "--btn-text-tertiary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.2)", "--btn-text-tertiary-hover-border": "transparent", "--btn-text-tertiary-hover-text": "var(--fc-text-2)", "--btn-text-tertiary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-text-tertiary-pressed-border": "transparent", "--btn-text-tertiary-pressed-text": "var(--fc-text-1)", "--btn-text-tertiary-disabled-bg": "transparent", "--btn-text-tertiary-disabled-border": "transparent", "--btn-text-tertiary-disabled-text": "var(--fc-text-5)", "--btn-text-tertiary-focus-bg": "transparent", "--btn-text-tertiary-focus-border": "var(--fc-border-color2)", "--btn-text-tertiary-focus-text": "var(--fc-text-3)", "--btn-text-quaternary-default-bg": "transparent", "--btn-text-quaternary-default-border": "transparent", "--btn-text-quaternary-default-text": "var(--fc-text-4)", "--btn-text-quaternary-hover-bg": "rgb(var(--fc-fill-5-rgb) / 0.4)", "--btn-text-quaternary-hover-border": "transparent", "--btn-text-quaternary-hover-text": "var(--fc-text-2)", "--btn-text-quaternary-pressed-bg": "rgb(var(--fc-fill-5-rgb) / 0.7)", "--btn-text-quaternary-pressed-border": "transparent", "--btn-text-quaternary-pressed-text": "var(--fc-text-1)", "--btn-text-quaternary-disabled-bg": "transparent", "--btn-text-quaternary-disabled-border": "transparent", "--btn-text-quaternary-disabled-text": "var(--fc-text-5)", "--btn-text-quaternary-focus-bg": "transparent", "--btn-text-quaternary-focus-border": "var(--fc-border-color2)", "--btn-text-quaternary-focus-text": "var(--fc-text-4)", "--btn-link-primary-default-text": "var(--fc-violet-11)", "--btn-link-primary-hover-text": "var(--fc-violet-12)", "--btn-link-primary-pressed-text": "var(--fc-violet-12)", "--btn-link-primary-disabled-text": "var(--fc-violet-6)", "--btn-link-primary-default-underline": "transparent", "--btn-link-primary-hover-underline": "currentColor", "--btn-link-primary-always-underline": "currentColor", "--btn-link-secondary-default-text": "var(--fc-text-2)", "--btn-link-secondary-hover-text": "var(--fc-text-1)", "--btn-link-secondary-pressed-text": "var(--fc-text-1)", "--btn-link-secondary-disabled-text": "var(--fc-text-5)", "--btn-link-secondary-default-underline": "transparent", "--btn-link-secondary-hover-underline": "currentColor", "--btn-link-secondary-always-underline": "currentColor", "--btn-link-tertiary-default-text": "var(--fc-text-3)", "--btn-link-tertiary-hover-text": "var(--fc-text-2)", "--btn-link-tertiary-pressed-text": "var(--fc-text-2)", "--btn-link-tertiary-disabled-text": "var(--fc-text-5)", "--btn-link-tertiary-default-underline": "transparent", "--btn-link-tertiary-hover-underline": "currentColor", "--btn-link-tertiary-always-underline": "currentColor", "--btn-link-quaternary-default-text": "var(--fc-text-4)", "--btn-link-quaternary-hover-text": "var(--fc-text-2)", "--btn-link-quaternary-pressed-text": "var(--fc-text-2)", "--btn-link-quaternary-disabled-text": "var(--fc-text-5)", "--btn-link-quaternary-default-underline": "transparent", "--btn-link-quaternary-hover-underline": "currentColor", "--btn-link-quaternary-always-underline": "currentColor"};
+    const SHARED_KEYS = new Set(["--btn-padding-y-sm", "--btn-icon-size-default", "--btn-padding-x-sm", "--btn-font-weight-solid", "--btn-line-height-sm", "--btn-font-size-sm", "--btn-padding-y-xs", "--btn-padding-x-lg", "--btn-padding-x-xs", "--btn-icon-size-lg", "--btn-gap", "--btn-font-size-lg", "--btn-height-xs", "--btn-height-lg", "--btn-icon-size-sm", "--btn-line-height-xs", "--btn-padding-y-lg", "--btn-height-sm", "--btn-font-size-xs", "--btn-focus-ring-width", "--btn-line-height-lg", "--btn-transition", "--btn-padding-x-default", "--btn-focus-ring-color", "--btn-padding-y-default", "--btn-radius-xs", "--btn-height-default", "--btn-radius-sm", "--btn-radius-lg", "--btn-line-height-default", "--btn-icon-size-xs", "--btn-font-size-default", "--btn-border-width", "--btn-font-weight", "--btn-radius-default"]);
+    const UNIFIED_COLOR_KEYS = new Set(["--btn-surface-secondary-destructive-pressed-border", "--btn-surface-primary-destructive-focus-bg", "--btn-text-secondary-destructive-hover-bg", "--btn-soft-secondary-hover-bg", "--btn-ghost-secondary-hover-bg", "--btn-ghost-tertiary-focus-border", "--btn-outline-secondary-focus-bg", "--btn-text-tertiary-pressed-bg", "--btn-text-secondary-destructive-default-border", "--btn-ghost-secondary-destructive-default-text", "--btn-text-quaternary-pressed-text", "--btn-outline-secondary-destructive-default-text", "--btn-soft-secondary-focus-text", "--btn-text-secondary-focus-bg", "--btn-ghost-quaternary-pressed-text", "--btn-text-quaternary-default-text", "--btn-surface-primary-disabled-border", "--btn-surface-secondary-default-text", "--btn-text-primary-destructive-disabled-border", "--btn-surface-primary-hover-bg", "--btn-ghost-tertiary-disabled-text", "--btn-text-primary-focus-text", "--btn-ghost-tertiary-default-text", "--btn-text-primary-focus-border", "--btn-surface-secondary-destructive-hover-text", "--btn-outline-primary-destructive-default-text", "--btn-outline-secondary-hover-bg", "--btn-link-primary-disabled-text", "--btn-ghost-primary-destructive-disabled-border", "--btn-outline-primary-disabled-text", "--btn-text-primary-destructive-focus-bg", "--btn-text-primary-destructive-pressed-text", "--btn-outline-secondary-destructive-pressed-text", "--btn-soft-primary-destructive-hover-border", "--btn-soft-secondary-pressed-border", "--btn-ghost-primary-pressed-border", "--btn-soft-secondary-default-bg", "--btn-ghost-primary-destructive-pressed-border", "--btn-soft-primary-focus-bg", "--btn-ghost-secondary-disabled-bg", "--btn-text-primary-default-bg", "--btn-link-quaternary-pressed-text", "--btn-soft-secondary-disabled-bg", "--btn-link-tertiary-default-text", "--btn-link-tertiary-hover-underline", "--btn-ghost-secondary-focus-bg", "--btn-solid-primary-pressed-text", "--btn-soft-secondary-destructive-pressed-bg", "--btn-outline-secondary-destructive-hover-bg", "--btn-ghost-quaternary-default-text", "--btn-soft-secondary-disabled-border", "--btn-soft-primary-pressed-bg", "--btn-soft-primary-destructive-hover-bg", "--btn-text-secondary-destructive-pressed-text", "--btn-soft-primary-destructive-focus-border", "--btn-ghost-secondary-destructive-hover-text", "--btn-text-quaternary-disabled-text", "--btn-ghost-primary-destructive-pressed-bg", "--btn-ghost-secondary-destructive-pressed-bg", "--btn-ghost-tertiary-focus-bg", "--btn-outline-secondary-focus-text", "--btn-outline-primary-destructive-disabled-text", "--btn-ghost-secondary-destructive-pressed-border", "--btn-text-primary-destructive-hover-border", "--btn-outline-secondary-pressed-bg", "--btn-outline-secondary-hover-text", "--btn-outline-primary-focus-bg", "--btn-text-secondary-focus-border", "--btn-link-primary-default-underline", "--btn-surface-secondary-default-border", "--btn-text-primary-destructive-focus-border", "--btn-ghost-primary-destructive-hover-border", "--btn-surface-secondary-destructive-default-text", "--btn-surface-secondary-destructive-pressed-text", "--btn-text-secondary-pressed-bg", "--btn-solid-primary-focus-text", "--btn-ghost-primary-destructive-disabled-bg", "--btn-outline-primary-default-text", "--btn-soft-primary-destructive-focus-text", "--btn-soft-primary-default-text", "--btn-surface-primary-default-border", "--btn-text-quaternary-hover-text", "--btn-ghost-quaternary-hover-bg", "--btn-soft-primary-destructive-default-text", "--btn-soft-primary-disabled-bg", "--btn-ghost-primary-hover-bg", "--btn-ghost-primary-destructive-disabled-text", "--btn-solid-primary-destructive-default-text", "--btn-outline-secondary-destructive-hover-text", "--btn-surface-primary-pressed-text", "--btn-ghost-secondary-disabled-text", "--btn-ghost-secondary-default-border", "--btn-outline-secondary-destructive-disabled-border", "--btn-text-secondary-pressed-text", "--btn-soft-secondary-destructive-default-bg", "--btn-ghost-primary-disabled-bg", "--btn-ghost-primary-destructive-default-bg", "--btn-solid-primary-destructive-hover-text", "--btn-ghost-tertiary-hover-border", "--btn-outline-primary-destructive-pressed-bg", "--btn-text-secondary-default-border", "--btn-surface-primary-pressed-bg", "--btn-soft-primary-pressed-border", "--btn-outline-secondary-destructive-focus-border", "--btn-solid-primary-destructive-pressed-border", "--btn-surface-primary-default-bg", "--btn-text-primary-hover-bg", "--btn-soft-secondary-disabled-text", "--btn-text-primary-disabled-bg", "--btn-ghost-secondary-default-text", "--btn-ghost-secondary-disabled-border", "--btn-ghost-tertiary-default-bg", "--btn-ghost-tertiary-pressed-text", "--btn-text-primary-destructive-disabled-bg", "--btn-ghost-primary-focus-text", "--btn-text-secondary-destructive-focus-bg", "--btn-link-tertiary-pressed-text", "--btn-ghost-quaternary-pressed-bg", "--btn-link-secondary-default-underline", "--btn-soft-secondary-hover-text", "--btn-text-quaternary-focus-text", "--btn-soft-primary-destructive-disabled-bg", "--btn-soft-secondary-focus-border", "--btn-outline-secondary-destructive-pressed-bg", "--btn-solid-primary-destructive-default-bg", "--btn-soft-primary-destructive-default-border", "--btn-ghost-tertiary-pressed-border", "--btn-ghost-quaternary-disabled-border", "--btn-soft-primary-focus-border", "--btn-soft-secondary-pressed-text", "--btn-soft-primary-destructive-hover-text", "--btn-surface-secondary-destructive-hover-bg", "--btn-link-secondary-hover-text", "--btn-soft-primary-hover-border", "--btn-text-primary-disabled-text", "--btn-text-secondary-destructive-hover-border", "--btn-outline-secondary-pressed-text", "--btn-soft-primary-destructive-focus-bg", "--btn-soft-primary-destructive-pressed-border", "--btn-surface-secondary-hover-text", "--btn-text-quaternary-default-border", "--btn-text-primary-hover-border", "--btn-link-secondary-disabled-text", "--btn-soft-secondary-destructive-hover-border", "--btn-soft-secondary-destructive-disabled-bg", "--btn-ghost-quaternary-pressed-border", "--btn-surface-secondary-destructive-focus-bg", "--btn-text-tertiary-default-border", "--btn-ghost-tertiary-default-border", "--btn-text-primary-destructive-pressed-border", "--btn-link-tertiary-always-underline", "--btn-text-primary-pressed-text", "--btn-ghost-tertiary-pressed-bg", "--btn-text-tertiary-disabled-text", "--btn-surface-primary-focus-bg", "--btn-text-primary-default-text", "--btn-surface-primary-destructive-pressed-border", "--btn-text-quaternary-focus-border", "--btn-link-secondary-always-underline", "--btn-surface-primary-destructive-pressed-bg", "--btn-ghost-secondary-hover-text", "--btn-surface-secondary-hover-border", "--btn-soft-primary-destructive-disabled-text", "--btn-solid-primary-focus-bg", "--btn-text-secondary-focus-text", "--btn-surface-primary-disabled-bg", "--btn-outline-primary-default-border", "--btn-outline-primary-pressed-border", "--btn-text-secondary-destructive-pressed-bg", "--btn-ghost-tertiary-focus-text", "--btn-ghost-primary-default-text", "--btn-text-tertiary-default-text", "--btn-surface-secondary-pressed-border", "--btn-surface-primary-destructive-disabled-border", "--btn-surface-secondary-destructive-default-border", "--btn-soft-secondary-pressed-bg", "--btn-ghost-primary-destructive-default-border", "--btn-ghost-primary-destructive-focus-border", "--btn-soft-secondary-destructive-default-text", "--btn-surface-primary-pressed-border", "--btn-solid-primary-destructive-focus-bg", "--btn-ghost-primary-focus-bg", "--btn-outline-primary-destructive-disabled-border", "--btn-surface-secondary-hover-bg", "--btn-text-secondary-hover-text", "--btn-text-secondary-destructive-pressed-border", "--btn-ghost-primary-destructive-focus-text", "--btn-ghost-primary-destructive-hover-bg", "--btn-text-secondary-destructive-default-text", "--btn-ghost-quaternary-focus-text", "--btn-text-secondary-disabled-text", "--btn-text-tertiary-focus-text", "--btn-outline-secondary-destructive-disabled-bg", "--btn-ghost-secondary-destructive-hover-bg", "--btn-text-primary-destructive-hover-bg", "--btn-text-quaternary-disabled-bg", "--btn-soft-secondary-destructive-pressed-text", "--btn-text-tertiary-hover-text", "--btn-solid-primary-destructive-hover-border", "--btn-surface-secondary-destructive-hover-border", "--btn-ghost-primary-default-border", "--btn-surface-secondary-destructive-disabled-bg", "--btn-outline-secondary-destructive-focus-bg", "--btn-outline-primary-default-bg", "--btn-ghost-quaternary-hover-border", "--btn-solid-primary-destructive-focus-border", "--btn-ghost-secondary-destructive-focus-text", "--btn-text-secondary-pressed-border", "--btn-solid-primary-hover-border", "--btn-surface-secondary-destructive-default-bg", "--btn-outline-secondary-destructive-default-border", "--btn-text-primary-disabled-border", "--btn-outline-secondary-destructive-focus-text", "--btn-link-quaternary-disabled-text", "--btn-soft-secondary-destructive-default-border", "--btn-ghost-quaternary-disabled-bg", "--btn-ghost-secondary-destructive-pressed-text", "--btn-solid-primary-destructive-pressed-text", "--btn-link-quaternary-hover-underline", "--btn-outline-primary-destructive-hover-border", "--btn-ghost-secondary-destructive-default-border", "--btn-link-quaternary-always-underline", "--btn-outline-primary-destructive-default-border", "--btn-text-secondary-default-text", "--btn-solid-primary-disabled-bg", "--btn-text-primary-pressed-bg", "--btn-link-primary-default-text", "--btn-outline-primary-hover-border", "--btn-link-tertiary-default-underline", "--btn-surface-secondary-pressed-text", "--btn-soft-primary-destructive-pressed-text", "--btn-link-secondary-default-text", "--btn-ghost-primary-pressed-bg", "--btn-soft-primary-disabled-text", "--btn-outline-secondary-default-bg", "--btn-soft-secondary-hover-border", "--btn-surface-primary-destructive-hover-text", "--btn-surface-secondary-disabled-border", "--btn-outline-primary-disabled-bg", "--btn-outline-secondary-hover-border", "--btn-ghost-tertiary-hover-bg", "--btn-ghost-primary-hover-border", "--btn-text-secondary-disabled-bg", "--btn-text-secondary-destructive-disabled-bg", "--btn-ghost-quaternary-focus-bg", "--btn-outline-primary-pressed-bg", "--btn-text-secondary-disabled-border", "--btn-surface-secondary-focus-border", "--btn-ghost-secondary-focus-border", "--btn-text-quaternary-focus-bg", "--btn-solid-primary-default-border", "--btn-ghost-primary-destructive-default-text", "--btn-text-secondary-destructive-focus-border", "--btn-solid-primary-destructive-disabled-text", "--btn-text-tertiary-pressed-text", "--btn-outline-secondary-destructive-disabled-text", "--btn-surface-secondary-destructive-focus-border", "--btn-outline-primary-destructive-pressed-border", "--btn-solid-primary-pressed-bg", "--btn-soft-primary-focus-text", "--btn-surface-primary-destructive-focus-border", "--btn-outline-secondary-destructive-hover-border", "--btn-ghost-primary-focus-border", "--btn-ghost-tertiary-disabled-bg", "--btn-ghost-tertiary-hover-text", "--btn-text-secondary-hover-border", "--btn-ghost-quaternary-focus-border", "--btn-solid-primary-hover-bg", "--btn-outline-primary-destructive-hover-text", "--btn-surface-primary-focus-text", "--btn-soft-primary-disabled-border", "--btn-soft-secondary-default-border", "--btn-surface-secondary-destructive-disabled-border", "--btn-outline-secondary-disabled-bg", "--btn-soft-secondary-destructive-focus-text", "--btn-soft-secondary-default-text", "--btn-ghost-secondary-pressed-text", "--btn-outline-primary-focus-text", "--btn-soft-primary-hover-text", "--btn-text-primary-destructive-default-text", "--btn-outline-secondary-focus-border", "--btn-ghost-primary-destructive-pressed-text", "--btn-text-secondary-destructive-disabled-text", "--btn-solid-primary-destructive-default-border", "--btn-outline-secondary-default-border", "--btn-soft-secondary-focus-bg", "--btn-ghost-primary-disabled-border", "--btn-text-quaternary-hover-border", "--btn-ghost-secondary-destructive-focus-border", "--btn-text-primary-focus-bg", "--btn-surface-secondary-focus-text", "--btn-link-primary-hover-underline", "--btn-outline-secondary-disabled-border", "--btn-surface-primary-destructive-disabled-bg", "--btn-outline-primary-destructive-default-bg", "--btn-surface-primary-default-text", "--btn-text-tertiary-pressed-border", "--btn-ghost-secondary-pressed-border", "--btn-surface-primary-destructive-hover-border", "--btn-link-secondary-pressed-text", "--btn-soft-primary-default-bg", "--btn-ghost-secondary-default-bg", "--btn-ghost-primary-destructive-hover-text", "--btn-outline-primary-destructive-disabled-bg", "--btn-outline-primary-destructive-focus-border", "--btn-ghost-primary-pressed-text", "--btn-soft-primary-destructive-pressed-bg", "--btn-surface-secondary-focus-bg", "--btn-soft-secondary-destructive-disabled-border", "--btn-text-quaternary-pressed-bg", "--btn-text-primary-destructive-hover-text", "--btn-text-primary-default-border", "--btn-soft-primary-destructive-disabled-border", "--btn-outline-primary-destructive-pressed-text", "--btn-text-secondary-hover-bg", "--btn-solid-primary-destructive-focus-text", "--btn-outline-secondary-destructive-pressed-border", "--btn-link-tertiary-hover-text", "--btn-text-primary-destructive-default-border", "--btn-outline-primary-focus-border", "--btn-solid-primary-default-text", "--btn-solid-primary-destructive-pressed-bg", "--btn-outline-primary-hover-bg", "--btn-ghost-secondary-focus-text", "--btn-soft-secondary-destructive-hover-text", "--btn-surface-primary-hover-border", "--btn-outline-primary-hover-text", "--btn-text-tertiary-hover-bg", "--btn-text-quaternary-default-bg", "--btn-link-quaternary-default-text", "--btn-ghost-quaternary-default-bg", "--btn-surface-secondary-disabled-bg", "--btn-ghost-secondary-destructive-disabled-text", "--btn-soft-primary-pressed-text", "--btn-outline-primary-pressed-text", "--btn-solid-primary-default-bg", "--btn-surface-primary-destructive-focus-text", "--btn-text-primary-destructive-default-bg", "--btn-text-secondary-default-bg", "--btn-surface-primary-destructive-pressed-text", "--btn-ghost-primary-destructive-focus-bg", "--btn-text-primary-pressed-border", "--btn-text-secondary-destructive-focus-text", "--btn-soft-primary-default-border", "--btn-solid-primary-pressed-border", "--btn-surface-secondary-default-bg", "--btn-ghost-primary-hover-text", "--btn-ghost-secondary-destructive-disabled-bg", "--btn-text-primary-destructive-focus-text", "--btn-text-quaternary-hover-bg", "--btn-link-quaternary-hover-text", "--btn-soft-secondary-destructive-focus-border", "--btn-ghost-secondary-hover-border", "--btn-solid-primary-destructive-disabled-border", "--btn-text-tertiary-focus-border", "--btn-text-tertiary-disabled-bg", "--btn-text-primary-hover-text", "--btn-ghost-secondary-pressed-bg", "--btn-outline-secondary-disabled-text", "--btn-solid-primary-disabled-text", "--btn-soft-secondary-destructive-focus-bg", "--btn-text-quaternary-disabled-border", "--btn-soft-primary-destructive-default-bg", "--btn-outline-secondary-default-text", "--btn-soft-secondary-destructive-hover-bg", "--btn-outline-primary-destructive-hover-bg", "--btn-solid-primary-disabled-border", "--btn-ghost-quaternary-hover-text", "--btn-ghost-tertiary-disabled-border", "--btn-ghost-quaternary-default-border", "--btn-surface-primary-hover-text", "--btn-soft-primary-hover-bg", "--btn-surface-primary-destructive-default-text", "--btn-outline-primary-destructive-focus-bg", "--btn-outline-primary-disabled-border", "--btn-surface-secondary-destructive-disabled-text", "--btn-link-quaternary-default-underline", "--btn-text-primary-destructive-pressed-bg", "--btn-ghost-quaternary-disabled-text", "--btn-soft-secondary-destructive-pressed-border", "--btn-surface-secondary-destructive-pressed-bg", "--btn-text-quaternary-pressed-border", "--btn-text-tertiary-focus-bg", "--btn-link-primary-hover-text", "--btn-link-primary-pressed-text", "--btn-text-primary-destructive-disabled-text", "--btn-surface-primary-destructive-hover-bg", "--btn-text-tertiary-default-bg", "--btn-surface-primary-focus-border", "--btn-text-secondary-destructive-default-bg", "--btn-solid-primary-hover-text", "--btn-ghost-primary-default-bg", "--btn-solid-primary-focus-border", "--btn-ghost-primary-disabled-text", "--btn-soft-secondary-destructive-disabled-text", "--btn-solid-primary-destructive-hover-bg", "--btn-ghost-secondary-destructive-default-bg", "--btn-link-tertiary-disabled-text", "--btn-solid-primary-destructive-disabled-bg", "--btn-surface-secondary-disabled-text", "--btn-text-tertiary-disabled-border", "--btn-surface-primary-destructive-default-bg", "--btn-surface-primary-destructive-disabled-text", "--btn-outline-primary-destructive-focus-text", "--btn-ghost-secondary-destructive-focus-bg", "--btn-outline-secondary-destructive-default-bg", "--btn-ghost-secondary-destructive-disabled-border", "--btn-text-tertiary-hover-border", "--btn-link-primary-always-underline", "--btn-surface-primary-destructive-default-border", "--btn-ghost-secondary-destructive-hover-border", "--btn-surface-secondary-pressed-bg", "--btn-link-secondary-hover-underline", "--btn-text-secondary-destructive-hover-text", "--btn-surface-primary-disabled-text", "--btn-text-secondary-destructive-disabled-border", "--btn-outline-secondary-pressed-border", "--btn-surface-secondary-destructive-focus-text"]);
+    const STORAGE_KEY = "fc-button-design-editor-v1";
+    const userState = { shared: {}, gold: {} };
+    let filterMode = "focus";
+    let live = { variant: "ghost", hierarchy: "primary", size: "xs", icon: "none", destructive: false };
+
+    function validHierarchies(v) { return VARIANTS[v] || ["primary"]; }
+    function isDestructiveAllowed(v, h) {
+      if (v === "solid") return h === "primary";
+      if (v === "ghost" || v === "text") return h === "primary" || h === "secondary";
+      return true;
+    }
+    function rowMatchesFilter(group) {
+      if (filterMode === "all") return true;
+      if (group === "尺寸") return true;
+      if (group.startsWith("link")) return true;
+      const dest = live.destructive ? " · destructive" : "";
+      return group === `${live.variant} · ${live.hierarchy}${dest}`;
+    }
+    function renderButtonHtml(o = {}) {
+      const v = o.variant ?? live.variant, h = o.hierarchy ?? live.hierarchy, sz = o.size ?? live.size;
+      const ic = o.icon ?? live.icon, d = o.destructive ?? live.destructive;
+      const cls = o.extraClass || "", dis = o.disabled ? " disabled" : "";
+      const dest = d ? ' data-destructive="true"' : "";
+      const label = o.text || (h.charAt(0).toUpperCase() + h.slice(1));
+      let i0 = ic === "inline-start" ? '<i data-lucide="plus"></i>' : "";
+      let i1 = ic === "inline-end" ? '<i data-lucide="chevron-right"></i>' : "";
+      return `<button type="button" class="fc-btn ${cls}" data-variant="${v}" data-hierarchy="${h}" data-size="${sz}"${dest}${dis}>${i0}${label}${i1}</button>`;
+    }
+    function renderLive() {
+      document.getElementById("live-btn-wrap").innerHTML =
+        renderButtonHtml({ icon: live.icon }) + " " + renderButtonHtml({ size: "default", icon: live.icon });
+      document.getElementById("combo-hint").textContent =
+        `variant=${live.variant} hierarchy=${live.hierarchy} size=${live.size} icon=${live.icon} destructive=${live.destructive}`;
+      document.getElementById("state-strip").innerHTML = [
+        ["默认",""],["Hover","is-hover"],["Pressed","is-pressed"],["Focus","is-focus"],["Disabled","is-disabled"]
+      ].map(([l,c]) => `<div class="state-cell"><span class="state-label">${l}</span>${renderButtonHtml({ extraClass:c, disabled:c==="is-disabled", icon:"inline-start" })}</div>`).join("");
+      refreshLucide(document.getElementById("preview-scope"));
+    }
+    function renderMatrix() {
+      let html = "";
+      for (const [variant, list] of Object.entries(VARIANTS)) {
+        html += `<h3 class="matrix-title">${variant}</h3><div class="matrix-row">`;
+        for (const h of list) html += renderButtonHtml({ variant, hierarchy: h, size: "default", text: h });
+        html += "</div>";
+        const dest = list.filter((h) => isDestructiveAllowed(variant, h));
+        if (dest.length) {
+          html += '<div class="matrix-row">';
+          for (const h of dest) html += renderButtonHtml({ variant, hierarchy: h, size: "default", destructive: true, text: "Delete" });
+          html += "</div>";
+        }
+      }
+      document.getElementById("matrix-all").innerHTML = html;
+      document.getElementById("link-strip").innerHTML =
+        LINK_HIERARCHIES.map((h) => `<button type="button" class="fc-link" data-hierarchy="${h}" data-underline="hover">${h}</button>`).join("") +
+        LINK_HIERARCHIES.map((h) => `<button type="button" class="fc-link" data-hierarchy="${h}" data-underline="always">${h} underline</button>`).join("");
+      document.getElementById("link-state-strip").innerHTML = [
+        ["默认",""],["Hover","is-hover"],["Disabled","is-disabled"]
+      ].map(([l,c]) => `<div class="state-cell"><span class="state-label">${l}</span><button type="button" class="fc-link ${c}" data-hierarchy="primary" data-underline="hover"${c==="is-disabled"?" disabled":""}>Link</button></div>`).join("");
+      refreshLucide(document.getElementById("matrix-all"));
+    }
+    function refreshLucide(root) {
+      if (typeof lucide !== "undefined" && lucide.createIcons) lucide.createIcons({ attrs: { "stroke-width": 2 }, root });
+    }
+    function populateSelectors() {
+      const v = document.getElementById("sel-variant");
+      v.innerHTML = Object.keys(VARIANTS).map((k) => `<option value="${k}">${k}</option>`).join("");
+      v.value = live.variant;
+      updateHierarchySelect();
+    }
+    function updateHierarchySelect() {
+      const list = validHierarchies(live.variant);
+      const h = document.getElementById("sel-hierarchy");
+      h.innerHTML = list.map((x) => `<option value="${x}">${x}</option>`).join("");
+      if (!list.includes(live.hierarchy)) live.hierarchy = list[0];
+      h.value = live.hierarchy;
+      const chk = document.getElementById("chk-destructive");
+      chk.disabled = !isDestructiveAllowed(live.variant, live.hierarchy);
+      if (!isDestructiveAllowed(live.variant, live.hierarchy)) live.destructive = false;
+      chk.checked = live.destructive;
+    }
+    function saveStorage() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ userState, filterMode, lastTheme: document.body.getAttribute("data-theme") })); } catch (_) {}
+    }
+    function loadStorage() {
+      try {
+        const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        if (d.userState) Object.assign(userState, d.userState);
+        if (d.filterMode) filterMode = d.filterMode;
+      } catch (_) {}
+    }
+    function isPlainHexColor(v) { return /^#[0-9a-f]{3,6}$/i.test((v||"").trim()); }
+    function hexForColorPicker(v) {
+      if (/^#[0-9a-f]{6}$/i.test(v)) return v;
+      if (/^#[0-9a-f]{3}$/i.test(v)) { const h=v.slice(1); return `#${h[0]}${h[0]}${h[1]}${h[1]}${h[2]}${h[2]}`; }
+      return "#6c53b1";
+    }
+    function resolveDisplayColor(v) {
+      const p = document.getElementById("color-probe");
+      const t = (s, pr) => { p.style.cssText=s; const o=getComputedStyle(p)[pr]; return o&&o!=="transparent"&&o!=="rgba(0,0,0,0)"?o:""; };
+      v=(v||"").trim();
+      return t(`background:${v}`,"backgroundColor")||t(`color:${v}`,"color")||"";
+    }
+    function getStoredValue(key, theme) {
+      if (SHARED_KEYS.has(key)) return userState.shared?.[key];
+      if (theme !== "gold") return userState.shared?.[key];
+      return userState.gold?.[key];
+    }
+    function persistFieldFromInput(input) {
+      const theme = document.body.getAttribute("data-theme");
+      const key = input.dataset.var, val = input.value.trim();
+      if (SHARED_KEYS.has(key) || theme !== "gold") {
+        if (val) { if (!userState.shared) userState.shared={}; userState.shared[key]=val; } else delete userState.shared?.[key];
+      } else if (val) { userState.gold[key]=val; } else delete userState.gold?.[key];
+      saveStorage();
+    }
+    function collectInputValues() {
+      const vars = {};
+      document.querySelectorAll(".spec-input").forEach((i) => { const v=i.value.trim(); if(v) vars[i.dataset.var]=v; });
+      return vars;
+    }
+    function applyPreviewStyles(vars) {
+      const lines = Object.entries(vars).map(([k,v]) => `  ${k}: ${v};`);
+      document.getElementById("runtime-preview-styles").textContent = lines.length ? `#preview-scope {\n${lines.join("\n")}\n}` : "";
+      renderLive(); renderMatrix();
+    }
+    function readVar(key) { return getComputedStyle(document.documentElement).getPropertyValue(key).trim(); }
+    function renderSpecTableStructure() {
+      const tbody = SPEC_ROWS.filter(([g]) => rowMatchesFilter(g)).map(([group, key, label]) => {
+        const tag = SHARED_KEYS.has(key) ? "（尺寸共用）" : "（色值）";
+        return `<tr><td>${group} · ${label}${tag}</td><td><code>${key}</code></td><td><div class="value-editor">
+          <input class="spec-input" data-var="${key}" spellcheck="false" />
+          <input type="color" class="spec-color-picker" hidden /><span class="swatch"></span></div></td></tr>`;
+      }).join("");
+      document.getElementById("spec-table").innerHTML = `<thead><tr><th>分组</th><th>变量</th><th>值</th></tr></thead><tbody>${tbody}</tbody>`;
+      loadInputsFromState(document.body.getAttribute("data-theme"));
+    }
+    function loadInputsFromState(theme) {
+      document.querySelectorAll(".spec-input").forEach((input) => {
+        const key = input.dataset.var;
+        let val = getStoredValue(key, theme) || readVar(key) || COLOR_DEFAULTS[key] || "";
+        input.value = val;
+        const picker = input.closest(".value-editor")?.querySelector(".spec-color-picker");
+        if (picker) { picker.hidden = !isPlainHexColor(val); if (!picker.hidden) picker.value = hexForColorPicker(val); }
+        const sw = input.closest(".value-editor")?.querySelector(".swatch");
+        const c = resolveDisplayColor(val);
+        if (sw) { sw.style.background = c || "transparent"; sw.style.display = c ? "inline-block" : "none"; }
+      });
+    }
+    function bindSpecTable() {
+      document.getElementById("spec-table").addEventListener("input", (e) => {
+        const input = e.target.closest(".spec-input");
+        if (input) persistFieldFromInput(input);
+        const picker = e.target.closest(".spec-color-picker");
+        if (picker) {
+          const t = picker.closest(".value-editor")?.querySelector(".spec-input");
+          if (t) { t.value = picker.value; persistFieldFromInput(t); }
+        }
+      });
+    }
+    const THEME_NOTES = {
+      light: "浅色 — ghost xs 24px 对齐 table-design-system.less",
+      dark: "深色 — 建议色值写 var(--fc-*)",
+      gold: "金拱门 — solid / link 可独立覆盖",
+    };
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme === "gold" ? "light" : theme);
+      document.body.setAttribute("data-theme", theme);
+      ["light","dark","gold"].forEach((t) => document.getElementById(`theme-${t}`)?.classList.toggle("is-on", t===theme));
+      document.getElementById("theme-note").textContent = THEME_NOTES[theme];
+      loadInputsFromState(theme);
+      applyPreviewStyles(collectInputValues());
+      saveStorage();
+    }
+    function generateStyleCode() {
+      const theme = document.body.getAttribute("data-theme");
+      const lines = Object.entries(collectInputValues()).map(([k,v]) => `  ${k}: ${v};`).join("\n");
+      const stamp = new Date().toLocaleString("zh-CN");
+      return theme === "gold"
+        ? `/* FC 按钮 金拱门 ${stamp} */\n.theme-light-gold {\n${lines}\n}\n`
+        : `/* FC 按钮 浅/深 ${stamp} */\n.theme-light,\n.theme-dark {\n${lines}\n}\n`;
+    }
+    document.getElementById("btn-preview").onclick = () => {
+      applyPreviewStyles(collectInputValues());
+      document.getElementById("copy-hint").textContent = "已预览";
+      document.getElementById("preview-scope").scrollIntoView({ behavior: "smooth" });
+    };
+    document.getElementById("btn-apply-code").onclick = () => {
+      applyPreviewStyles(collectInputValues());
+      document.getElementById("code-output").value = generateStyleCode();
+      document.getElementById("output-section").classList.add("is-visible");
+    };
+    document.getElementById("btn-copy-output").onclick = async () => {
+      try { await navigator.clipboard.writeText(document.getElementById("code-output").value);
+        document.getElementById("copy-hint").textContent = "已复制"; } catch { window.prompt("复制", document.getElementById("code-output").value); }
+    };
+    document.getElementById("btn-reset-vars").onclick = () => {
+      const theme = document.body.getAttribute("data-theme");
+      if (theme === "gold") userState.gold = {}; else userState.shared = {};
+      loadInputsFromState(theme); applyPreviewStyles(collectInputValues()); saveStorage();
+    };
+    document.getElementById("btn-filter-all").onclick = () => { filterMode = "all"; renderSpecTableStructure(); saveStorage(); };
+    document.getElementById("btn-filter-focus").onclick = () => { filterMode = "focus"; renderSpecTableStructure(); saveStorage(); };
+    document.getElementById("theme-light").onclick = () => setTheme("light");
+    document.getElementById("theme-dark").onclick = () => setTheme("dark");
+    document.getElementById("theme-gold").onclick = () => setTheme("gold");
+    ["sel-variant","sel-hierarchy","sel-size","sel-icon"].forEach((id) => {
+      document.getElementById(id).onchange = (e) => {
+        live[id.replace("sel-","")] = e.target.value;
+        if (id === "sel-variant") updateHierarchySelect();
+        renderSpecTableStructure(); renderLive();
+      };
+    });
+    document.getElementById("chk-destructive").onchange = (e) => {
+      live.destructive = e.target.checked; renderSpecTableStructure(); renderLive();
+    };
+    bindSpecTable(); loadStorage(); populateSelectors();
+    document.getElementById("sel-variant").value = "ghost";
+    document.getElementById("sel-size").value = "xs";
+    live.variant = "ghost"; live.size = "xs";
+    updateHierarchySelect(); renderMatrix(); renderLive(); setTheme("light");
+  </script>
+</body>
+</html>

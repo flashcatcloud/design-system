@@ -2,6 +2,14 @@
 
 FC 前端设计规范与可落地的主题片段仓库。
 
+## 按钮（2026-05）
+
+| 路径 | 说明 |
+|------|------|
+| `cat/button-design-editor.html` | 设计师调参预览页（Figma variant × hierarchy × size） |
+| `cat/button-current-from-code.md` | 与线上一致的初值说明 |
+| `cat/_gen_button_editor.py` | 重新生成调参页（改默认 token 时） |
+
 ## 表格分页（2026-05）
 
 | 路径 | 说明 |
