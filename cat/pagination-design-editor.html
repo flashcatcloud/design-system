@@ -1,0 +1,1789 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FC 表格分页 · 设计调参稿</title>
+  <style>
+    /*
+      ═══════════════════════════════════════════════════════════════
+      【设计师只改这一块】往下找 :root { } 和 [data-theme="light"] 里的数字/颜色
+      改完 → 保存文件 → 浏览器刷新本页即可，不用懂其它代码
+      页码宽高用 box-sizing: border-box，1px 描边算在 24px 里面（不外扩）
+      ═══════════════════════════════════════════════════════════════
+    */
+    :root {
+      /* ── 尺寸（浅/深共用）── */
+      --pagination-item-size: 24px;       /* 页码按钮总宽高（含描边，描边在内部） */
+      --pagination-item-gap: 2px;         /* 页码间距 */
+      --pagination-item-radius: 6px;      /* 圆角 */
+      --pagination-font-size: 12px;       /* 页码数字字号 */
+      --pagination-line-height: 22px;     /* 格内行高（24 - 上下各 1px 描边） */
+      --pagination-font-weight-active: 500;
+      --pagination-total-font-size: 12px;
+      --pagination-total-line-height: 24px;
+      --pagination-total-gap: 8px;
+      --pagination-select-height: 24px;   /* 「每页 N 条」下拉框高度，与页码对齐 */
+      --pagination-select-radius: 6px;   /* 24px 高 → 圆角 6（<28px 用 6，>=28px 用 8） */
+      --pagination-select-padding-x: 11px;
+      --pagination-options-margin-left: 16px;
+      --pagination-bar-padding-top: 16px;
+      --pagination-bar-gap: 16px;
+      --pagination-mini-item-size: 24px;  /* Table size=small 时 */
+      --pagination-mini-item-gap: 0px;
+      --pagination-border-width: 1px;     /* 描边在 24px 内部，不外扩 */
+      --pagination-transition: 0.3s ease;
+      --pagination-number-input-width: 44px;
+      --pagination-number-step-width: 22px;
+      --pagination-number-field-width: calc(var(--pagination-number-input-width) + var(--pagination-number-step-width));
+    }
+
+    /* 浅色 / 深色共用色值（与 fe default.less 一致，引用 --fc-*，切换模式自动变色） */
+    [data-theme="light"],
+    [data-theme="dark"] {
+      --pagination-brand: transparent;
+      --pagination-brand-hover: transparent;
+      --pagination-bg-default: var(--fc-fill-2);
+      --pagination-border-default: transparent;
+      --pagination-text-default: var(--fc-text-3);
+      --pagination-bg-hover: rgb(var(--fc-fill-5-rgb) / 0.4);
+      --pagination-border-hover: transparent;
+      --pagination-text-hover: var(--fc-text-1);
+      --pagination-bg-pressed: rgb(var(--fc-fill-5-rgb) / 0.7);
+      --pagination-border-pressed: transparent;
+      --pagination-text-pressed: var(--fc-text-1);
+      --pagination-bg-active: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --pagination-border-active: var(--fc-border-color2);
+      --pagination-text-active: var(--fc-text-2);
+      --pagination-border-active-hover: var(--fc-border-color2);
+      --pagination-text-active-hover: var(--fc-text-1);
+      --pagination-bg-active-hover: rgb(var(--fc-fill-5-rgb) / 0.4); /* 选中页 hover 背景 */
+      --pagination-bg-disabled: transparent;
+      --pagination-border-disabled: transparent;
+      --pagination-text-disabled: var(--fc-text-5);
+      --pagination-arrow-color-default: var(--fc-text-3);
+      --pagination-arrow-color-hover: var(--fc-text-3);
+      --pagination-arrow-color-disabled: var(--fc-text-5);
+      --pagination-ellipsis-color: var(--fc-text-5);
+      --pagination-total-color: var(--fc-text-3);
+      --pagination-select-bg: var(--fc-fill-2);
+      --pagination-select-border: var(--fc-border-color2);
+      --pagination-select-text: var(--fc-text-2);
+      --pagination-select-bg-hover: rgb(var(--fc-fill-5-rgb) / 0.2);
+      --pagination-select-border-hover: var(--fc-border-color2);
+    }
+
+    /* 预览画布背景（跟随 FC token） */
+    html[data-theme="light"] body,
+    html:not([data-theme]) body {
+      --preview-page-bg: var(--fc-fill-1);
+      --preview-panel-bg: var(--fc-fill-2);
+      --preview-text: var(--fc-text-2);
+      --preview-muted: var(--fc-text-4);
+    }
+
+    html[data-theme="dark"] body {
+      --preview-page-bg: var(--fc-fill-1);
+      --preview-panel-bg: var(--fc-fill-2);
+      --preview-text: var(--fc-text-2);
+      --preview-muted: var(--fc-text-4);
+    }
+
+    /*
+      FC 设计 token（与 fe/src/theme/variable.css :root / .theme-dark 对齐）
+      切换深浅时同步设置 html + body 的 data-theme
+    */
+    html[data-theme="light"],
+    html:not([data-theme]) {
+      --fc-fill-1-rgb: 252 252 253;
+      --fc-fill-1: rgb(var(--fc-fill-1-rgb));
+      --fc-fill-2-rgb: 255 255 255;
+      --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+      --fc-fill-2-5-rgb: 249 249 250;
+      --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
+      --fc-fill-3-rgb: 244 244 246;
+      --fc-fill-3: rgb(var(--fc-fill-3-rgb));
+      --fc-fill-4-rgb: 234 234 236;
+      --fc-fill-4: rgb(var(--fc-fill-4-rgb));
+      --fc-fill-5-rgb: 228 228 231;
+      --fc-fill-5: rgb(var(--fc-fill-5-rgb));
+      --fc-fill-6-rgb: 220 220 224;
+      --fc-fill-6: rgb(var(--fc-fill-6-rgb));
+      --fc-fill-7-rgb: 212 212 217;
+      --fc-fill-7: rgb(var(--fc-fill-7-rgb));
+      --fc-fill-primary-rgb: 108 83 177;
+      --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
+      --fc-text-1: #0c1018;
+      --fc-text-2: #181c25;
+      --fc-text-3: #3f4856;
+      --fc-text-4: #657386;
+      --fc-text-5: #65738666;
+      --fc-text-link: #8162dc;
+      --fc-text-link-light: #a186f4;
+      --fc-text-link-rgb: 129, 98, 220;
+      --fc-text-placeholder: #bfbfbf;
+      --fc-primary-color: var(--fc-text-link);
+      --fc-border-color: hsla(240, 5%, 89%, 0.7);
+      --fc-border-color2: hsla(240, 5%, 89%);
+      --fc-border-base: hsla(240, 5%, 89%, 0.4);
+      --fc-antd-border-color: #d9d9d9;
+      --fc-background-color-light: rgba(250, 250, 250, 1);
+      --fc-card-border: #f0f0f0;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --fc-fill-1-rgb: 12 12 14;
+      --fc-fill-1: rgb(var(--fc-fill-1-rgb));
+      --fc-fill-2-rgb: 22 22 24;
+      --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+      --fc-fill-2-5-rgb: 27 27 29;
+      --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
+      --fc-fill-3-rgb: 37 37 40;
+      --fc-fill-3: rgb(var(--fc-fill-3-rgb));
+      --fc-fill-4-rgb: 39 39 42;
+      --fc-fill-4: rgb(var(--fc-fill-4-rgb));
+      --fc-fill-5-rgb: 44 44 48;
+      --fc-fill-5: rgb(var(--fc-fill-5-rgb));
+      --fc-fill-6-rgb: 49 49 53;
+      --fc-fill-6: rgb(var(--fc-fill-6-rgb));
+      --fc-fill-7-rgb: 54 54 58;
+      --fc-fill-7: rgb(var(--fc-fill-7-rgb));
+      --fc-fill-primary-rgb: 148 112 255;
+      --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
+      --fc-text-1: rgb(242, 242, 242);
+      --fc-text-2: rgb(201, 201, 207);
+      --fc-text-3: rgb(135, 135, 146);
+      --fc-text-4: rgb(109, 109, 120);
+      --fc-text-5: rgb(68, 68, 75);
+      --fc-text-link: #9470ff;
+      --fc-text-link-rgb: 148, 112, 255;
+      --fc-text-link-light: #b794ff;
+      --fc-text-placeholder: rgb(89, 89, 98);
+      --fc-primary-color: var(--fc-text-link);
+      --fc-border-color: rgba(255, 255, 255, 0.06);
+      --fc-border-color2: rgba(255, 255, 255, 0.08);
+      --fc-border-base: rgba(255, 255, 255, 0.03);
+      --fc-antd-border-color: #ccccdc33;
+      --fc-background-color-light: rgba(255, 255, 255, 0.04);
+      --fc-card-border: #393c4d;
+    }
+
+    /* 金拱门独立主题（仅 theme-light-gold，非深浅模式） */
+    [data-theme="gold"] {
+      --preview-page-bg: #fcfcfd;
+      --preview-panel-bg: #ffffff;
+      --preview-text: #181c25;
+      --preview-muted: #657386;
+
+      --pagination-brand: #ffbc0d;
+      --pagination-brand-hover: #ffcd36;
+
+      --pagination-bg-default: #ffffff;
+      --pagination-border-default: #d9d9d9;
+      --pagination-text-default: rgba(0, 0, 0, 0.85);
+      --pagination-bg-hover: #ffffff;
+      --pagination-border-hover: #ffbc0d;
+      --pagination-text-hover: #ffbc0d;
+      --pagination-bg-active: #ffffff;
+      --pagination-border-active: #ffbc0d;
+      --pagination-text-active: #ffbc0d;
+      --pagination-border-active-hover: #ffcd36;
+      --pagination-text-active-hover: #ffcd36;
+      --pagination-bg-disabled: #f5f5f5;
+      --pagination-border-disabled: #d9d9d9;
+      --pagination-text-disabled: rgba(0, 0, 0, 0.25);
+      --pagination-arrow-color-hover: #ffbc0d;
+      --pagination-select-bg-hover: rgba(0, 0, 0, 0.04);
+      --pagination-select-border-hover: #ffbc0d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--preview-page-bg, #fcfcfd);
+      color: var(--preview-text, #181c25);
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.5;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    main {
+      width: min(960px, calc(100vw - 48px));
+      margin: 32px auto 64px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--preview-text);
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      color: var(--preview-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .intro code {
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #f4f4f6;
+      font-size: 12px;
+    }
+
+    section {
+      margin-bottom: 28px;
+      padding: 20px 24px;
+      border: 1px solid var(--pagination-border-default);
+      border-radius: 8px;
+      background: var(--preview-panel-bg);
+    }
+
+    section h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    section .desc {
+      margin: 0 0 16px;
+      color: var(--preview-muted);
+      font-size: 12px;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .theme-toggle button {
+      padding: 6px 12px;
+      border: 1px solid var(--pagination-border-default);
+      border-radius: 6px;
+      background: var(--preview-panel-bg);
+      color: var(--preview-muted);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .theme-toggle button.is-on {
+      border-color: var(--pagination-brand);
+      color: var(--pagination-brand);
+      background: color-mix(in srgb, var(--pagination-brand) 10%, var(--preview-panel-bg));
+    }
+
+    .theme-note {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--pagination-brand) 8%, var(--preview-panel-bg));
+      color: var(--preview-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* ── 分页条预览 ── */
+    .pagination-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--pagination-bar-gap);
+      padding-top: var(--pagination-bar-padding-top);
+    }
+
+    .pagination-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--pagination-total-gap);
+    }
+
+    .pagination-total {
+      color: var(--pagination-total-color);
+      font-size: var(--pagination-total-font-size);
+      line-height: var(--pagination-total-line-height);
+    }
+
+    .pagination-select {
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      height: var(--pagination-select-height);
+      padding: 0 var(--pagination-select-padding-x);
+      border: var(--pagination-border-width) solid var(--pagination-select-border);
+      border-radius: var(--pagination-select-radius);
+      background: var(--pagination-select-bg);
+      color: var(--pagination-select-text);
+      font-size: var(--pagination-total-font-size);
+      line-height: 1;
+      cursor: default;
+      transition: border-color var(--pagination-transition), background var(--pagination-transition);
+    }
+
+    .pagination-select:hover {
+      border-color: var(--pagination-select-border-hover);
+      background: var(--pagination-select-bg-hover);
+    }
+
+    .pagination-select .lucide-chevron-down {
+      width: 14px;
+      height: 14px;
+      margin-left: 6px;
+      opacity: 0.6;
+      flex: none;
+    }
+
+    .page-btn .lucide,
+    .fc-pg-btn .lucide {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2px;
+      flex: none;
+    }
+
+    .fc-pagination-live {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--pagination-bar-gap);
+      padding-top: var(--pagination-bar-padding-top);
+    }
+
+    .fc-pagination-live .fc-pg-left,
+    .fc-pagination-live .fc-pg-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--pagination-total-gap);
+    }
+
+    .fc-pagination-live .fc-pg-right {
+      gap: var(--pagination-item-gap);
+    }
+
+    .fc-pg-total {
+      color: var(--pagination-total-color);
+      font-size: var(--pagination-total-font-size);
+      line-height: var(--pagination-total-line-height);
+      white-space: nowrap;
+    }
+
+    /* Shadcn 风格：每页条数 Select */
+    .fc-shadcn-select {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .fc-shadcn-select-trigger {
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: var(--pagination-select-height);
+      padding: 0 8px 0 var(--pagination-select-padding-x);
+      border: var(--pagination-border-width) solid var(--pagination-select-border);
+      border-radius: var(--pagination-select-radius);
+      background: var(--pagination-select-bg);
+      color: var(--pagination-select-text);
+      font: inherit;
+      font-size: var(--pagination-total-font-size);
+      line-height: 1;
+      cursor: pointer;
+      transition: border-color var(--pagination-transition), background var(--pagination-transition), box-shadow var(--pagination-transition);
+    }
+
+    .fc-shadcn-select-trigger:hover,
+    .fc-shadcn-select.is-open .fc-shadcn-select-trigger {
+      border-color: var(--pagination-select-border-hover);
+      background: var(--pagination-select-bg-hover);
+    }
+
+    .fc-shadcn-select.is-open .fc-shadcn-select-trigger {
+      box-shadow: 0 0 0 2px rgb(var(--fc-fill-5-rgb) / 0.25);
+    }
+
+    .fc-shadcn-select-trigger .lucide {
+      width: 14px;
+      height: 14px;
+      opacity: 0.55;
+      flex: none;
+    }
+
+    .fc-shadcn-select-menu {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 100%;
+      margin: 0;
+      padding: 4px;
+      list-style: none;
+      border: var(--pagination-border-width) solid var(--pagination-select-border);
+      border-radius: var(--pagination-select-radius);
+      background: var(--pagination-select-bg);
+      box-shadow: 0 4px 12px rgb(var(--fc-fill-5-rgb) / 0.15);
+    }
+
+    .fc-shadcn-select-menu[hidden] {
+      display: none;
+    }
+
+    .fc-shadcn-select-menu li {
+      padding: 6px 10px;
+      border-radius: calc(var(--pagination-select-radius) - 2px);
+      color: var(--pagination-select-text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .fc-shadcn-select-menu li:hover {
+      background: var(--pagination-select-bg-hover);
+      color: var(--pagination-text-hover);
+    }
+
+    .fc-shadcn-select-menu li.is-selected {
+      background: var(--pagination-bg-active);
+      color: var(--pagination-text-active);
+    }
+
+    .fc-pg-btn {
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--pagination-item-size);
+      height: var(--pagination-item-size);
+      padding: 0 4px;
+      border: var(--pagination-border-width) solid var(--pagination-border-default);
+      border-radius: var(--pagination-item-radius);
+      background: var(--pagination-bg-default);
+      color: var(--pagination-text-default);
+      font-size: var(--pagination-font-size);
+      line-height: var(--pagination-line-height);
+      font-weight: 400;
+      cursor: pointer;
+      transition:
+        background var(--pagination-transition),
+        border-color var(--pagination-transition),
+        color var(--pagination-transition);
+      user-select: none;
+    }
+
+    .fc-pg-btn:hover:not(:disabled) {
+      background: var(--pagination-bg-hover);
+      border-color: var(--pagination-border-hover);
+      color: var(--pagination-text-hover);
+    }
+
+    .fc-pg-btn:active:not(:disabled) {
+      background: var(--pagination-bg-pressed);
+      border-color: var(--pagination-border-pressed);
+      color: var(--pagination-text-pressed);
+    }
+
+    .fc-pg-btn.is-active {
+      background: var(--pagination-bg-active);
+      border-color: var(--pagination-border-active);
+      color: var(--pagination-text-active);
+      font-weight: var(--pagination-font-weight-active);
+      cursor: default;
+    }
+
+    .fc-pg-btn.is-active:hover {
+      background: var(--pagination-bg-active-hover);
+      border-color: var(--pagination-border-active-hover);
+      color: var(--pagination-text-active-hover);
+    }
+
+    .fc-pg-btn:disabled {
+      background: var(--pagination-bg-disabled);
+      border-color: var(--pagination-border-disabled);
+      color: var(--pagination-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .fc-pg-btn.is-arrow {
+      color: var(--pagination-arrow-color-default);
+    }
+
+    .fc-pg-btn.is-arrow:hover:not(:disabled) {
+      color: var(--pagination-arrow-color-hover);
+    }
+
+    .fc-pg-btn.is-arrow:disabled {
+      color: var(--pagination-arrow-color-disabled);
+    }
+
+    .fc-pg-btn.is-ellipsis {
+      border-color: transparent;
+      background: transparent;
+      color: var(--pagination-ellipsis-color);
+      min-width: calc(var(--pagination-item-size) - 4px);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* Shadcn 风格：跳至 X 页 Number Input（[-] 输入 [+]） */
+    .fc-shadcn-number {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: var(--pagination-options-margin-left);
+      color: var(--pagination-total-color);
+      font-size: var(--pagination-total-font-size);
+      white-space: nowrap;
+    }
+
+    .fc-shadcn-number-group {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: stretch;
+      width: var(--pagination-number-field-width);
+      min-width: var(--pagination-number-field-width);
+      height: var(--pagination-select-height);
+      border: var(--pagination-border-width) solid var(--pagination-select-border);
+      border-radius: var(--pagination-select-radius);
+      background: var(--pagination-select-bg);
+      overflow: hidden;
+      transition: border-color var(--pagination-transition), background var(--pagination-transition), box-shadow var(--pagination-transition);
+    }
+
+    .fc-shadcn-number-group:hover {
+      border-color: var(--pagination-select-border-hover);
+      background: var(--pagination-select-bg-hover);
+    }
+
+    .fc-shadcn-number-group:focus-within {
+      border-color: var(--pagination-select-border-hover);
+      background: var(--pagination-select-bg-hover);
+      box-shadow: 0 0 0 2px rgb(var(--fc-fill-5-rgb) / 0.25);
+    }
+
+    .fc-shadcn-number-input {
+      box-sizing: border-box;
+      position: relative;
+      z-index: 2;
+      flex: none;
+      width: var(--pagination-number-input-width);
+      height: 100%;
+      padding: 0 6px;
+      border: none;
+      background: transparent;
+      color: var(--pagination-select-text);
+      font: inherit;
+      font-size: var(--pagination-font-size);
+      text-align: center;
+      outline: none;
+      cursor: text;
+      pointer-events: auto;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .fc-shadcn-number-handlers {
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      width: var(--pagination-number-step-width);
+      background: transparent;
+      border: none;
+      border-left: var(--pagination-border-width) solid transparent;
+      transition: border-color var(--pagination-transition);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .fc-shadcn-number-group:hover .fc-shadcn-number-handlers,
+    .fc-shadcn-number-group:focus-within .fc-shadcn-number-handlers {
+      border-left-color: var(--pagination-select-border-hover);
+      pointer-events: auto;
+    }
+
+    .fc-shadcn-number-step {
+      display: inline-flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--pagination-select-text);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, background var(--pagination-transition), color var(--pagination-transition);
+    }
+
+    .fc-shadcn-number-group:hover .fc-shadcn-number-step,
+    .fc-shadcn-number-group:focus-within .fc-shadcn-number-step {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .fc-shadcn-number-step[data-step="1"] {
+      border-bottom: var(--pagination-border-width) solid transparent;
+      transition: border-color var(--pagination-transition), opacity 0.15s ease, background var(--pagination-transition), color var(--pagination-transition);
+    }
+
+    .fc-shadcn-number-group:hover .fc-shadcn-number-step[data-step="1"],
+    .fc-shadcn-number-group:focus-within .fc-shadcn-number-step[data-step="1"] {
+      border-bottom-color: var(--pagination-select-border-hover);
+    }
+
+    .fc-shadcn-number-step:hover {
+      background: var(--pagination-bg-hover);
+      color: var(--pagination-text-hover);
+    }
+
+    .fc-shadcn-number-step:active {
+      background: var(--pagination-bg-pressed);
+      color: var(--pagination-text-pressed);
+    }
+
+    .fc-shadcn-number-step .lucide {
+      width: 12px;
+      height: 12px;
+      opacity: 0.75;
+    }
+
+    .fc-shadcn-number-input::-webkit-outer-spin-button,
+    .fc-shadcn-number-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .fc-pg-meta {
+      margin: 8px 0 0;
+      color: var(--preview-muted);
+      font-size: 11px;
+    }
+
+    .pagination-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--pagination-item-gap);
+    }
+
+    .page-btn {
+      box-sizing: border-box; /* 描边计入宽高，24px 含 1px 边框，视觉等同旧 22px+外描边 */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--pagination-item-size);
+      width: var(--pagination-item-size);
+      height: var(--pagination-item-size);
+      padding: 0 4px;
+      border: var(--pagination-border-width) solid var(--pagination-border-default);
+      border-radius: var(--pagination-item-radius);
+      background: var(--pagination-bg-default);
+      color: var(--pagination-text-default);
+      font-size: var(--pagination-font-size);
+      line-height: var(--pagination-line-height);
+      font-weight: 400;
+      cursor: default;
+      transition:
+        background var(--pagination-transition),
+        border-color var(--pagination-transition),
+        color var(--pagination-transition);
+      user-select: none;
+    }
+
+    .page-btn.is-hover {
+      background: var(--pagination-bg-hover);
+      border-color: var(--pagination-border-hover);
+      color: var(--pagination-text-hover);
+    }
+
+    .page-btn.is-pressed {
+      background: var(--pagination-bg-pressed);
+      border-color: var(--pagination-border-pressed);
+      color: var(--pagination-text-pressed);
+    }
+
+    .page-btn.is-active {
+      background: var(--pagination-bg-active);
+      border-color: var(--pagination-border-active);
+      color: var(--pagination-text-active);
+      font-weight: var(--pagination-font-weight-active);
+    }
+
+    .page-btn.is-active.is-hover {
+      background: var(--pagination-bg-active-hover);
+      border-color: var(--pagination-border-active-hover);
+      color: var(--pagination-text-active-hover);
+    }
+
+    .page-btn.is-disabled {
+      background: var(--pagination-bg-disabled);
+      border-color: var(--pagination-border-disabled);
+      color: var(--pagination-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .page-btn.is-arrow {
+      color: var(--pagination-arrow-color-default);
+      font-size: 14px;
+    }
+
+    .page-btn.is-arrow.is-hover {
+      color: var(--pagination-arrow-color-hover);
+    }
+
+    .page-btn.is-arrow.is-disabled {
+      color: var(--pagination-arrow-color-disabled);
+    }
+
+    .page-btn.is-ellipsis {
+      border-color: transparent;
+      background: transparent;
+      color: var(--pagination-ellipsis-color);
+      min-width: calc(var(--pagination-item-size) - 4px);
+    }
+
+    /* ── 状态矩阵（单独展示每种状态）── */
+    .state-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 32px;
+    }
+
+    .state-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .state-label {
+      color: #657386;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .spec-table th,
+    .spec-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(226, 226, 228, 0.7);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .spec-table th {
+      color: #3f4856;
+      font-weight: 500;
+      background: #f9f9fa;
+    }
+
+    .spec-table td:first-child {
+      color: #3f4856;
+      white-space: nowrap;
+    }
+
+    .value-cell {
+      min-width: 200px;
+    }
+
+    .value-editor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spec-input {
+      flex: 1;
+      min-width: 120px;
+      padding: 6px 8px;
+      border: 1px solid var(--pagination-border-default, #d9d9d9);
+      border-radius: 6px;
+      background: var(--preview-panel-bg, #fff);
+      color: var(--preview-text, #181c25);
+      font: inherit;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .spec-input:focus {
+      outline: none;
+      border-color: var(--pagination-brand, #6c53b1);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--pagination-brand, #6c53b1) 20%, transparent);
+    }
+
+    .spec-color-picker {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 6px;
+      cursor: pointer;
+      flex: none;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      flex: none;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 3px;
+    }
+
+    .copy-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .copy-bar button {
+      padding: 6px 12px;
+      border: 1px solid var(--pagination-border-default);
+      border-radius: 6px;
+      background: var(--preview-panel-bg);
+      color: var(--preview-text);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .copy-bar button:hover {
+      border-color: var(--pagination-brand);
+      color: var(--pagination-brand);
+    }
+
+    .copy-hint {
+      color: var(--preview-muted);
+      font-size: 12px;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--pagination-border-default, #d9d9d9);
+      border-radius: 8px;
+      background: var(--preview-panel-bg, #fff);
+    }
+
+    .action-bar .btn-primary-action {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 6px;
+      background: var(--pagination-brand, #6c53b1);
+      color: #fff;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .action-bar .btn-primary-action:hover {
+      filter: brightness(1.05);
+    }
+
+    .action-bar .btn-secondary-action {
+      padding: 8px 14px;
+      border: 1px solid var(--pagination-border-default);
+      border-radius: 6px;
+      background: var(--preview-panel-bg);
+      color: var(--preview-text);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .action-bar .btn-secondary-action:hover {
+      border-color: var(--pagination-brand);
+      color: var(--pagination-brand);
+    }
+
+    #color-probe {
+      position: fixed;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    #output-section {
+      display: none;
+      margin-top: 16px;
+    }
+
+    #output-section.is-visible {
+      display: block;
+    }
+
+    .code-output {
+      width: 100%;
+      min-height: 280px;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--pagination-border-default);
+      border-radius: 8px;
+      background: #1e1e22;
+      color: #e8e8ed;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      resize: vertical;
+    }
+
+    .value-hint {
+      margin-top: 4px;
+      color: var(--preview-muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .note {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: #f9f9fa;
+      color: #3f4856;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .density-toggle {
+      display: inline-flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .density-toggle button {
+      padding: 6px 12px;
+      border: 1px solid rgba(226, 226, 228, 0.7);
+      border-radius: 6px;
+      background: #fff;
+      color: #3f4856;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .density-toggle button.is-on {
+      border-color: #6c53b1;
+      background: rgb(40 0 255 / 0.08);
+      color: #6b51af;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <!-- html data-theme 由脚本同步，与 variable.css 深浅 token 对齐 -->
+  <main>
+    <h1>FC 表格分页 · 设计调参稿</h1>
+    <p class="intro">
+      在下方表格填写数值，支持 <code>var(--fc-fill-2)</code>、<code>rgb(var(--fc-fill-5-rgb) / 0.2)</code> 等写法。<br />
+      <strong>浅色/深色色值共用一套</strong>（写 <code>var(--fc-*)</code>，与线上一致，切换模式自动变色）；<strong>金拱门仅色值独立</strong>；<strong>尺寸/间距三模式共用</strong>。<br />
+      <strong>圆角规则</strong>：组件高度 ≥28px → 圆角 8px；&lt;28px（如 24px 分页控件）→ 圆角 6px。刷新页面会记住（本地缓存）。<br />
+      填完后点 <strong>预览</strong>；确认后点 <strong>生效</strong> 生成代码。
+    </p>
+
+    <div class="action-bar">
+      <button type="button" class="btn-primary-action" id="btn-preview">预览</button>
+      <button type="button" class="btn-primary-action" id="btn-apply-code">生效（生成样式代码）</button>
+      <button type="button" class="btn-secondary-action" id="btn-reset-vars">恢复本模式默认</button>
+      <span class="copy-hint" id="copy-hint"></span>
+    </div>
+
+    <div id="preview-scope">
+    <div id="color-probe" aria-hidden="true"></div>
+    <section>
+      <h2>1. 完整分页条预览（可交互 · 100 页）</h2>
+      <p class="desc">与 Ant Design Pagination 一致：总数、每页条数、上一页/下一页、跳页（«‹›»）、省略号、快速跳转到指定页。填表后点「预览」刷新样式。</p>
+
+      <div class="theme-toggle" aria-label="颜色模式">
+        <button type="button" id="theme-light" class="is-on">浅色模式（默认）</button>
+        <button type="button" id="theme-dark">深色模式</button>
+        <button type="button" id="theme-gold">金拱门（独立主题）</button>
+      </div>
+      <p class="theme-note" id="theme-note">当前：浅色模式 — 与系统默认 <code>theme-light</code> 一致，主色 #6C53B1。</p>
+
+      <div class="density-toggle" aria-label="尺寸对照">
+        <button type="button" id="btn-standard" class="is-on">标准（24px 描边在内）</button>
+        <button type="button" id="btn-legacy">对照：当前线上 AntD（32px）</button>
+      </div>
+
+      <div id="fc-pagination-live" class="fc-pagination-live" aria-label="分页交互预览"></div>
+      <p class="fc-pg-meta" id="fc-pagination-meta"></p>
+    </section>
+
+    <section>
+      <h2>2. 页码按钮 · 各状态</h2>
+      <p class="desc">从左到右：默认 → Hover → 按下 → 选中 → 禁用</p>
+      <div class="state-grid">
+        <div class="state-cell">
+          <span class="state-label">Default 默认</span>
+          <span class="page-btn">4</span>
+        </div>
+        <div class="state-cell">
+          <span class="state-label">Hover</span>
+          <span class="page-btn is-hover">4</span>
+        </div>
+        <div class="state-cell">
+          <span class="state-label">Pressed 按下</span>
+          <span class="page-btn is-pressed">4</span>
+        </div>
+        <div class="state-cell">
+          <span class="state-label">Active 选中</span>
+          <span class="page-btn is-active">4</span>
+        </div>
+        <div class="state-cell">
+          <span class="state-label">Disabled 禁用</span>
+          <span class="page-btn is-disabled">4</span>
+        </div>
+        <div class="state-cell">
+          <span class="state-label">箭头 · 默认</span>
+          <span class="page-btn is-arrow"><i data-lucide="chevron-left"></i></span>
+        </div>
+        <div class="state-cell">
+          <span class="state-label">箭头 · Hover</span>
+          <span class="page-btn is-arrow is-hover"><i data-lucide="chevron-right"></i></span>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <section>
+      <h2>3. 参数表（填完点顶部「预览」）</h2>
+      <p class="desc">
+        支持：<code>24px</code>、<code>#6c53b1</code>、<code>var(--fc-fill-2)</code>、<code>rgb(var(--fc-fill-5-rgb) / 0.2)</code>、<code>var(--fc-primary-color)</code> 等。纯色可用右侧色块；含 <code>var(</code> 的以预览为准。
+      </p>
+      <table class="spec-table" id="spec-table"></table>
+      <div id="output-section">
+        <h2>4. 生成的样式代码</h2>
+        <p class="desc">由「生效」按钮生成，复制给研发或粘贴进 <code>fe/src/theme/default.less</code> / 设计规范。</p>
+        <textarea class="code-output" id="code-output" readonly spellcheck="false"></textarea>
+        <div class="copy-bar" style="margin-top:10px">
+          <button type="button" class="btn-secondary-action" id="btn-copy-output">复制代码</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. 交接研发 · 变量名映射</h2>
+      <p class="desc">研发落地时大致对应关系（Ant Design 类名 <code>.ant-pagination</code>）。</p>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>本文件变量</th>
+            <th>设计语义</th>
+            <th>工程参考</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--pagination-item-size</code></td><td>页码宽高</td><td><code>@pagination-item-size</code></td></tr>
+          <tr><td><code>--pagination-item-radius</code></td><td>圆角</td><td><code>@border-radius-base</code></td></tr>
+          <tr><td><code>--pagination-item-gap</code></td><td>页码间距</td><td><code>.ant-pagination-item { margin-inline-end }</code></td></tr>
+          <tr><td><code>--pagination-bg-active</code></td><td>选中背景</td><td>浅/深多为透明或白底，非实心底</td></tr>
+          <tr><td><code>--pagination-text-active</code></td><td>选中文字</td><td><code>--fc-primary-color</code></td></tr>
+          <tr><td><code>--pagination-border-hover</code></td><td>Hover 边框/字</td><td><code>--fc-primary-color</code></td></tr>
+          <tr><td><code>--pagination-text-disabled</code></td><td>禁用字</td><td><code>--fc-text-5</code></td></tr>
+          <tr><td><code>--pagination-select-height</code></td><td>每页条数高度</td><td>与工具栏 Select 32px 对齐</td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        <strong>产品规则（勿改样式文件）：</strong>主表默认每页 15 条；分页左侧总数+条数、右侧页码。紧凑表（small）才建议用 22px 分页项。<br />
+        详细说明见 <code>design-system-table.md</code> §8。
+      </p>
+    </section>
+  </main>
+
+  <style id="runtime-preview-styles"></style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+
+  <script>
+    const SPEC_ROWS = [
+      ["尺寸", "--pagination-item-size", "页码按钮宽高（含描边）"],
+      ["尺寸", "--pagination-item-gap", "页码间距"],
+      ["尺寸", "--pagination-item-radius", "页码圆角"],
+      ["尺寸", "--pagination-font-size", "页码字号"],
+      ["尺寸", "--pagination-line-height", "页码行高"],
+      ["尺寸", "--pagination-select-height", "每页条数高度"],
+      ["尺寸", "--pagination-total-line-height", "总数字行高"],
+      ["尺寸", "--pagination-border-width", "描边粗细"],
+      ["品牌", "--pagination-brand", "主色（hover/选中常用）"],
+      ["品牌", "--pagination-brand-hover", "主色加深（选中 hover）"],
+      ["默认", "--pagination-bg-default", "页码背景"],
+      ["默认", "--pagination-border-default", "页码边框"],
+      ["默认", "--pagination-text-default", "页码文字"],
+      ["Hover", "--pagination-bg-hover", "页码背景"],
+      ["Hover", "--pagination-border-hover", "页码边框"],
+      ["Hover", "--pagination-text-hover", "页码文字"],
+      ["按下", "--pagination-bg-pressed", "页码背景"],
+      ["按下", "--pagination-border-pressed", "页码边框"],
+      ["按下", "--pagination-text-pressed", "页码文字"],
+      ["选中", "--pagination-bg-active", "页码背景"],
+      ["选中", "--pagination-border-active", "页码边框"],
+      ["选中", "--pagination-text-active", "页码文字"],
+      ["选中", "--pagination-border-active-hover", "选中+hover 边框"],
+      ["选中", "--pagination-text-active-hover", "选中+hover 文字"],
+      ["选中", "--pagination-bg-active-hover", "选中+hover 背景"],
+      ["禁用", "--pagination-bg-disabled", "页码背景"],
+      ["禁用", "--pagination-border-disabled", "页码边框"],
+      ["禁用", "--pagination-text-disabled", "页码文字"],
+      ["箭头", "--pagination-arrow-color-default", "上一页/下一页"],
+      ["箭头", "--pagination-arrow-color-hover", "箭头 hover"],
+      ["箭头", "--pagination-arrow-color-disabled", "箭头禁用"],
+      ["其它", "--pagination-ellipsis-color", "省略号 …"],
+      ["其它", "--pagination-total-color", "共 N 条 文字"],
+      ["其它", "--pagination-select-bg", "每页条数背景"],
+      ["其它", "--pagination-select-border", "每页条数边框"],
+      ["其它", "--pagination-select-text", "每页条数文字"],
+      ["其它", "--pagination-select-bg-hover", "每页条数 hover 背景色"],
+      ["其它", "--pagination-select-border-hover", "每页条数 hover 边框"],
+    ];
+
+    const THEME_NOTES = {
+      light: "当前：浅色模式 — 色值走 var(--fc-*)，与 fe default.less 一致。",
+      dark: "当前：深色模式 — 色值走 var(--fc-*)，切换后自动变深色系。",
+      gold: "当前：金拱门独立主题 — 仅特定客户，主色 #FFBC0D，色值可单独调。",
+    };
+
+    const STANDARD_24 = {
+      "--pagination-item-size": "24px",
+      "--pagination-item-gap": "2px",
+      "--pagination-item-radius": "6px",
+      "--pagination-line-height": "22px",
+      "--pagination-total-line-height": "24px",
+      "--pagination-select-height": "24px",
+    };
+
+    const LEGACY_ANTD_32 = {
+      "--pagination-item-size": "32px",
+      "--pagination-item-gap": "8px",
+      "--pagination-line-height": "30px",
+      "--pagination-total-line-height": "30px",
+      "--pagination-select-height": "32px",
+    };
+
+    /** 尺寸/间距：浅色、深色、金拱门共用一份 */
+    const SHARED_KEYS = new Set(SPEC_ROWS.filter(([group]) => group === "尺寸").map(([, key]) => key));
+    /** 浅色/深色共用色值（与线上一致，走 --fc-*）；金拱门单独记在 userState.gold */
+    const UNIFIED_COLOR_KEYS = new Set(
+      SPEC_ROWS.filter(([group]) => group !== "尺寸").map(([, key]) => key)
+    );
+
+    const STORAGE_KEY = "fc-pagination-design-editor-v1";
+
+    const userState = {
+      shared: {},
+      light: {},
+      dark: {},
+      gold: {},
+    };
+
+    function saveStorage() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            userState,
+            lastTheme: document.body.getAttribute("data-theme"),
+          })
+        );
+      } catch (_) {}
+    }
+
+    function loadStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data.userState) {
+          Object.assign(userState.shared, data.userState.shared || {});
+          Object.assign(userState.light, data.userState.light || {});
+          Object.assign(userState.dark, data.userState.dark || {});
+          Object.assign(userState.gold, data.userState.gold || {});
+        }
+      } catch (_) {}
+    }
+
+    function isPlainHexColor(val) {
+      return /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(val);
+    }
+
+    function hexForColorPicker(val) {
+      if (/^#[0-9a-f]{6}$/i.test(val)) return val;
+      if (/^#[0-9a-f]{3}$/i.test(val)) {
+        const h = val.slice(1);
+        return `#${h[0]}${h[0]}${h[1]}${h[1]}${h[2]}${h[2]}`;
+      }
+      return "#6c53b1";
+    }
+
+    function resolveDisplayColor(value) {
+      const v = (value || "").trim();
+      if (!v) return "";
+      const probe = document.getElementById("color-probe");
+      const tryRead = (styleText, prop) => {
+        probe.style.cssText = styleText;
+        const out = getComputedStyle(probe)[prop];
+        if (!out || out === "rgba(0, 0, 0, 0)" || out === "transparent") return "";
+        return out;
+      };
+      return (
+        tryRead(`background:${v}`, "backgroundColor") ||
+        tryRead(`color:${v}`, "color") ||
+        tryRead(`border:4px solid ${v};background:transparent`, "borderTopColor") ||
+        ""
+      );
+    }
+
+    function refreshLucideIcons(root = document) {
+      if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons({ attrs: { "stroke-width": 2 }, root });
+      }
+    }
+
+    const livePagination = {
+      totalPages: 100,
+      pageSize: 15,
+      current: 1,
+      pageSizeOptions: [10, 15, 20, 50, 100],
+    };
+
+    function buildPageList(current, total) {
+      if (total <= 9) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+      }
+      const items = [];
+      const showPrevMore = current > 4;
+      const showNextMore = current < total - 3;
+
+      if (!showPrevMore && showNextMore) {
+        for (let i = 1; i <= 5; i++) items.push(i);
+        items.push("jump-next", total);
+      } else if (showPrevMore && !showNextMore) {
+        items.push(1, "jump-prev");
+        for (let i = total - 4; i <= total; i++) items.push(i);
+      } else if (showPrevMore && showNextMore) {
+        items.push(1, "jump-prev", current - 1, current, current + 1, "jump-next", total);
+      } else {
+        for (let i = 1; i <= total; i++) items.push(i);
+      }
+      return items;
+    }
+
+    function renderLivePagination() {
+      const root = document.getElementById("fc-pagination-live");
+      const meta = document.getElementById("fc-pagination-meta");
+      if (!root) return;
+
+      const { totalPages, pageSize, current, pageSizeOptions } = livePagination;
+      const totalRecords = totalPages * pageSize;
+      const prevDisabled = current <= 1;
+      const nextDisabled = current >= totalPages;
+      const pages = buildPageList(current, totalPages);
+
+      const sizeMenu = pageSizeOptions
+        .map(
+          (n) =>
+            `<li role="option" data-value="${n}" class="${n === pageSize ? "is-selected" : ""}" tabindex="-1">${n} 条/页</li>`
+        )
+        .join("");
+
+      const pageButtons = pages
+        .map((p) => {
+          if (p === "jump-prev") {
+            return `<button type="button" class="fc-pg-btn is-arrow" data-action="jump-prev" title="向前 5 页" aria-label="向前 5 页"><i data-lucide="chevrons-left"></i></button>`;
+          }
+          if (p === "jump-next") {
+            return `<button type="button" class="fc-pg-btn is-arrow" data-action="jump-next" title="向后 5 页" aria-label="向后 5 页"><i data-lucide="chevrons-right"></i></button>`;
+          }
+          if (p === "ellipsis") {
+            return `<span class="fc-pg-btn is-ellipsis" aria-hidden="true"><i data-lucide="ellipsis"></i></span>`;
+          }
+          const active = p === current ? " is-active" : "";
+          return `<button type="button" class="fc-pg-btn${active}" data-page="${p}" aria-label="第 ${p} 页" aria-current="${p === current ? "page" : "false"}">${p}</button>`;
+        })
+        .join("");
+
+      root.innerHTML = `
+        <div class="fc-pg-left">
+          <span class="fc-pg-total">共 ${totalRecords.toLocaleString()} 条</span>
+          <div class="fc-shadcn-select" data-component="page-size">
+            <button type="button" class="fc-shadcn-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="每页条数">
+              <span class="fc-shadcn-select-value">${pageSize} 条/页</span>
+              <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </button>
+            <ul class="fc-shadcn-select-menu" role="listbox" hidden>${sizeMenu}</ul>
+          </div>
+        </div>
+        <div class="fc-pg-right">
+          <button type="button" class="fc-pg-btn is-arrow" data-action="prev" ${prevDisabled ? "disabled" : ""} aria-label="上一页">
+            <i data-lucide="chevron-left"></i>
+          </button>
+          ${pageButtons}
+          <button type="button" class="fc-pg-btn is-arrow" data-action="next" ${nextDisabled ? "disabled" : ""} aria-label="下一页">
+            <i data-lucide="chevron-right"></i>
+          </button>
+          <div class="fc-shadcn-number" data-component="jumper">
+            <span>跳至</span>
+            <div class="fc-shadcn-number-group">
+              <input type="text" inputmode="numeric" class="fc-shadcn-number-input" value="${current}" data-action="jumper-input" aria-label="跳转到页码" />
+              <div class="fc-shadcn-number-handlers">
+                <button type="button" class="fc-shadcn-number-step" data-step="1" aria-label="增加页码"><i data-lucide="chevron-up"></i></button>
+                <button type="button" class="fc-shadcn-number-step" data-step="-1" aria-label="减少页码"><i data-lucide="chevron-down"></i></button>
+              </div>
+            </div>
+            <span>页</span>
+          </div>
+        </div>
+      `;
+
+      if (meta) {
+        meta.textContent = `当前第 ${current} / ${totalPages} 页 · 每页 ${pageSize} 条 · 共 ${totalRecords.toLocaleString()} 条数据（演示用虚拟总数）`;
+      }
+
+      refreshLucideIcons(root);
+    }
+
+    function bindLivePagination() {
+      const root = document.getElementById("fc-pagination-live");
+      if (!root || root.dataset.bound) return;
+      root.dataset.bound = "1";
+
+      root.addEventListener("click", (e) => {
+        /* 跳页输入框带 data-action，勿走下方通用分支（否则会重绘导致无法输入） */
+        if (e.target.closest(".fc-shadcn-number-input")) {
+          return;
+        }
+
+        const selectTrigger = e.target.closest(".fc-shadcn-select-trigger");
+        if (selectTrigger) {
+          const wrap = selectTrigger.closest(".fc-shadcn-select");
+          const open = wrap.classList.toggle("is-open");
+          const menu = wrap.querySelector(".fc-shadcn-select-menu");
+          menu.hidden = !open;
+          selectTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+          document.querySelectorAll(".fc-shadcn-select.is-open").forEach((el) => {
+            if (el !== wrap) {
+              el.classList.remove("is-open");
+              el.querySelector(".fc-shadcn-select-menu").hidden = true;
+              el.querySelector(".fc-shadcn-select-trigger")?.setAttribute("aria-expanded", "false");
+            }
+          });
+          return;
+        }
+
+        const sizeOption = e.target.closest(".fc-shadcn-select-menu [data-value]");
+        if (sizeOption) {
+          livePagination.pageSize = Number(sizeOption.dataset.value);
+          document.querySelectorAll(".fc-shadcn-select.is-open").forEach((el) => {
+            el.classList.remove("is-open");
+            el.querySelector(".fc-shadcn-select-menu").hidden = true;
+            el.querySelector(".fc-shadcn-select-trigger")?.setAttribute("aria-expanded", "false");
+          });
+          renderLivePagination();
+          return;
+        }
+
+        const stepBtn = e.target.closest(".fc-shadcn-number-step");
+        if (stepBtn) {
+          const delta = Number(stepBtn.dataset.step);
+          livePagination.current = Math.min(
+            livePagination.totalPages,
+            Math.max(1, livePagination.current + delta)
+          );
+          renderLivePagination();
+          return;
+        }
+
+        const pageBtn = e.target.closest("[data-page]");
+        if (pageBtn) {
+          livePagination.current = Number(pageBtn.dataset.page);
+          renderLivePagination();
+          return;
+        }
+
+        const actionBtn = e.target.closest("[data-action]");
+        if (!actionBtn || actionBtn.disabled) return;
+        const action = actionBtn.dataset.action;
+        const { current, totalPages } = livePagination;
+        if (action === "prev") {
+          livePagination.current = Math.max(1, current - 1);
+          renderLivePagination();
+        } else if (action === "next") {
+          livePagination.current = Math.min(totalPages, current + 1);
+          renderLivePagination();
+        } else if (action === "jump-prev") {
+          livePagination.current = Math.max(1, current - 5);
+          renderLivePagination();
+        } else if (action === "jump-next") {
+          livePagination.current = Math.min(totalPages, current + 5);
+          renderLivePagination();
+        }
+      });
+
+      root.addEventListener("input", (e) => {
+        if (!e.target.matches("[data-action='jumper-input']")) return;
+        e.target.value = String(e.target.value).replace(/\D/g, "");
+      });
+
+      root.addEventListener("keydown", (e) => {
+        if (e.target.matches("[data-action='jumper-input']") && e.key === "Enter") {
+          applyJumperValue(e.target);
+        }
+      });
+
+      root.addEventListener("blur", (e) => {
+        const input = e.target;
+        if (!input.matches("[data-action='jumper-input']")) return;
+        const n = Math.min(
+          livePagination.totalPages,
+          Math.max(1, Number(String(input.value).replace(/\D/g, "")) || 1)
+        );
+        if (n !== livePagination.current) {
+          livePagination.current = n;
+          renderLivePagination();
+        }
+      }, true);
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".fc-shadcn-select")) {
+          document.querySelectorAll(".fc-shadcn-select.is-open").forEach((el) => {
+            el.classList.remove("is-open");
+            el.querySelector(".fc-shadcn-select-menu").hidden = true;
+            el.querySelector(".fc-shadcn-select-trigger")?.setAttribute("aria-expanded", "false");
+          });
+        }
+      });
+    }
+
+    function applyJumperValue(input) {
+      const n = Math.min(
+        livePagination.totalPages,
+        Math.max(1, Number(String(input.value).replace(/\D/g, "")) || 1)
+      );
+      livePagination.current = n;
+      renderLivePagination();
+    }
+
+    function readVarFromPreviewScope(key) {
+      const scope = document.getElementById("preview-scope");
+      return getComputedStyle(scope).getPropertyValue(key).trim();
+    }
+
+    function readVarFromThemeDefault(key) {
+      return getComputedStyle(document.body).getPropertyValue(key).trim();
+    }
+
+    function saveInputsToState(theme) {
+      if (!theme) return;
+      document.querySelectorAll(".spec-input").forEach((input) => {
+        const key = input.dataset.var;
+        const val = input.value.trim();
+        if (SHARED_KEYS.has(key) || (theme !== "gold" && UNIFIED_COLOR_KEYS.has(key))) {
+          if (val) userState.shared[key] = val;
+          else delete userState.shared[key];
+        } else if (theme === "gold") {
+          if (!userState.gold) userState.gold = {};
+          if (val) userState.gold[key] = val;
+          else delete userState.gold[key];
+        }
+      });
+      saveStorage();
+    }
+
+    function getStoredValue(key, theme) {
+      if (SHARED_KEYS.has(key)) return userState.shared[key];
+      if (theme !== "gold" && UNIFIED_COLOR_KEYS.has(key)) {
+        return (
+          userState.shared[key] ??
+          userState.light?.[key] ??
+          userState.dark?.[key]
+        );
+      }
+      return userState[theme]?.[key];
+    }
+
+    function persistFieldFromInput(input) {
+      const theme = document.body.getAttribute("data-theme");
+      const key = input.dataset.var;
+      const val = input.value.trim();
+      if (SHARED_KEYS.has(key) || (theme !== "gold" && UNIFIED_COLOR_KEYS.has(key))) {
+        if (val) userState.shared[key] = val;
+        else delete userState.shared[key];
+      } else if (theme === "gold") {
+        if (!userState.gold) userState.gold = {};
+        if (val) userState.gold[key] = val;
+        else delete userState.gold[key];
+      }
+      saveStorage();
+    }
+
+    function collectInputValues() {
+      const theme = document.body.getAttribute("data-theme");
+      saveInputsToState(theme);
+      const vars = {};
+      document.querySelectorAll(".spec-input").forEach((input) => {
+        const v = input.value.trim();
+        if (v) vars[input.dataset.var] = v;
+      });
+      return vars;
+    }
+
+    function applyPreviewStyles(vars) {
+      const lines = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`);
+      document.getElementById("runtime-preview-styles").textContent =
+        lines.length ? `#preview-scope {\n${lines.join("\n")}\n}` : "";
+      renderLivePagination();
+    }
+
+    function clearPreviewStyles() {
+      document.getElementById("runtime-preview-styles").textContent = "";
+    }
+
+    function updateSwatchForInput(input) {
+      const swatch = input.closest(".value-editor")?.querySelector(".swatch");
+      if (!swatch) return;
+      const val = input.value.trim();
+      const resolved = resolveDisplayColor(val);
+      if (resolved) {
+        swatch.style.background = resolved;
+        swatch.style.display = "inline-block";
+      } else {
+        swatch.style.background = "transparent";
+        swatch.style.display = "none";
+      }
+    }
+
+    function updateAllSwatches() {
+      document.querySelectorAll(".spec-input").forEach(updateSwatchForInput);
+    }
+
+    function renderSpecTableStructure() {
+      const tbody = SPEC_ROWS.map(([group, key, label]) => {
+        const sharedTag = SHARED_KEYS.has(key)
+          ? ' <span style="color:var(--preview-muted);font-size:11px">（浅/深/金共用）</span>'
+          : UNIFIED_COLOR_KEYS.has(key)
+            ? ' <span style="color:var(--preview-muted);font-size:11px">（浅/深共用 · var(--fc-*)）</span>'
+            : "";
+        return `<tr data-var-row="${key}">
+          <td>${group} · ${label}${sharedTag}</td>
+          <td><code>${key}</code></td>
+          <td class="value-cell">
+            <div class="value-editor">
+              <input type="text" class="spec-input" data-var="${key}" data-shared="${SHARED_KEYS.has(key)}" value="" spellcheck="false" />
+              <input type="color" class="spec-color-picker" hidden title="选纯色" />
+              <span class="swatch"></span>
+            </div>
+          </td>
+        </tr>`;
+      }).join("");
+      document.getElementById("spec-table").innerHTML =
+        `<thead><tr><th>状态</th><th>变量</th><th>当前值（填写后点「预览」）</th></tr></thead><tbody>${tbody}</tbody>`;
+    }
+
+    function refreshColorPickerForInput(input) {
+      const picker = input.closest(".value-editor")?.querySelector(".spec-color-picker");
+      if (!picker) return;
+      const val = input.value.trim();
+      if (isPlainHexColor(val)) {
+        picker.hidden = false;
+        picker.value = hexForColorPicker(val);
+      } else {
+        picker.hidden = true;
+      }
+    }
+
+    function loadInputsFromState(theme) {
+      document.querySelectorAll(".spec-input").forEach((input) => {
+        const key = input.dataset.var;
+        let val = getStoredValue(key, theme);
+        if (val === undefined || val === "") {
+          val = readVarFromThemeDefault(key);
+        }
+        input.value = val;
+        refreshColorPickerForInput(input);
+        updateSwatchForInput(input);
+      });
+    }
+
+    function bindSpecTable() {
+      const table = document.getElementById("spec-table");
+      table.addEventListener("input", (e) => {
+        const input = e.target.closest(".spec-input");
+        if (input) {
+          persistFieldFromInput(input);
+          refreshColorPickerForInput(input);
+          updateSwatchForInput(input);
+          return;
+        }
+        const picker = e.target.closest(".spec-color-picker");
+        if (picker) {
+          const text = picker.closest(".value-editor")?.querySelector(".spec-input");
+          if (!text) return;
+          text.value = picker.value;
+          persistFieldFromInput(text);
+          updateSwatchForInput(text);
+        }
+      });
+    }
+
+    function setTheme(theme) {
+      const prev = document.body.getAttribute("data-theme");
+      if (prev && prev !== theme) {
+        saveInputsToState(prev);
+      }
+
+      document.documentElement.setAttribute("data-theme", theme === "gold" ? "light" : theme);
+      document.body.setAttribute("data-theme", theme);
+      ["light", "dark", "gold"].forEach((t) => {
+        document.getElementById(`theme-${t}`)?.classList.toggle("is-on", t === theme);
+      });
+      const sharedNote = " · 尺寸/间距三模式共用 · 色值浅/深共用 var(--fc-*)";
+      document.getElementById("theme-note").textContent = THEME_NOTES[theme] + (theme === "gold" ? " · 金拱门色值独立" : sharedNote);
+
+      loadInputsFromState(theme);
+      applyPreviewStyles(collectInputValues());
+      saveStorage();
+    }
+
+    function applyPreset(preset, activeId) {
+      Object.entries(preset).forEach(([k, v]) => {
+        userState.shared[k] = v;
+      });
+      const theme = document.body.getAttribute("data-theme");
+      loadInputsFromState(theme);
+      saveStorage();
+      document.getElementById("btn-standard")?.classList.toggle("is-on", activeId === "btn-standard");
+      document.getElementById("btn-legacy")?.classList.toggle("is-on", activeId === "btn-legacy");
+    }
+
+    function generateStyleCode() {
+      const theme = document.body.getAttribute("data-theme");
+      const vars = collectInputValues();
+      const themeLabel = theme === "light" ? "浅色" : theme === "dark" ? "深色" : "金拱门";
+      const lines = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`);
+      const block = lines.length ? lines.join("\n") : "  /* 无参数 */";
+      const stamp = new Date().toLocaleString("zh-CN");
+
+      if (theme === "gold") {
+        return `/* FC 表格分页 · 金拱门（${stamp}）
+ * 仅 .theme-light-gold — 不写入 default.less 的浅/深共用块
+ */
+.theme-light-gold {
+${block}
+}
+`;
+      }
+
+      return `/* FC 表格分页 · 浅/深共用（${stamp}）
+ * 写入 fe/src/theme/default.less → .theme-light, .theme-dark { }
+ * 色值用 var(--fc-*)，切换深浅自动变色；金拱门不适用此块
+ */
+.theme-light,
+.theme-dark {
+${block}
+}
+
+/* 已含 .ant-pagination / .ant-pagination-options-size-changer 覆盖，见 default.less 同文件 */
+`;
+    }
+
+    function showHint(msg) {
+      document.getElementById("copy-hint").textContent = msg;
+    }
+
+    document.getElementById("btn-preview")?.addEventListener("click", () => {
+      const vars = collectInputValues();
+      applyPreviewStyles(vars);
+      updateAllSwatches();
+      showHint("已应用预览 — 请操作上方交互分页（100 页）");
+      document.getElementById("preview-scope").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.getElementById("btn-apply-code")?.addEventListener("click", () => {
+      const vars = collectInputValues();
+      applyPreviewStyles(vars);
+      const code = generateStyleCode();
+      const out = document.getElementById("code-output");
+      const section = document.getElementById("output-section");
+      out.value = code;
+      section.classList.add("is-visible");
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      showHint("已生成样式代码 — 见下方第 4 节");
+    });
+
+    document.getElementById("btn-copy-output")?.addEventListener("click", async () => {
+      const text = document.getElementById("code-output").value;
+      try {
+        await navigator.clipboard.writeText(text);
+        showHint("代码已复制到剪贴板");
+      } catch {
+        window.prompt("复制以下内容：", text);
+      }
+    });
+
+    document.getElementById("btn-standard")?.addEventListener("click", () => {
+      applyPreset(STANDARD_24, "btn-standard");
+      showHint("已填入 24px 标准尺寸到表格，请点击「预览」");
+    });
+    document.getElementById("btn-legacy")?.addEventListener("click", () => {
+      applyPreset(LEGACY_ANTD_32, "btn-legacy");
+      showHint("已填入 32px 对照尺寸到表格，请点击「预览」");
+    });
+    document.getElementById("theme-light")?.addEventListener("click", () => setTheme("light"));
+    document.getElementById("theme-dark")?.addEventListener("click", () => setTheme("dark"));
+    document.getElementById("theme-gold")?.addEventListener("click", () => setTheme("gold"));
+    document.getElementById("btn-reset-vars")?.addEventListener("click", () => {
+      const theme = document.body.getAttribute("data-theme");
+      if (theme === "gold") {
+        userState.gold = {};
+      } else {
+        UNIFIED_COLOR_KEYS.forEach((k) => delete userState.shared[k]);
+        delete userState.light;
+        delete userState.dark;
+      }
+      loadInputsFromState(theme);
+      clearPreviewStyles();
+      applyPreviewStyles(collectInputValues());
+      saveStorage();
+      document.getElementById("output-section")?.classList.remove("is-visible");
+      showHint(
+        theme === "gold"
+          ? "已恢复金拱门色值默认；尺寸仍保留"
+          : "已恢复浅/深色值默认（var(--fc-*)）；尺寸仍保留"
+      );
+    });
+
+    bindSpecTable();
+    bindLivePagination();
+    loadStorage();
+    renderSpecTableStructure();
+    document.documentElement.setAttribute("data-theme", "light");
+    setTheme("light");
+    renderLivePagination();
+    refreshLucideIcons(document.getElementById("preview-scope"));
+  </script>
+</body>
+</html>

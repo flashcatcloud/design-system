@@ -1,0 +1,12 @@
+---
+description: FC 组件圆角与分页控件尺寸规则（设计 token）
+globs: fe/src/theme/**/*.less,fc-dev-docs/cat/**/*
+alwaysApply: false
+---
+
+# 组件圆角规则
+
+- **高度 ≥ 28px**：圆角 **8px**
+- **高度 < 28px**（如分页 24px 控件）：圆角 **6px**
+
+分页、表格相关样式优先使用 `--pagination-*` 与 `var(--fc-*)`，禁止在主题 patch 里写死十六进制色值（金拱门 `.theme-light-gold` 除外）。

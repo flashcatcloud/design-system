@@ -1,0 +1,488 @@
+// 2026-05 table pagination — sync from n9e/fe src/theme/default.less
+// Scope: .theme-light, .theme-dark only (excludes .theme-light-gold)
+
+// 2026-05 table pagination
+// .theme-light / .theme-dark only — colors via --fc-* (auto light/dark). Excludes .theme-light-gold (金拱门).
+.theme-light,
+.theme-dark {
+  --pagination-item-size: 24px;
+  --pagination-item-gap: 2px;
+  --pagination-item-radius: 6px;
+  --pagination-font-size: 12px;
+  --pagination-line-height: 22px;
+  --pagination-font-weight-active: 500;
+  --pagination-total-font-size: 12px;
+  --pagination-total-line-height: 24px;
+  --pagination-total-gap: 8px;
+  --pagination-select-height: 24px;
+  /* 圆角规则：高度 >= 28px → 8px；高度 < 28px → 6px */
+  --pagination-select-radius: 6px;
+  --pagination-options-margin-left: 16px;
+  --pagination-bar-padding-top: 16px;
+  --pagination-border-width: 1px;
+  --pagination-transition: all 0.3s;
+
+  --pagination-brand: transparent;
+  --pagination-brand-hover: transparent;
+  --pagination-bg-default: var(--fc-fill-2);
+  --pagination-border-default: transparent;
+  --pagination-text-default: var(--fc-text-3);
+  --pagination-bg-hover: rgb(var(--fc-fill-5-rgb) / 0.4);
+  --pagination-border-hover: transparent;
+  --pagination-text-hover: var(--fc-text-1);
+  --pagination-bg-pressed: rgb(var(--fc-fill-5-rgb) / 0.7);
+  --pagination-border-pressed: transparent;
+  --pagination-text-pressed: var(--fc-text-1);
+  /* 选中 0.2；hover 0.4；选中+hover 0.4（勿与 --pagination-bg-hover 混用同一透明度） */
+  --pagination-bg-active: rgb(var(--fc-fill-5-rgb) / 0.2);
+  --pagination-border-active: var(--fc-border-color2);
+  --pagination-text-active: var(--fc-text-2);
+  --pagination-border-active-hover: var(--fc-border-color2);
+  --pagination-text-active-hover: var(--fc-text-1);
+  --pagination-bg-active-hover: rgb(var(--fc-fill-5-rgb) / 0.4);
+  --pagination-bg-disabled: transparent;
+  --pagination-border-disabled: transparent;
+  --pagination-text-disabled: var(--fc-text-5);
+  --pagination-arrow-color-default: var(--fc-text-3);
+  --pagination-arrow-color-hover: var(--fc-text-3);
+  --pagination-arrow-color-disabled: var(--fc-text-5);
+  --pagination-ellipsis-color: var(--fc-text-5);
+  --pagination-total-color: var(--fc-text-3);
+  --pagination-select-bg: var(--fc-fill-2);
+  --pagination-select-border: var(--fc-border-color2);
+  --pagination-select-text: var(--fc-text-2);
+  --pagination-select-bg-hover: rgb(var(--fc-fill-5-rgb) / 0.2);
+  --pagination-select-border-hover: var(--fc-border-color2);
+  --pagination-number-input-width: 44px;
+  --pagination-number-step-width: 22px;
+  --pagination-number-field-width: calc(var(--pagination-number-input-width) + var(--pagination-number-step-width));
+
+  .ant-table-pagination.ant-pagination {
+    margin: var(--pagination-bar-padding-top) 0;
+  }
+
+  .ant-pagination {
+    font-size: var(--pagination-font-size);
+    transition: var(--pagination-transition);
+  }
+
+  .ant-pagination-total-text {
+    height: var(--pagination-item-size);
+    margin-right: var(--pagination-total-gap);
+    line-height: var(--pagination-total-line-height);
+    color: var(--pagination-total-color);
+    font-size: var(--pagination-total-font-size);
+  }
+
+  .ant-pagination-item {
+    box-sizing: border-box;
+    min-width: var(--pagination-item-size);
+    height: var(--pagination-item-size);
+    margin-right: var(--pagination-item-gap);
+    line-height: calc(var(--pagination-item-size) - 2 * var(--pagination-border-width));
+    background-color: var(--pagination-bg-default);
+    border: var(--pagination-border-width) solid var(--pagination-border-default);
+    border-radius: var(--pagination-item-radius);
+
+    a {
+      display: block;
+      padding: 0 6px;
+      color: var(--pagination-text-default);
+      transition: none;
+    }
+
+    &:hover {
+      border-color: var(--pagination-border-hover);
+      transition: var(--pagination-transition);
+
+      a {
+        color: var(--pagination-text-hover);
+      }
+    }
+
+    &.ant-pagination-item-active {
+      font-weight: var(--pagination-font-weight-active);
+      background: var(--pagination-bg-active);
+      border-color: var(--pagination-border-active);
+
+      a {
+        color: var(--pagination-text-active);
+      }
+
+      &:hover {
+        background: var(--pagination-bg-active-hover);
+        border-color: var(--pagination-border-active-hover);
+
+        a {
+          color: var(--pagination-text-active-hover);
+        }
+      }
+    }
+  }
+
+  .ant-pagination-prev,
+  .ant-pagination-next,
+  .ant-pagination-jump-prev,
+  .ant-pagination-jump-next {
+    min-width: var(--pagination-item-size);
+    height: var(--pagination-item-size);
+    margin-right: var(--pagination-item-gap);
+    line-height: var(--pagination-item-size);
+    border-radius: var(--pagination-item-radius);
+  }
+
+  .ant-pagination-prev .ant-pagination-item-link,
+  .ant-pagination-next .ant-pagination-item-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: var(--pagination-bg-default);
+    border: var(--pagination-border-width) solid var(--pagination-border-default);
+    border-radius: var(--pagination-item-radius);
+    color: var(--pagination-arrow-color-default);
+    font-size: var(--pagination-font-size);
+    transition: var(--pagination-transition);
+  }
+
+  .ant-pagination-prev:hover .ant-pagination-item-link,
+  .ant-pagination-next:hover .ant-pagination-item-link {
+    border-color: var(--pagination-border-hover);
+    color: var(--pagination-arrow-color-hover);
+  }
+
+  .ant-pagination-disabled,
+  .ant-pagination-disabled:hover {
+    .ant-pagination-item-link {
+      color: var(--pagination-arrow-color-disabled);
+      background: var(--pagination-bg-disabled);
+      border-color: var(--pagination-border-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  .ant-pagination-disabled .ant-pagination-item {
+    background: var(--pagination-bg-disabled);
+    border-color: var(--pagination-border-disabled);
+    cursor: not-allowed;
+
+    a {
+      color: var(--pagination-text-disabled);
+    }
+  }
+
+  .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+  .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis {
+    color: var(--pagination-ellipsis-color);
+  }
+
+  .ant-pagination-jump-prev:hover .ant-pagination-item-container .ant-pagination-item-link-icon,
+  .ant-pagination-jump-next:hover .ant-pagination-item-container .ant-pagination-item-link-icon {
+    color: var(--pagination-brand);
+  }
+
+  .ant-pagination-options {
+    margin-left: var(--pagination-options-margin-left);
+  }
+
+  .ant-pagination-options-size-changer.ant-select {
+    font-size: var(--pagination-font-size);
+
+    .ant-select-selector {
+      height: var(--pagination-select-height) !important;
+      min-height: var(--pagination-select-height) !important;
+      padding: 0 22px 0 10px !important;
+      border-radius: var(--pagination-select-radius) !important;
+      border-color: var(--pagination-select-border) !important;
+      background: var(--pagination-select-bg) !important;
+      color: var(--pagination-select-text) !important;
+      font-size: var(--pagination-font-size) !important;
+      line-height: calc(var(--pagination-select-height) - 2px) !important;
+      box-shadow: none !important;
+      transition: var(--pagination-transition);
+    }
+
+    .ant-select-selection-item {
+      line-height: calc(var(--pagination-select-height) - 2px) !important;
+      padding-right: 0 !important;
+    }
+
+    .ant-select-arrow {
+      color: var(--pagination-select-text);
+      opacity: 0.55;
+      font-size: 10px;
+      right: 8px;
+      margin-top: -5px;
+    }
+
+    &:hover .ant-select-selector {
+      border-color: var(--pagination-select-border-hover) !important;
+      background: var(--pagination-select-bg-hover) !important;
+    }
+
+    &.ant-select-focused .ant-select-selector {
+      border-color: var(--pagination-select-border-hover) !important;
+      background: var(--pagination-select-bg-hover) !important;
+      box-shadow: 0 0 0 2px rgb(var(--fc-fill-5-rgb) / 0.25) !important;
+    }
+  }
+
+  .ant-pagination-options-quick-jumper {
+    height: var(--pagination-select-height);
+    margin-left: var(--pagination-total-gap);
+    line-height: var(--pagination-select-height);
+    color: var(--pagination-total-color);
+    font-size: var(--pagination-total-font-size);
+    vertical-align: middle;
+
+    input {
+      width: 48px;
+      height: var(--pagination-select-height) !important;
+      margin: 0 8px;
+      padding: 0 8px !important;
+      border: var(--pagination-border-width) solid var(--pagination-select-border) !important;
+      border-radius: var(--pagination-select-radius) !important;
+      background: var(--pagination-select-bg) !important;
+      color: var(--pagination-select-text) !important;
+      font-size: var(--pagination-font-size) !important;
+      line-height: calc(var(--pagination-select-height) - 2px) !important;
+      text-align: center;
+      box-shadow: none !important;
+      -moz-appearance: textfield;
+      appearance: textfield;
+      transition: var(--pagination-transition);
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+      }
+
+      &:hover {
+        border-color: var(--pagination-select-border-hover) !important;
+        background: var(--pagination-select-bg-hover) !important;
+      }
+
+      &:focus,
+      &-focused {
+        border-color: var(--pagination-select-border-hover) !important;
+        background: var(--pagination-select-bg-hover) !important;
+        box-shadow: 0 0 0 2px rgb(var(--fc-fill-5-rgb) / 0.25) !important;
+        outline: none;
+      }
+    }
+  }
+
+  /* Number Input：定宽；右侧常驻步进区，hover/focus 仅显隐箭头（Lucide chevron） */
+  .ant-pagination-options .ant-input-number {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: var(--pagination-number-field-width);
+    min-width: var(--pagination-number-field-width);
+    height: var(--pagination-select-height);
+    border: var(--pagination-border-width) solid var(--pagination-select-border);
+    border-radius: var(--pagination-select-radius);
+    background: var(--pagination-select-bg);
+    overflow: hidden;
+    line-height: 1;
+    transition: border-color var(--pagination-transition), background var(--pagination-transition), box-shadow var(--pagination-transition);
+
+    &:hover {
+      border-color: var(--pagination-select-border-hover);
+      background: var(--pagination-select-bg-hover);
+    }
+
+    &.ant-input-number-focused,
+    &:focus-within {
+      border-color: var(--pagination-select-border-hover);
+      background: var(--pagination-select-bg-hover);
+      box-shadow: 0 0 0 2px rgb(var(--fc-fill-5-rgb) / 0.25);
+    }
+
+    .ant-input-number-input-wrap {
+      position: relative;
+      z-index: 2;
+      flex: none;
+      width: var(--pagination-number-input-width);
+      padding-right: 0 !important;
+      padding-inline-end: 0 !important;
+      pointer-events: auto;
+    }
+
+    .ant-input-number-input {
+      width: 100%;
+      height: calc(var(--pagination-select-height) - 2px);
+      min-width: 0;
+      padding: 0 8px !important;
+      color: var(--pagination-select-text);
+      font-size: var(--pagination-font-size);
+      text-align: center;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      pointer-events: auto !important;
+      cursor: text;
+    }
+
+    .ant-input-number-handler-wrap {
+      position: static !important;
+      top: auto !important;
+      right: auto !important;
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      width: var(--pagination-number-step-width);
+      height: auto !important;
+      opacity: 1 !important;
+      background: transparent !important;
+      border-radius: 0;
+      border: none;
+      border-left: var(--pagination-border-width) solid transparent;
+      transition: border-color var(--pagination-transition);
+      /* 常态不挡输入区点击 */
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &:hover .ant-input-number-handler-wrap,
+    &.ant-input-number-focused .ant-input-number-handler-wrap,
+    &:focus-within .ant-input-number-handler-wrap {
+      border-left-color: var(--pagination-select-border-hover);
+      pointer-events: auto;
+    }
+
+    .ant-input-number-handler {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      width: var(--pagination-number-step-width);
+      height: auto !important;
+      min-height: 0;
+      border: none;
+      border-radius: 0;
+      color: var(--pagination-select-text);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, background var(--pagination-transition), color var(--pagination-transition);
+
+      &:hover {
+        height: auto !important;
+        background: var(--pagination-bg-hover);
+        color: var(--pagination-text-hover);
+      }
+
+      &:active {
+        background: var(--pagination-bg-pressed);
+        color: var(--pagination-text-pressed);
+      }
+    }
+
+    &:hover .ant-input-number-handler,
+    &.ant-input-number-focused .ant-input-number-handler,
+    &:focus-within .ant-input-number-handler {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ant-input-number-handler-up,
+    .ant-input-number-handler-down {
+      border: none;
+      transition: border-color var(--pagination-transition);
+    }
+
+    /* 覆盖 AntD 默认 handler-down 顶部分割线（常态会闪深色线） */
+    .ant-input-number-handler-down {
+      border-top: var(--pagination-border-width) solid transparent !important;
+    }
+
+    .ant-input-number-handler-up {
+      border-bottom: var(--pagination-border-width) solid transparent;
+    }
+
+    &:hover .ant-input-number-handler-up,
+    &.ant-input-number-focused .ant-input-number-handler-up,
+    &:focus-within .ant-input-number-handler-up {
+      border-bottom-color: var(--pagination-select-border-hover);
+    }
+
+    &:hover .ant-input-number-handler-down,
+    &.ant-input-number-focused .ant-input-number-handler-down,
+    &:focus-within .ant-input-number-handler-down {
+      border-top-color: transparent !important;
+    }
+
+    .ant-input-number-handler-up-inner,
+    .ant-input-number-handler-down-inner {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      transform: none;
+      margin: 0;
+      line-height: 1;
+      opacity: 1;
+
+      .anticon {
+        display: none !important;
+      }
+
+      &::before {
+        content: '';
+        display: block;
+        width: 12px;
+        height: 12px;
+        background-color: currentColor;
+        opacity: 0.75;
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        -webkit-mask-size: contain;
+      }
+    }
+
+    .ant-input-number-handler-up-inner::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+    }
+
+    .ant-input-number-handler-down-inner::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    }
+  }
+
+  .ant-pagination.ant-pagination-mini {
+    --pagination-item-size: 24px;
+    --pagination-line-height: 22px;
+
+    .ant-pagination-item,
+    .ant-pagination-prev,
+    .ant-pagination-next,
+    .ant-pagination-jump-prev,
+    .ant-pagination-jump-next {
+      min-width: var(--pagination-item-size);
+      height: var(--pagination-item-size);
+      line-height: var(--pagination-line-height);
+      margin-right: var(--pagination-mini-item-gap, 0);
+    }
+
+    .ant-pagination-item:not(.ant-pagination-item-active) {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .ant-pagination-prev .ant-pagination-item-link,
+    .ant-pagination-next .ant-pagination-item-link {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .ant-pagination-options-size-changer.ant-select .ant-select-selector {
+      height: var(--pagination-select-height) !important;
+    }
+  }
+}
