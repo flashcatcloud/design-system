@@ -1,0 +1,138 @@
+From 980c331abc2ae419e8541e9a75599ea6c2e30aea Mon Sep 17 00:00:00 2001
+From: caribbeanangel-ctrl <caribbeanangel@vip.qq.com>
+Date: Fri, 22 May 2026 15:53:44 +0800
+Subject: [PATCH 2/2] fix: normalize existing table action dropdowns
+
+---
+ .../EnhancedTable/TableActionDropdown.tsx     | 90 ++++++++++++++-----
+ 1 file changed, 66 insertions(+), 24 deletions(-)
+
+diff --git a/src/components/EnhancedTable/TableActionDropdown.tsx b/src/components/EnhancedTable/TableActionDropdown.tsx
+index e98c3f89b..84b229fc1 100644
+--- a/src/components/EnhancedTable/TableActionDropdown.tsx
++++ b/src/components/EnhancedTable/TableActionDropdown.tsx
+@@ -50,25 +50,63 @@ function getButtonFromWrapper(node: React.ReactElement) {
+   return children.find((child) => React.isValidElement(child) && child.type === Button) as React.ReactElement | undefined;
+ }
+ 
+-function containsExistingActionDropdown(node: React.ReactNode): boolean {
++function isMenuContainer(node: React.ReactElement) {
++  return node.type === Menu || node.type === Menu.ItemGroup;
++}
++
++function isMenuDivider(node: React.ReactElement) {
++  return node.type === Menu.Divider;
++}
++
++function isMenuItem(node: React.ReactElement) {
++  return node.type === Menu.Item;
++}
++
++function getDropdownOverlay(node: React.ReactElement) {
++  const overlay = node.props.overlay || node.props.menu;
++  return typeof overlay === 'function' ? overlay() : overlay;
++}
++
++function flattenMenuNodes(node: React.ReactNode): React.ReactNode[] {
+   if (node === null || node === undefined || typeof node === 'boolean') {
+-    return false;
++    return [];
+   }
+   if (Array.isArray(node)) {
+-    return node.some(containsExistingActionDropdown);
++    return node.flatMap(flattenMenuNodes);
+   }
+   if (!React.isValidElement(node)) {
+-    return false;
++    return [node];
++  }
++  if (node.type === React.Fragment || isMenuContainer(node)) {
++    return React.Children.toArray(node.props.children).flatMap(flattenMenuNodes);
+   }
+-  if (node.type === Dropdown || node.props?.className?.includes?.('fc-table-more-button')) {
+-    return true;
++  if (isMenuDivider(node)) {
++    return [];
+   }
+-  return React.Children.toArray(node.props.children).some(containsExistingActionDropdown);
++  return [node];
++}
++
++function getActionNodesFromDropdown(node: React.ReactElement) {
++  const overlay = getDropdownOverlay(node);
++  const overlayNodes = flattenMenuNodes(overlay);
++  return overlayNodes.length ? overlayNodes : flattenActionNodes(node.props.children);
+ }
+ 
+ function getActionMeta(node: React.ReactNode) {
++  if (React.isValidElement(node) && isMenuItem(node)) {
++    const { children, danger, disabled, icon, onClick } = node.props as any;
++    const label = getTextContent(children);
++    return {
++      content: children,
++      danger: danger || /删除|delete|remove/i.test(label),
++      disabled,
++      icon: icon || getDefaultIcon(label, danger),
++      onClick,
++    };
++  }
++
+   if (React.isValidElement(node) && node.type === Button) {
+-    const { children, danger, disabled, icon, onClick } = node.props;
++    const { children, danger, disabled, icon, onClick } = node.props as any;
+     const label = getTextContent(children);
+     return {
+       content: children,
+@@ -131,6 +169,23 @@ interface Props {
+   children: React.ReactNode;
+ }
+ 
++function renderDropdown(actionNodes: React.ReactNode[], dropdownProps: any = {}) {
++  const { children, overlay, menu, overlayClassName, placement, trigger, ...restDropdownProps } = dropdownProps;
++  const mergedOverlayClassName = ['fc-table-action-dropdown', overlayClassName].filter(Boolean).join(' ');
++
++  return (
++    <Dropdown
++      {...restDropdownProps}
++      overlay={<Menu>{renderActionItems(actionNodes)}</Menu>}
++      overlayClassName={mergedOverlayClassName}
++      placement={placement || 'bottomRight'}
++      trigger={trigger || ['hover', 'click']}
++    >
++      <Button className='fc-table-more-button' icon={<MoreVertical {...triggerIconProps} />} size='small' type='text' />
++    </Dropdown>
++  );
++}
++
+ export default function TableActionDropdown(props: Props) {
+   const actionNodes = flattenActionNodes(props.children);
+ 
+@@ -138,22 +193,9 @@ export default function TableActionDropdown(props: Props) {
+     return null;
+   }
+ 
+-  if (actionNodes.length === 1 && React.isValidElement(actionNodes[0]) && actionNodes[0].props?.className?.includes?.('fc-table-more-button')) {
+-    return actionNodes[0];
+-  }
+-
+-  if (actionNodes.length === 1 && containsExistingActionDropdown(actionNodes[0])) {
+-    return actionNodes[0] as React.ReactElement;
++  if (actionNodes.length === 1 && React.isValidElement(actionNodes[0]) && actionNodes[0].type === Dropdown) {
++    return renderDropdown(getActionNodesFromDropdown(actionNodes[0]), actionNodes[0].props);
+   }
+ 
+-  return (
+-    <Dropdown
+-      overlay={<Menu>{renderActionItems(actionNodes)}</Menu>}
+-      overlayClassName='fc-table-action-dropdown'
+-      placement='bottomRight'
+-      trigger={['hover', 'click']}
+-    >
+-      <Button className='fc-table-more-button' icon={<MoreVertical {...triggerIconProps} />} size='small' type='text' />
+-    </Dropdown>
+-  );
++  return renderDropdown(actionNodes);
+ }
+-- 
+2.49.0
+
