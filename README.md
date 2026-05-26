@@ -11,7 +11,7 @@ FC 前端设计规范与可落地的主题片段仓库。
 **使用方式**
 
 1. 用浏览器直接打开 `cat/button-design-editor.html`（或本地静态服务）。
-2. §1–§4 选 variant / hierarchy / 尺寸 / 图标，§5.2 调 `--btn-*`；色值请保持 `var(--fc-*)`，勿改成 `rgb(...)` 硬编码。
+2. §1–§4 选 variant / hierarchy / 尺寸 / 图标，§5.2 调 `--btn-*`；色值请保持 `var(--fc-*)`，勿改成 `rgb(...)` 硬编码。**text** 按钮仅 `--btn-text-*-{default|hover|pressed|disabled}-text`，无 bg/border token。
 3. 「预览」看效果；定稿后点「生效」会写入页面内 `:root` / `COLOR_DEFAULTS` 并下载 HTML，**以仓库本文件为准**时无需再覆盖下载件。
 4. 浅/深在页内切换；金拱门为 `data-theme="gold"` 覆盖。与产品主题类名 `body.theme-dark` 不同，落地时 token 仍走 `--fc-*`。
 
