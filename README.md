@@ -2,6 +2,26 @@
 
 FC 前端设计规范与可落地的主题片段仓库。
 
+## 按钮（2026-05）
+
+| 路径 | 说明 |
+|------|------|
+| `cat/button-design-editor.html` | 设计师调参预览页（§5.1 尺寸对齐 Meow；§5.2 状态色 token） |
+
+**使用方式**
+
+1. 用浏览器直接打开 `cat/button-design-editor.html`（或本地静态服务）。
+2. §1–§4 选 variant / hierarchy / 尺寸 / 图标，§5.2 调 `--btn-*`；色值请保持 `var(--fc-*)`，勿改成 `rgb(...)` 硬编码。
+3. 「预览」看效果；定稿后点「生效」会写入页面内 `:root` / `COLOR_DEFAULTS` 并下载 HTML，**以仓库本文件为准**时无需再覆盖下载件。
+4. 浅/深在页内切换；金拱门为 `data-theme="gold"` 覆盖。与产品主题类名 `body.theme-dark` 不同，落地时 token 仍走 `--fc-*`。
+
+**研发落地（Meow UI）**
+
+- 设计矩阵：`variant`（solid / soft / surface / outline / ghost / text / link）× `hierarchy`（primary … quaternary / destructive）。
+- Meow `Button` 仍为 `variant` + `size` + `data-icon`（见内网 Meow 文档）；上表矩阵通过 `--btn-*` → `var(--fc-*)` 映射，勿在业务里直接复制 `.fc-btn` 类名。
+- 参考映射：`solid·primary` → `variant="primary"`；`destructive` → `variant="danger"`；`outline` / `ghost` / `link` 同名；`soft` / `surface` / `text` 需扩展或映射到 `default` / `ghost`。
+- 尺寸档与 Meow `h-6/7/8/9` 已对齐，§5.1 勿随意改。
+
 ## 表格分页（2026-05）
 
 | 路径 | 说明 |
