@@ -2,14 +2,14 @@
 <html lang="zh-CN" data-theme="light"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FC 按钮 · 设计调参稿</title>
+  <title>FC 按钮 · Meow 矩阵调参稿</title>
   <style>
 
 /*
       ═══════════════════════════════════════════════════════════════
-      【设计师只改色值】分类按 Figma；尺寸/间距/gap 已与 Meow UI 对齐（§5.1，一般不改）
-      在 §5.2 调状态色 →「预览」即时看效果；调完点「生效」写入本页 :root 与 COLOR_DEFAULTS
-      并下载 HTML，用下载文件覆盖本路径后提交 Git
+      【Meow 矩阵 · 设计师调参】预览为 .fc-btn（非线上 antd）。归档副本：button-design-editor-meow.html
+      设计师只改色值；§5.2 调完「生效」→ node cat/sync-button-tokens-from-editor.mjs
+      线上 Ant Design 规范预览：button-design-editor-antd.html（node cat/build-button-antd-editor.mjs 生成）
       ═══════════════════════════════════════════════════════════════
     */
     :root {
@@ -1153,9 +1153,16 @@
     .taxonomy-table td { padding: 4px 12px 4px 0; color: var(--preview-muted); font-size: 12px; }
   
   
+  
+    .lucide-icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; flex-shrink: 0; }
   </style>
 </head>
 <body data-theme="dark">
+<svg style="display:none" aria-hidden="true">
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></symbol>
+</svg>
+
   <main>
     <h1 data-cursor-ref="e444">FC 按钮 · 设计调参稿</h1>
     <p class="intro" data-cursor-ref="e445">
@@ -1536,7 +1543,9 @@
       </div>
     </section>
   </main>
-  <style id="runtime-preview-styles"></style>
+  <style id="runtime-preview-styles">
+    .lucide-icon { display: inline-block; width: 16px; height: 16px; vertical-align: middle; flex-shrink: 0; }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.511.0/dist/umd/lucide.min.js"></script>
   <script>
     const HIERARCHY_ORDER = ["primary", "secondary", "tertiary", "quaternary", "destructive"];
@@ -1869,11 +1878,11 @@
       const ariaDisabled = o.ariaDisabled ? ' aria-disabled="true"' : "";
       let inner;
       if (iconOnly) {
-        inner = '<i data-lucide="plus"></i>';
+        inner = '<svg class="lucide-icon"><use href="#icon-plus"/></svg>';
       } else {
         const label = o.text !== undefined ? o.text : hierarchyLabel(h0);
-        const i0 = ic === "inline-start" ? '<i data-lucide="plus"></i>' : "";
-        const i1 = ic === "inline-end" ? '<i data-lucide="chevron-right"></i>' : "";
+        const i0 = ic === "inline-start" ? '<svg class="lucide-icon"><use href="#icon-plus"/></svg>' : "";
+        const i1 = ic === "inline-end" ? '<svg class="lucide-icon"><use href="#icon-chevron-right"/></svg>' : "";
         inner = `${i0}${label}${i1}`;
       }
       return `<button type="button" class="fc-btn ${cls}" data-variant="${variant}" data-hierarchy="${hierarchy}" data-size="${sz}"${iconAttr}${ariaDisabled}${ariaLabel}>${inner}</button>`;
@@ -1887,8 +1896,8 @@
       const ul = linkDefaultUnderlineAttr(o.defaultUnderline);
       const ariaDisabled = o.ariaDisabled ? ' aria-disabled="true"' : "";
       const label = o.text !== undefined ? o.text : hierarchyLabel(h0);
-      const i0 = ic === "inline-start" ? '<i data-lucide="plus"></i>' : "";
-      const i1 = ic === "inline-end" ? '<i data-lucide="chevron-right"></i>' : "";
+      const i0 = ic === "inline-start" ? '<svg class="lucide-icon"><use href="#icon-plus"/></svg>' : "";
+      const i1 = ic === "inline-end" ? '<svg class="lucide-icon"><use href="#icon-chevron-right"/></svg>' : "";
       const inner = `${i0}${label}${i1}`;
       const disabled = o.ariaDisabled || cls === "is-disabled" ? " disabled" : "";
       return `<button type="button" class="fc-link ${cls}" data-hierarchy="${h0}" data-size="${sz}" data-default-underline="${ul}"${disabled}${ariaDisabled}>${inner}</button>`;
