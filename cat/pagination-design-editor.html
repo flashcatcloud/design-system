@@ -335,7 +335,7 @@
       background: var(--pagination-select-bg-hover);
     }
 
-    .pagination-select .lucide-chevron-down {
+    .pagination-select > .fc-shadcn-select-trigger > svg {
       width: 14px;
       height: 14px;
       margin-left: 6px;
@@ -343,8 +343,8 @@
       flex: none;
     }
 
-    .page-btn .lucide,
-    .fc-pg-btn .lucide {
+    .page-btn svg,
+    .fc-pg-btn svg {
       width: 14px;
       height: 14px;
       stroke-width: 2px;
@@ -413,7 +413,7 @@
       box-shadow: 0 0 0 2px rgb(var(--fc-fill-5-rgb) / 0.25);
     }
 
-    .fc-shadcn-select-trigger .lucide {
+    .fc-shadcn-select-trigger > svg {
       width: 14px;
       height: 14px;
       opacity: 0.55;
@@ -653,7 +653,7 @@
       color: var(--pagination-text-pressed);
     }
 
-    .fc-shadcn-number-step .lucide {
+    .fc-shadcn-number-step svg {
       width: 12px;
       height: 12px;
       opacity: 0.75;
@@ -1061,11 +1061,11 @@
         </div>
         <div class="state-cell">
           <span class="state-label">箭头 · 默认</span>
-          <span class="page-btn is-arrow"><i data-lucide="chevron-left"></i></span>
+          <span class="page-btn is-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-left"/></svg></span>
         </div>
         <div class="state-cell">
           <span class="state-label">箭头 · Hover</span>
-          <span class="page-btn is-arrow is-hover"><i data-lucide="chevron-right"></i></span>
+          <span class="page-btn is-arrow is-hover"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-right"/></svg></span>
         </div>
       </div>
     </section>
@@ -1117,9 +1117,64 @@
   </main>
 
   <style id="runtime-preview-styles"></style>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.511.0/dist/umd/lucide.min.js"></script>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <defs>
+    <g id="lucide-chevron-left"><path d="m15 18-6-6 6-6"/></g>
+    <g id="lucide-chevron-right"><path d="m9 18 6-6-6-6"/></g>
+    <g id="lucide-chevrons-left"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></g>
+    <g id="lucide-chevrons-right"><path d="m13 17 5-5-5-5"/><path d="m6 17 5-5-5-5"/></g>
+    <g id="lucide-ellipsis"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></g>
+    <g id="lucide-chevron-down"><path d="m6 9 6 6 6-6"/></g>
+    <g id="lucide-chevron-up"><path d="m18 15-6-6-6 6"/></g>
+  </defs>
+</svg>
 
   <script>
+
+    /** Source-of-truth default values from pagination-design-snapshot.json (2026-05-20).
+     *  These preserve var(--fc-*) tokens instead of resolving them via getComputedStyle. */
+    const TOKEN_DEFAULTS = {
+      "--pagination-item-size": "24px",
+      "--pagination-item-gap": "2px",
+      "--pagination-item-radius": "6px",
+      "--pagination-font-size": "12px",
+      "--pagination-line-height": "22px",
+      "--pagination-select-height": "24px",
+      "--pagination-total-line-height": "24px",
+      "--pagination-border-width": "1px",
+      "--pagination-brand": "transparent",
+      "--pagination-brand-hover": "transparent",
+      "--pagination-bg-default": "var(--fc-fill-2)",
+      "--pagination-border-default": "transparent",
+      "--pagination-text-default": "var(--fc-text-3)",
+      "--pagination-bg-hover": "rgb(var(--fc-fill-5-rgb) / 0.4)",
+      "--pagination-border-hover": "transparent",
+      "--pagination-text-hover": "var(--fc-text-1)",
+      "--pagination-bg-pressed": "rgb(var(--fc-fill-5-rgb) / 0.7)",
+      "--pagination-border-pressed": "transparent",
+      "--pagination-text-pressed": "var(--fc-text-1)",
+      "--pagination-bg-active": "rgb(var(--fc-fill-5-rgb) / 0.2)",
+      "--pagination-border-active": "var(--fc-border-color2)",
+      "--pagination-select-radius": "6px",
+      "--pagination-text-active": "var(--fc-text-2)",
+      "--pagination-border-active-hover": "var(--fc-border-color2)",
+      "--pagination-text-active-hover": "var(--fc-text-1)",
+      "--pagination-bg-active-hover": "rgb(var(--fc-fill-5-rgb) / 0.4)",
+      "--pagination-bg-disabled": "transparent",
+      "--pagination-border-disabled": "transparent",
+      "--pagination-text-disabled": "var(--fc-text-5)",
+      "--pagination-arrow-color-default": "var(--fc-text-3)",
+      "--pagination-arrow-color-hover": "var(--fc-text-3)",
+      "--pagination-arrow-color-disabled": "var(--fc-text-5)",
+      "--pagination-ellipsis-color": "var(--fc-text-5)",
+      "--pagination-total-color": "var(--fc-text-3)",
+      "--pagination-select-bg": "var(--fc-fill-2)",
+      "--pagination-select-border": "var(--fc-border-color2)",
+      "--pagination-select-text": "var(--fc-text-2)",
+      "--pagination-select-bg-hover": "rgb(var(--fc-fill-5-rgb) / 0.2)",
+      "--pagination-select-border-hover": "var(--fc-border-color2)"
+    };
+
     const SPEC_ROWS = [
       ["尺寸", "--pagination-item-size", "页码按钮宽高（含描边）"],
       ["尺寸", "--pagination-item-gap", "页码间距"],
@@ -1258,9 +1313,7 @@
     }
 
     function refreshLucideIcons(root = document) {
-      if (typeof lucide !== "undefined" && lucide.createIcons) {
-        lucide.createIcons({ attrs: { "stroke-width": 2 }, root });
-      }
+      /* Inline SVGs used — no lucide CDN needed */
     }
 
     const livePagination = {
@@ -1313,13 +1366,13 @@
       const pageButtons = pages
         .map((p) => {
           if (p === "jump-prev") {
-            return `<button type="button" class="fc-pg-btn is-arrow" data-action="jump-prev" title="向前 5 页" aria-label="向前 5 页"><i data-lucide="chevrons-left"></i></button>`;
+            return `<button type="button" class="fc-pg-btn is-arrow" data-action="jump-prev" title="向前 5 页" aria-label="向前 5 页"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevrons-left"/></svg></button>`;
           }
           if (p === "jump-next") {
-            return `<button type="button" class="fc-pg-btn is-arrow" data-action="jump-next" title="向后 5 页" aria-label="向后 5 页"><i data-lucide="chevrons-right"></i></button>`;
+            return `<button type="button" class="fc-pg-btn is-arrow" data-action="jump-next" title="向后 5 页" aria-label="向后 5 页"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevrons-right"/></svg></button>`;
           }
           if (p === "ellipsis") {
-            return `<span class="fc-pg-btn is-ellipsis" aria-hidden="true"><i data-lucide="ellipsis"></i></span>`;
+            return `<span class="fc-pg-btn is-ellipsis" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-ellipsis"/></svg></span>`;
           }
           const active = p === current ? " is-active" : "";
           return `<button type="button" class="fc-pg-btn${active}" data-page="${p}" aria-label="第 ${p} 页" aria-current="${p === current ? "page" : "false"}">${p}</button>`;
@@ -1332,26 +1385,26 @@
           <div class="fc-shadcn-select" data-component="page-size">
             <button type="button" class="fc-shadcn-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="每页条数">
               <span class="fc-shadcn-select-value">${pageSize} 条/页</span>
-              <i data-lucide="chevron-down" aria-hidden="true"></i>
+              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-down"/></svg>
             </button>
             <ul class="fc-shadcn-select-menu" role="listbox" hidden>${sizeMenu}</ul>
           </div>
         </div>
         <div class="fc-pg-right">
           <button type="button" class="fc-pg-btn is-arrow" data-action="prev" ${prevDisabled ? "disabled" : ""} aria-label="上一页">
-            <i data-lucide="chevron-left"></i>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-left"/></svg>
           </button>
           ${pageButtons}
           <button type="button" class="fc-pg-btn is-arrow" data-action="next" ${nextDisabled ? "disabled" : ""} aria-label="下一页">
-            <i data-lucide="chevron-right"></i>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-right"/></svg>
           </button>
           <div class="fc-shadcn-number" data-component="jumper">
             <span>跳至</span>
             <div class="fc-shadcn-number-group">
               <input type="text" inputmode="numeric" class="fc-shadcn-number-input" value="${current}" data-action="jumper-input" aria-label="跳转到页码" />
               <div class="fc-shadcn-number-handlers">
-                <button type="button" class="fc-shadcn-number-step" data-step="1" aria-label="增加页码"><i data-lucide="chevron-up"></i></button>
-                <button type="button" class="fc-shadcn-number-step" data-step="-1" aria-label="减少页码"><i data-lucide="chevron-down"></i></button>
+                <button type="button" class="fc-shadcn-number-step" data-step="1" aria-label="增加页码"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-up"/></svg></button>
+                <button type="button" class="fc-shadcn-number-step" data-step="-1" aria-label="减少页码"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#lucide-chevron-down"/></svg></button>
               </div>
             </div>
             <span>页</span>
@@ -1493,6 +1546,10 @@
     }
 
     function readVarFromThemeDefault(key) {
+      /* Use JSON snapshot defaults to preserve var(--fc-*) tokens.
+       * getComputedStyle resolves nested var() references, which would
+       * replace tokens like var(--fc-fill-2) with hardcoded rgb() values. */
+      if (TOKEN_DEFAULTS[key] !== undefined) return TOKEN_DEFAULTS[key];
       return getComputedStyle(document.body).getPropertyValue(key).trim();
     }
 
@@ -1783,7 +1840,7 @@ ${block}
     document.documentElement.setAttribute("data-theme", "light");
     setTheme("light");
     renderLivePagination();
-    refreshLucideIcons(document.getElementById("preview-scope"));
+    /* refreshLucideIcons not needed with inline SVGs */
   </script>
 </body>
 </html>

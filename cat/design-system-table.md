@@ -165,7 +165,7 @@ sort active: rgb(var(--fc-fill-5-rgb) / 0.4)
 - 下拉内展示该列所有可筛选项，每个 item 左侧都有 checkbox。
 - 当可筛选项超过 5 个时，下拉顶部展示带搜索功能的输入框。
 - 下拉底部展示操作区：左侧/次要动作用“重置”，右侧/主动作用“确定”。
-- “确定”按钮使用 `ghost-primary-xs`；“重置”按钮使用 `ghost-quaternary-xs` 的文字按钮形态。
+- “确定”按钮使用 `text-primary-xs`；“重置”按钮使用 `ghost-quaternary-xs` 的文字按钮形态。
 - 下拉容器、item、separator、阴影和圆角沿用表格 dropdown menu 的 shadcn 骨架。
 - 筛选下拉、操作菜单等浮层不能被表格容器裁剪；工程实现优先使用 Radix Portal 挂到 `body`，或确保表格外层不以 `overflow: hidden` 截断浮层。
 
@@ -227,22 +227,76 @@ targets 页面是信息密集型业务表，局部覆盖为：
 
 ## 8. 分页
 
-```
-border-radius: 8px
-border-color: var(--fc-border-color)
-background: var(--fc-fill-2)
-active → background: var(--fc-fill-primary), 文字 #fff
-hover → border-color/color: var(--fc-primary-color)
-```
+分页整体采用 Shadcn 风格（无 AntD 竖向步进条），组件高度固定 24px（旧 AntD 32px 仅作对照）。设计调参稿见 `pagination-design-editor.html`，对应 token 快照见 `pagination-design-snapshot.json`。
 
-产品规范要求：
+### 8.1 尺寸 Token
+
+| Token | 值 | 说明 |
+| --- | --- | --- |
+| `--pagination-item-size` | `24px` | 页码按钮宽高（`box-sizing: border-box`，1px 描边在内部） |
+| `--pagination-item-gap` | `2px` | 页码按钮间距 |
+| `--pagination-item-radius` | `6px` | 页码按钮圆角 |
+| `--pagination-font-size` | `12px` | 页码数字字号 |
+| `--pagination-line-height` | `22px` | 格内行高（24px - 上下各 1px 描边） |
+| `--pagination-select-height` | `24px` | 每页条数下拉框高度，与页码对齐 |
+| `--pagination-select-radius` | `6px` | 下拉框圆角（高度 &lt;28px → 6px） |
+| `--pagination-total-line-height` | `24px` | 总数行高 |
+| `--pagination-border-width` | `1px` | 描边在 24px 内部，不外扩 |
+| `--pagination-number-input-width` | `44px` | 跳页输入框宽度 |
+| `--pagination-number-step-width` | `22px` | 跳页步进按钮宽度 |
+
+**圆角规则（全局）**：组件高度 ≥28px → 圆角 8px；高度 &lt;28px → 圆角 6px。
+
+### 8.2 颜色 Token（浅/深共用 `var(--fc-*)`）
+
+浅色和深色模式共用一套色值变量，通过 `var(--fc-*)` 引用，切换模式自动变色。金拱门（`.theme-light-gold`）色值独立，不走这套 token。
+
+**页码按钮**：
+
+| 状态 | 背景 | 边框 | 文字 | 说明 |
+| --- | --- | --- | --- | --- |
+| default | `var(--fc-fill-2)` | `transparent` | `var(--fc-text-3)` | 与行背景融为一体 |
+| hover | `rgb(var(--fc-fill-5-rgb) / 0.4)` | `transparent` | `var(--fc-text-1)` | 弱背景浮现 |
+| pressed | `rgb(var(--fc-fill-5-rgb) / 0.7)` | `transparent` | `var(--fc-text-1)` | 按下加深 |
+| active（选中） | `rgb(var(--fc-fill-5-rgb) / 0.2)` | `var(--fc-border-color2)` | `var(--fc-text-2)` | 浅紫底 + 描边 |
+| active + hover | `rgb(var(--fc-fill-5-rgb) / 0.4)` | `var(--fc-border-color2)` | `var(--fc-text-1)` | 选中页 hover 加深 |
+| disabled | `transparent` | `transparent` | `var(--fc-text-5)` | 不可点击 |
+| brand | `transparent` | — | — | 主色不参与页码 |
+
+**箭头 / 省略号**：
+
+| Token | 值 | 说明 |
+| --- | --- | --- |
+| 箭头 default / hover | `var(--fc-text-3)` | 常态与 hover 同色 |
+| 箭头 disabled | `var(--fc-text-5)` | 禁用的箭头 |
+| 省略号 | `var(--fc-text-5)` | 「…」颜色 |
+
+**总数 / 每页条数下拉**：
+
+| Token | 值 |
+| --- | --- |
+| 总数文字 | `var(--fc-text-3)` |
+| 下拉背景 | `var(--fc-fill-2)` |
+| 下拉边框 | `var(--fc-border-color2)` |
+| 下拉文字 | `var(--fc-text-2)` |
+| 下拉 hover 背景 | `rgb(var(--fc-fill-5-rgb) / 0.2)` |
+| 下拉 hover 边框 | `var(--fc-border-color2)` |
+
+### 8.3 交互规范
+
+- 页码区右侧放页码按钮，左侧放总数和 pageSize 下拉，中间弹性空白。
+- pageSize 下拉和跳页输入均采用 Shadcn 风格（无 AntD 竖向步进条）。
+- 向前/向后 5 页使用双箭头（`chevrons-left` / `chevrons-right`）；单页使用单箭头（`chevron-left` / `chevron-right`）。
+- 页码过多时使用省略号（`…`），不可点击。
+- 跳页输入框右侧设上/下步进按钮（`chevron-up` / `chevron-down`），每次 ±1 页。
+- 所有图标使用 lucide，尺寸 14px × 14px（页码内）、12px × 12px（跳页步进按钮内），`stroke-width: 2`。
+
+### 8.4 产品规范
 
 - 主表默认要有分页、每页行数选项、总数统计。
 - **每页默认 15 行**。每页行数选项必须可选。
 - pageSize 改动应持久化，避免用户返回后丢失密度选择。
 - targets 当前默认 30 行写入 localStorage，属于历史实现，纳入后续 PRD 改造范围。
-- 分页标准尺寸（设计调参稿 2026-05-20）：页码按钮 **24×24px**，`box-sizing: border-box`，**1px 描边在内部**。项间距 `2px`，页码圆角 `6px`，总数 `12px / 24px` 行高，pageSize / 跳页控件高度 **24px**。**圆角规则（全局）**：组件高度 ≥28px → 圆角 8px；高度 &lt;28px → 圆角 6px。每页条数、跳页输入采用 Shadcn 风格（无 AntD 竖向步进条）。旧 AntD 32px 仅作对照。
-- 分页区域默认右侧放页码，左侧放总数和每页条数选择；中间可留弹性空白，不要让页码挤压总数文案。
 
 targets 页面参考：
 
@@ -407,67 +461,97 @@ icon-only 操作必须有 tooltip。
 }
 ```
 
-### 12.1.2 ghost-primary-xs
+### 12.1.2 text-primary-xs
 
-`ghost-primary-xs` 是标准 `24px` 主色 ghost 按钮等级，适用于表格操作列外露的低噪声文字操作（如 `Edit`、`Clone`、`Preview`）。后续所有同等级按钮统一使用以下样式。
+`text-primary-xs` 是标准 `24px` 纯文字按钮等级（无背景、无边框），适用于表格操作列外露的低噪声文字操作（如 `Edit`、`Clone`、`Preview`）。后续所有同等级按钮统一使用以下样式。
 
 | 状态 | 按钮 | 文字 / Icon |
 | --- | --- | --- |
 | default | 高度 `24px`，`padding: 0 8px`，`border-radius: 6px`，无背景 | `color: var(--fc-violet-11)` |
-| hover | `background: var(--fc-violet-3)` | `color: var(--fc-violet-11)` |
-| pressed / active | `background: var(--fc-violet-4)` | `color: var(--fc-violet-12)` |
+| hover | 无背景 | `color: var(--fc-violet-12)` |
+| pressed / active | 无背景 | `color: var(--fc-violet-12)` |
 | disabled | 无背景 | `color: var(--fc-violet-6)` |
 
 结构规则：
 
-- icon-only 的弱入口不用 `ghost-primary-xs`，继续使用 `ghost-quaternary-xs`。
+- icon-only 的弱入口不用 `text-primary-xs`，继续使用 `ghost-quaternary-xs`。
 - 文字按钮高度固定 `24px`，左右 padding 固定 `8px`。
 - 当出现 icon + 文字组合时，gap 固定 `4px`；当前表格操作列通常不使用 icon + 文字同时出现。
-- 操作列外露的普通文字动作使用 `ghost-primary-xs`；删除等危险动作不要套主色按钮，继续走危险色规则和二次确认。
+- 操作列外露的普通文字动作使用 `text-primary-xs`；删除等危险动作不要套主色按钮，继续走危险色规则和二次确认。
 
-参考样式：
+#### 按钮样式与按钮编辑器的对应关系
 
-```less
-.fc-ghost-primary-xs {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 24px;
-  padding: 0 8px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--fc-violet-11);
-  line-height: 1;
-  transition: background-color 0.2s ease, color 0.2s ease;
+表格中所有按钮均对应 `button-design-editor.html` 中的 token 体系：
 
-  svg {
-    color: currentColor;
-  }
+| 表格按钮 class | 按钮编辑器 Token | 语义 |
+| --- | --- | --- |
+| `ghost-quaternary-xs` | `--btn-ghost-quaternary-*` | 弱图标按钮（三点、排序、过滤、拖拽） |
+| `ghost-quaternary-text-xs` | `--btn-ghost-quaternary-*` | 弱文字按钮（过滤面板“重置”） |
+| `text-primary-xs` | `--btn-text-primary-*` | 纯文字操作按钮（Edit、Clone、Preview） |
+| `link-primary` | `--btn-link-primary-*` | 主链接（名称、标题等可点击文本） |
+| `link-secondary` | `--btn-link-secondary-*` | 次要链接（辅助信息、关联实体） |
+| `link-secondary-brand` | `--btn-link-secondary-brand-*` | 品牌色次要链接（页面色彩饱和时替代 primary） |
+| `link-tertiary` | `--btn-link-tertiary-*` | 三级链接（需弱化视觉效果时使用） |
 
-  &:hover,
-  &:focus-visible {
-    background: var(--fc-violet-3);
-    color: var(--fc-violet-11);
-  }
+按钮编辑器中定义的完整 token 体系（solid / soft / surface / outline / ghost / text / link × primary / destructive / secondary / tertiary / quaternary）为按钮样式的唯一来源，表格中新增按钮类型需先在按钮编辑器中定义 token。
 
-  &:active,
-  &.is-active {
-    background: var(--fc-violet-4);
-    color: var(--fc-violet-12);
-  }
+### 12.1.3 链接按钮
 
-  &[disabled],
-  &.is-disabled {
-    background: transparent;
-    color: var(--fc-violet-6);
-    cursor: not-allowed;
-  }
-}
-```
+表格中所有可点击的链接文本（如实体名称、ID、关联对象等）统一使用按钮编辑器中的 link 按钮样式，默认 `defaultUnderline=false`（常态无下划线，hover 时出现下划线）。
 
-### 12.1.3 行首拖拽排序 handle
+**link-primary**（主链接，对应 `--btn-link-primary-*`）：
+
+| 状态 | 文字色 | 下划线 |
+| --- | --- | --- |
+| default | `var(--fc-violet-11)` | 无 |
+| hover | `var(--fc-violet-12)` | `var(--fc-violet-7)` |
+| pressed | `var(--fc-violet-12)` | `var(--fc-violet-8)` |
+| disabled | `var(--fc-violet-6)` | 无 |
+
+适用场景：表格中的主实体名称、标题、ID 等作为主要导航入口的链接。
+
+**link-secondary**（次要链接，对应 `--btn-link-secondary-*`）：
+
+| 状态 | 文字色 | 下划线 |
+| --- | --- | --- |
+| default | `var(--fc-text-2)` | 无 |
+| hover | `var(--fc-text-1)` | `var(--fc-text-5)` |
+| pressed | `var(--fc-text-1)` | `var(--fc-text-4)` |
+| disabled | `var(--fc-text-5)` | 无 |
+
+适用场景：表格中的辅助信息链接、关联对象、数据源名称等作为次要入口的链接。
+
+**link-secondary-brand**（品牌色次要链接，对应 `--btn-link-secondary-brand-*`）：
+
+| 状态 | 文字色 | 下划线 |
+| --- | --- | --- |
+| default | `var(--fc-text-2)` | 无 |
+| hover | `var(--fc-violet-11)` | `var(--fc-violet-6)` |
+| pressed | `var(--fc-violet-12)` | `var(--fc-violet-7)` |
+| disabled | `var(--fc-violet-6)` | 无 |
+
+适用场景：当页面中已有大量红、橙、黄、绿、紫等标签和状态色，视觉色彩已经饱和时，主链接不适合使用 `link-primary`（紫色文字常态可见），可优先使用 `link-secondary-brand`。该样式默认呈灰色 `text-2` 与普通文字一致，仅在 hover 时才显露品牌紫色，既保留品牌识别，又避免颜色过载。
+
+**link-tertiary**（三级链接，对应 `--btn-link-tertiary-*`）：
+
+| 状态 | 文字色 | 下划线 |
+| --- | --- | --- |
+| default | `var(--fc-text-3)` | 无 |
+| hover | `var(--fc-text-2)` | `var(--fc-text-5)` |
+| pressed | `var(--fc-text-1)` | `var(--fc-text-4)` |
+| disabled | `var(--fc-text-5)` | 无 |
+
+适用场景：需要弱化链接视觉存在感时使用，例如表格中重复出现的次要字段链接、低优先级关联信息，或空间中已有多处 primary / secondary 链接、需要进一步降低层级的场景。
+
+**规则**：
+- 链接选择优先级：`link-primary` > `link-secondary-brand` > `link-secondary` > `link-tertiary`。
+- 同一行内有多个链接时，优先级最高的使用 `link-primary`（页面色彩饱和时改用 `link-secondary-brand`），其余依次降级。
+- 同一个表格内严禁出现两个及以上的 `link-primary`。
+- `defaultUnderline` 统一设为 `false`，保持表格整洁。
+- 链接按钮复用 `.fc-link` class 配合 `data-hierarchy="primary|secondary|secondary-brand|tertiary"` 属性。
+
+
+### 12.1.4 行首拖拽排序 handle
 
 表格行首如果提供拖拽排序入口，拖拽 handle 使用与操作列三点入口一致的 `ghost-quaternary-xs` 样式：
 
@@ -485,7 +569,7 @@ icon-only 操作必须有 tooltip。
 - 图标优先使用 lucide，并按系统内已有同语义图标做映射，避免同一操作语义混用不一致的图形语言；只有 lucide 不能准确表达时再复用现有 AntD icon。
 - 触发按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标，例如 `MoreHorizontal` / `MoreVertical`，icon 尺寸固定为 `14px × 14px`，按钮尺寸固定为 `24px × 24px`。
 - 行首拖拽排序 handle 使用 `ghost-quaternary-xs`，icon 从 lucide 选择，例如 `GripVertical`。
-- 外露文字操作使用 `ghost-primary-xs`，例如 `Edit`、`Clone`、`Preview`；多个文字操作之间保持轻量间距，不使用实底按钮堆叠。
+- 外露文字操作使用 `text-primary-xs`，例如 `Edit`、`Clone`、`Preview`；多个文字操作之间保持轻量间距，不使用实底按钮堆叠。
 - dropdown menu 采用 shadcn/Radix `DropdownMenu` 的结构骨架：`Content` 承载浮层，`Item` 承载单个动作，`Separator` 分组高危操作。不要继续使用 AntD Menu 的默认视觉。
 - dropdown 菜单项统一左对齐，且每项包含 lucide icon + 文字说明；同一菜单内避免不同操作使用重复 icon，避免某个业务组件内置按钮 padding 导致文本缩进不一致。
 - 常见操作建议映射：预览 `Eye`，设置 `Settings`，克隆/复制 `Copy`，删除 `Trash2`；空间/可见性这类权限范围操作可用 `Network`，不要和预览重复使用 `Eye`。
@@ -566,6 +650,31 @@ icon-only 操作必须有 tooltip。
 ```
 
 - 固定操作列背景应继承当前行状态，避免 hover/selected 断层。
+
+### 12.1.5 单元格操作
+
+单元格操作指不在末尾操作列内，而是对表格中其他列的某个单元格内容直接附加操作入口。与操作列不同，单元格操作常态隐藏，仅在 hover 单元格时浮现。
+
+**单个操作**：
+
+- 操作按钮常态隐藏，hover 单元格时显示。
+- 按钮样式使用 `soft-quaternary-xs`（icon-only，`24px × 24px`，`border-radius: 6px`），icon 尺寸 `14px × 14px`。
+- `soft-quaternary-xs` icon-only 按钮**必须**附带 Tooltip，显示操作名称，避免纯图标歧义。
+- 操作按钮出现时，若单元格内容显示不全，文本自动截断为省略号（`…`），自动避让按钮区域；被截断的文本，鼠标悬停至文本上方时弹出 Tooltip 展示完整信息。
+
+**两个及以上操作**：
+
+- 通过「三点更多」按钮统一收纳，点击或 hover 展开下拉菜单。
+- 三点按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标（`MoreHorizontal` / `MoreVertical`），icon 尺寸 `14px × 14px`，按钮尺寸 `24px × 24px`。
+- 下拉菜单的样式、交互规则与下拉菜单项与操作列 dropdown 完全一致，参见 [12.1 操作列 dropdown](#121-操作列-dropdown) 中的推荐实现约束及参考样式。
+- 三点按钮同样**必须**附带 Tooltip，例如「更多操作」。
+
+**显隐规则**：
+
+- 常态：单元格仅显示内容，操作按钮不可见。
+- hover 单元格：操作按钮（或三点按钮）浮现，单元格内容自动避让、必要时截断。
+- 菜单展开时：三点按钮保持 pressed/active 态。
+
 
 ## 13. 内容、链接与标签
 
