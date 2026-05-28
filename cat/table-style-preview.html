@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FC Table Style Preview</title>
+  <svg style="display:none" aria-hidden="true">
+  <symbol id="icon-sort" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16l-4 4-4-4"/><path d="M17 20V4"/><path d="M3 8l4-4 4 4"/><path d="M7 4v16"/></symbol>
+  <symbol id="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></symbol>
+  <symbol id="icon-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></symbol>
+  <symbol id="icon-funnel" viewBox="0 -2 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20a1 1 0 0 0 .553.895l3.447 1.724V14.87l5.446-5.446A.5.5 0 0 0 19.093 8.5H4.907a.5.5 0 0 0-.353.924L10 14.87Z"/></symbol>
+</svg>
+
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     :root {
@@ -17,6 +24,7 @@
       --fc-fill-2-5: #f9f9fa;
       --fc-fill-3: #f4f4f6;
       --fc-fill-4: #eaeaec;
+      --fc-fill-6: #d4d4d8;
       --fc-fill-5: #e4e4e7;
       --fc-fill-5-rgb: 228 228 231;
       --fc-border-color: rgb(226 226 228 / 0.7);
@@ -30,7 +38,18 @@
       --fc-fill-error: rgb(var(--fc-fill-error-rgb));
       --fc-red-3: #ff0d0015;
       --fc-red-11: rgb(204 46 57);
-    }
+ 
+      --fc-green-3: rgb(23 146 77 / 0.1);
+      --fc-green-11: #168447;
+      --fc-orange-3: rgb(245 158 11 / 0.14);
+      --fc-orange-11: #a16207;
+      --fc-blue-3: rgb(37 99 235 / 0.1);
+      --fc-blue-11: #1d4ed8;
+      --fc-gray-3: rgb(100 116 139 / 0.1);
+      --fc-gray-11: #475569;
+      --fc-yellow-3: rgb(234 179 8 / 0.14);
+      --fc-yellow-11: #a16207;
+      }
 
     * { box-sizing: border-box; }
 
@@ -70,7 +89,7 @@
     }
 
     .panel {
-      overflow: visible;
+      overflow: hidden;
       border: 1px solid var(--fc-border-color);
       border-radius: 8px;
       background: var(--fc-fill-2);
@@ -91,25 +110,38 @@
 
     thead th {
       height: 40px;
-      padding: 0 16px;
+      padding: 8px 0 8px 16px;
       border-bottom: 1px solid var(--fc-border-color);
       background: var(--fc-fill-2-5);
       color: var(--fc-text-3);
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 400;
+      line-height: 18px;
       text-align: left;
       white-space: nowrap;
+      transition: background 0.15s ease;
+    }
+
+    thead th:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
     }
 
     tbody td {
       height: 48px;
-      padding: 0 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--fc-border-color);
       background: var(--fc-fill-2);
       color: var(--fc-text-2);
-      font-size: 14px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 18px;
       vertical-align: middle;
       transition: background-color 0.2s ease;
+    }
+
+    /* date column */
+    tbody td:nth-child(5) {
+      color: var(--fc-text-3);
     }
 
     tbody tr:hover td {
@@ -124,19 +156,229 @@
       background: rgb(var(--fc-fill-5-rgb) / 0.25);
     }
 
-    .drag-col { width: 60px; text-align: center; padding: 0 14px; }
-    .name-col { width: 260px; }
-    .status-col { width: 160px; }
-    .filter-col { width: 150px; }
-    .sort-col { width: 190px; }
-    .action-col { width: 260px; }
+    th:has(.th-content.is-sorted) {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+
+    .drag-col { width: 44px; text-align: center; }
+    .name-col { width: 220px; overflow: visible; }
+    .status-col { width: 90px; }
+    .filter-col { width: 130px; }
+    .sort-col { width: 160px; }
+    .action-col { width: 120px; }
+    thead th.action-col { padding-left: 24px; }
+    .biz-col { width: 240px; }
+
+    .biz-tags-wrap { position: relative; }
+
+    .biz-tag-more {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      height: 20px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 999px;
+      background: var(--fc-fill-2-5);
+      color: var(--fc-text-4);
+      font-size: 11px;
+      line-height: 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex: none;
+    }
+
+    .biz-tags.has-more .biz-tag-more {
+      display: inline-flex;
+    }
+
+    .biz-tag-more:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.2);
+      color: var(--fc-text-2);
+    }
+
+    .biz-tag {
+      max-width: 200px;
+    }
+
+    .biz-tag .fc-link {
+      white-space: nowrap;
+    }
+
+    .biz-popover {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--fc-fill-2);
+      border: 1px solid var(--fc-border-color);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+      padding: 6px;
+      z-index: 300;
+      display: none;
+      max-width: 320px;
+      min-width: 160px;
+    }
+
+    .biz-popover.is-open {
+      display: block;
+    }
+
+    .biz-popover-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      height: 28px;
+      font-size: 12px;
+      line-height: 18px;
+      color: var(--fc-text-3);
+    }
+
+    .biz-popover-header .copy-all-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--fc-text-4);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .biz-popover-header .copy-all-btn svg {
+      width: 14px;
+      height: 14px;
+      color: currentColor;
+    }
+
+    .biz-popover-header .copy-all-btn:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      color: var(--fc-text-2);
+    }
+.biz-popover-header .copy-all-btn {
+      position: relative;
+    }
+    .biz-popover-header .copy-all-btn::after {
+      content: attr(title);
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.75);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.4;
+      padding: 6px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      z-index: 400;
+      pointer-events: none;
+    }
+    .biz-popover-header .copy-all-btn:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .biz-popover-tags {
+      gap: 6px;
+      padding-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 4px 6px;
+    }
+
+    .biz-popover .biz-tag {
+      display: inline-flex !important;
+      align-items: center;
+    }
+
+
+    .biz-tags-wrap {
+      position: relative;
+    }
+    .biz-popover-sep {
+      height: 1px;
+      margin: 4px -6px;
+      background: var(--fc-border-color);
+    }
+
+
+    .biz-tags {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 4px;
+      align-items: center;
+      overflow: hidden;
+    width: 100%;
+    }
+
+    .biz-tag {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 1;
+      min-width: 0;
+      padding: 0 8px;
+      height: 20px;
+      line-height: 18px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 999px;
+      background: var(--fc-fill-2-5);
+      font-size: 11px;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+
+    .biz-tag .fc-link[data-hierarchy="tertiary"] {
+      color: var(--fc-text-3);
+      text-decoration: none;
+      font-size: 11px;
+      line-height: 16px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .biz-tag .fc-link[data-hierarchy="tertiary"]:hover {
+      color: var(--fc-text-2);
+      text-decoration: underline;
+      text-decoration-color: var(--fc-text-5);
+      text-underline-offset: 2px;
+    }
+
+    .biz-tag .fc-link[data-hierarchy="tertiary"]:active {
+      color: var(--fc-text-1);
+      text-decoration: underline;
+      text-decoration-color: var(--fc-text-4);
+      text-underline-offset: 2px;
+    }
+
+    .biz-sep {
+      color: var(--fc-text-5);
+      font-size: 11px;
+      line-height: 16px;
+      margin: 0 2px;
+      flex: none;
+    }
+
 
     .th-content {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 6px;
       min-width: 0;
       height: 100%;
+      width: 100%;
     }
 
     .th-content .sort-entry,
@@ -157,7 +399,7 @@
     .divider {
       display: inline-block;
       width: 1px;
-      height: 18px;
+      height: 16px;
       margin-left: auto;
       background: var(--fc-border-color);
       vertical-align: middle;
@@ -181,14 +423,15 @@
       border-radius: 6px;
       background: transparent;
       color: var(--fc-text-4);
-      line-height: 1;
+      flex-shrink: 0;
     }
 
     .fc-ghost-quaternary-xs svg {
+      display: block;
       width: 14px;
       height: 14px;
-      color: currentColor;
-      stroke-width: 2;
+      flex-shrink: 0;
+      pointer-events: none;
     }
 
     .fc-ghost-quaternary-xs:hover,
@@ -225,17 +468,85 @@
       color: var(--fc-violet-9);
     }
 
-    .table-head-filter.is-active svg {
-      width: 14px;
-      height: 14px;
-      fill: none;
+    .table-head-filter.is-active:active {
+      background: rgb(var(--fc-fill-5-rgb) / 0.7);
+      color: var(--fc-violet-9);
     }
+
 
     .fc-ghost-quaternary-xs:disabled {
       background: transparent;
       color: var(--fc-text-5);
       cursor: not-allowed;
     }
+
+    .fc-ghost-tertiary-xs { display:inline-flex;align-items:center;justify-content:center;gap:4px;height:24px;padding:0 8px;border:none;border-radius:6px;background:transparent;color:var(--fc-text-3);font:inherit;font-size:12px;line-height:1;cursor:pointer;transition:background-color .2s ease,color .2s ease; }
+    .fc-ghost-tertiary-xs svg,.fc-ghost-tertiary-xs i { width:14px;height:14px;color:currentColor; }
+    .fc-ghost-tertiary-xs:hover { background:rgb(var(--fc-fill-5-rgb)/.2);color:var(--fc-text-2); }
+    .fc-ghost-tertiary-xs:active { background:rgb(var(--fc-fill-5-rgb)/.4);color:var(--fc-text-1); }
+    .fc-ghost-tertiary-xs:disabled { background:transparent;color:var(--fc-text-5);cursor:not-allowed; }
+
+    .fc-ghost-primary-xs { display:inline-flex;align-items:center;justify-content:center;gap:4px;height:24px;padding:0 8px;border:none;border-radius:6px;background:transparent;color:var(--fc-violet-11);font:inherit;font-size:12px;line-height:1;cursor:pointer;transition:background-color .2s ease,color .2s ease; }
+    .fc-ghost-primary-xs svg,.fc-ghost-primary-xs i { width:14px;height:14px;color:currentColor; }
+    .fc-ghost-primary-xs:hover { background:var(--fc-violet-3);color:var(--fc-violet-11); }
+    .fc-ghost-primary-xs:active { background:var(--fc-violet-4);color:var(--fc-violet-12); }
+    .fc-ghost-primary-xs:disabled { background:transparent;color:var(--fc-violet-6);cursor:not-allowed; }
+
+    .fc-text-primary-xs { display:inline-flex;align-items:center;justify-content:center;gap:4px;height:24px;padding:0 8px;border:none;border-radius:6px;background:transparent;color:var(--fc-violet-11);font:inherit;font-size:12px;line-height:1;cursor:pointer;transition:color .2s ease; }
+    .fc-text-primary-xs svg,.fc-text-primary-xs i { width:14px;height:14px;color:currentColor; }
+    .fc-text-primary-xs:hover { color:var(--fc-violet-12); }
+    .fc-text-primary-xs:active { color:var(--fc-violet-12); }
+    .fc-text-primary-xs:disabled { color:var(--fc-violet-6);cursor:not-allowed; }
+
+    .fc-link { text-decoration:none;cursor:pointer;transition:color .2s ease; }
+    .fc-link[data-hierarchy="secondary-brand"] { color:var(--fc-text-2);text-decoration:none; }
+    .fc-link[data-hierarchy="secondary-brand"]:hover { color:var(--fc-violet-11);text-decoration:underline;text-decoration-color:var(--fc-violet-6);text-underline-offset:2px; }
+    .fc-link[data-hierarchy="secondary-brand"]:active { color:var(--fc-violet-12);text-decoration:underline;text-decoration-color:var(--fc-violet-7);text-underline-offset:2px; }
+
+    .cell-op { position:relative;display:flex;align-items:center;gap:6px;min-width:0; }
+    .cell-op .fc-link { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;line-height:18px; }
+    .cell-op .cell-op-btn { display:none;flex:none;position:relative; }
+    tr:hover .cell-op .cell-op-btn { display:inline-flex; }
+    .cell-op .tag { flex:none; }
+
+    .fc-soft-quaternary-xs { display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:none;border-radius:6px;background:rgb(var(--fc-fill-5-rgb)/.15);color:var(--fc-text-3);cursor:pointer;transition:background-color .2s ease,color .2s ease; }
+    .fc-soft-quaternary-xs svg,.fc-soft-quaternary-xs i { width:14px;height:14px;color:currentColor; }
+    .fc-soft-quaternary-xs:hover { background:rgb(var(--fc-fill-5-rgb)/.35);color:var(--fc-text-2); } .fc-soft-quaternary-xs:active { background:rgb(var(--fc-fill-5-rgb)/.5);color:var(--fc-text-1); }
+    .cell-op-btn::after {
+      content: attr(aria-label);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.75);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.4;
+      padding: 6px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      z-index: 200;
+      pointer-events: none;
+    }
+    .cell-op-btn:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
+
+
+    .drag-col button { cursor:grab; }
+    .drag-col button:active { cursor:grabbing; }
+    tr.drag-source { opacity:.35;transition:opacity .15s ease; }
+    tr.drag-source td { background:transparent!important; }
+    tr.drag-ghost { box-shadow:0 2px 8px rgb(var(--fc-fill-5-rgb)/.3); }
+    tr.drag-indicator { position:relative; }
+    tr.drag-indicator::after { content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--fc-violet-9);border-radius:1px;z-index:2;pointer-events:none; }
+    tr.drag-hover { background:rgb(var(--fc-fill-5-rgb)/.12)!important; }
+    tr.drag-hover td { background:transparent!important; }
+
 
     .fc-ghost-primary-xs {
       display: inline-flex;
@@ -294,21 +605,20 @@
     .status-pill {
       display: inline-flex;
       align-items: center;
-      height: 22px;
-      padding: 0 8px;
-      border-radius: 999px;
+      padding: 0 6px;
+      border-radius: 6px;
       font-size: 12px;
       line-height: 18px;
     }
 
     .status-pill.is-normal {
-      background: rgb(23 146 77 / 0.1);
-      color: #168447;
+      background: var(--fc-green-3);
+      color: var(--fc-green-11);
     }
 
     .status-pill.is-warning {
-      background: rgb(245 158 11 / 0.14);
-      color: #a16207;
+      background: var(--fc-orange-3);
+      color: var(--fc-orange-11);
     }
 
     .status-pill.is-error {
@@ -316,27 +626,50 @@
       color: var(--fc-red-11);
     }
 
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 36px;
-      height: 20px;
-      border-radius: 999px;
-      background: var(--fc-violet-9);
-      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.04);
-      vertical-align: middle;
+    .status-pill.is-maintenance {
+      background: var(--fc-fill-3);
+      color: var(--fc-text-4);
     }
 
-    .switch::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 14px;
-      height: 14px;
+    .status-pill.is-offline {
+      background: var(--fc-gray-3);
+      color: var(--fc-gray-11);
+    }
+
+    .status-pill.is-pending {
+      background: var(--fc-yellow-3);
+      color: var(--fc-yellow-11);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 32px;
+      height: 16px;
       border-radius: 999px;
-      background: white;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.22);
+      background: var(--fc-fill-6);
+      cursor: pointer;
+      transition: background 0.2s ease;
+      vertical-align: middle;
+    }
+    .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .switch-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.18);
+      transition: transform 0.2s ease;
+    }
+    .switch input:checked ~ .switch-knob {
+      transform: translateX(16px);
+    }
+    .switch:has(input:checked) {
+      background: var(--fc-violet-9);
     }
 
     .actions {
@@ -530,12 +863,13 @@
     }
 
     .filter-option input:checked + .filter-checkbox {
-      border-color: var(--fc-violet-9);
-      background: var(--fc-violet-9);
+      border-color: var(--fc-violet-6);
+      background: var(--fc-violet-3);
     }
 
     .filter-option input:checked + .filter-checkbox svg {
       display: block;
+      color: var(--fc-violet-9);
     }
 
     .filter-footer {
@@ -705,17 +1039,20 @@
           <tr>
             <th class="drag-col"></th>
             <th class="name-col">
-              <span class="th-content">分层<span class="divider"></span></span>
-            </th>
-            <th class="status-col">
-              <span class="th-content">是否可见<span class="divider"></span></span>
+              <span class="th-content">名称
+                <button class="fc-ghost-quaternary-xs table-head-icon table-head-sort sort-entry" aria-label="排序">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16l-4 4-4-4"/><path d="M17 20V4"/><path d="M3 8l4-4 4 4"/><path d="M7 4v16"/></svg>
+                </button>
+                <span class="divider"></span></span></th>
+            <th class="biz-col">
+              <span class="th-content">业务线<span class="divider"></span></span>
             </th>
             <th class="filter-col">
               <span class="th-content">
                 状态
                 <span class="filter-menu-wrap">
                   <button class="fc-ghost-quaternary-xs table-head-icon table-head-filter filter-entry filter-trigger" aria-label="过滤状态" aria-haspopup="menu" aria-expanded="false">
-                    <i data-lucide="funnel"></i>
+                    <i data-lucide="filter"></i>
                   </button>
                   <span class="filter-dropdown" role="menu" aria-label="状态筛选">
                     <span class="filter-search">
@@ -755,60 +1092,57 @@
                       </label>
                     </span>
                     <span class="filter-footer">
-                      <button class="fc-ghost-quaternary-text-xs filter-reset" type="button">重置</button>
+                      <button class="fc-ghost-tertiary-xs filter-reset" type="button">重置</button>
                       <button class="fc-ghost-primary-xs filter-confirm" type="button">确定</button>
                     </span>
                   </span>
                 </span>
                 <span class="divider"></span>
-              </span>
-            </th>
+              </span></th>
             <th class="sort-col">
               <span class="th-content">
                 更新时间
                 <button class="fc-ghost-quaternary-xs table-head-icon table-head-sort sort-entry" aria-label="排序">
-                  <i data-lucide="arrow-up-down"></i>
-                </button>
-                <button class="fc-ghost-quaternary-xs table-head-icon table-head-filter filter-entry" aria-label="过滤">
-                  <i data-lucide="funnel"></i>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16l-4 4-4-4"/><path d="M17 20V4"/><path d="M3 8l4-4 4 4"/><path d="M7 4v16"/></svg>
                 </button>
                 <span class="divider"></span>
-              </span>
-            </th>
-            <th class="action-col">
-              <span class="th-content is-sorted">
-                操作
-                <button class="fc-ghost-quaternary-xs table-head-icon table-head-sort sort-entry is-active" aria-label="降序">
-                  <i data-lucide="arrow-down"></i>
+              </span></th>
+            <th class="status-col">
+              <span class="th-content">可见性
+                <button class="fc-ghost-quaternary-xs table-head-icon table-head-sort sort-entry" aria-label="排序">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16l-4 4-4-4"/><path d="M17 20V4"/><path d="M3 8l4-4 4 4"/><path d="M7 4v16"/></svg>
                 </button>
-              </span>
-            </th>
-          </tr>
+                <span class="divider"></span></span></th>
+            <th class="action-col">
+              <span class="th-content">操作</span></th></tr>
         </thead>
         <tbody>
           <tr>
             <td class="drag-col">
               <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
                 <i data-lucide="grip-vertical"></i>
-              </button>
-            </td>
+              </button></td>
             <td>
-              <span class="row-name">系统 <span class="tag">Deprecated</span></span>
-            </td>
-            <td><span class="switch" aria-hidden="true"></span></td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">系统监控概览仪表盘</a>
+                
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">我的空间</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">北极星蜂窝图关联灭火图</a></span></span></td>
             <td><span class="status-pill is-normal">正常</span></td>
             <td>2026-05-19 14:18</td>
+            <td><label class="switch"><input type="checkbox"><span class="switch-knob"></span></label></td>
             <td>
               <span class="actions">
-                <button class="fc-ghost-primary-xs">Edit</button>
-                <button class="fc-ghost-primary-xs is-hover">Clone</button>
-                <button class="fc-ghost-primary-xs">Preview</button>
+                <button class="fc-text-primary-xs">AI巡检</button>
                 <span class="action-menu-wrap">
                   <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
                     <i data-lucide="more-vertical"></i>
                   </button>
                   <span class="table-dropdown" role="menu" aria-label="常用操作">
-                    <span class="shadcn-menu-item is-hover" role="menuitem">
+                    <span class="shadcn-menu-item" role="menuitem">
                       <i data-lucide="eye"></i>
                       <span>查看详情</span>
                     </span>
@@ -827,110 +1161,419 @@
                     </span>
                   </span>
                 </span>
-              </span>
-            </td>
-          </tr>
-          <tr class="is-selected">
+              </span></td>
+          
+          <tr>
             <td class="drag-col">
-              <button class="fc-ghost-quaternary-xs is-active" aria-label="拖拽排序">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
                 <i data-lucide="grip-vertical"></i>
-              </button>
-            </td>
-            <td>中间件</td>
-            <td><span class="switch" aria-hidden="true"></span></td>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">Redis 集群性能监控</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">基础设施</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">数据集成</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">采集规则</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">安全审计</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">操作日志</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">用户管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">权限控制</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">角色绑定</a></span></span></td>
             <td><span class="status-pill is-warning">警告</span></td>
             <td>2026-05-18 09:42</td>
+            <td><label class="switch"><input type="checkbox"><span class="switch-knob"></span></label></td>
             <td>
               <span class="actions">
-                <button class="fc-ghost-primary-xs">Edit</button>
-                <button class="fc-ghost-primary-xs">Clone</button>
-                <button class="fc-ghost-primary-xs is-active">Preview</button>
-                <button class="fc-ghost-quaternary-xs is-hover" aria-label="更多">
-                  <i data-lucide="more-vertical"></i>
-                </button>
-              </span>
-            </td>
-          </tr>
+                <button class="fc-text-primary-xs">AI巡检</button>
+                
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
           <tr>
             <td class="drag-col">
               <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
                 <i data-lucide="grip-vertical"></i>
-              </button>
-            </td>
-            <td>微服务</td>
-            <td><span class="switch" aria-hidden="true"></span></td>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">华东区业务健康度看板</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">成本管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">资源账单</a></span></span></td>
             <td><span class="status-pill is-error">异常</span></td>
             <td>2026-05-16 21:03</td>
+            <td><label class="switch"><input type="checkbox"><span class="switch-knob"></span></label></td>
             <td>
               <span class="actions">
-                <button class="fc-ghost-primary-xs">Edit</button>
-                <button class="fc-ghost-primary-xs" disabled>Clone</button>
-                <a class="danger-link" href="#">删除</a>
-                <button class="fc-ghost-quaternary-xs" disabled aria-label="更多">
-                  <i data-lucide="more-vertical"></i>
-                </button>
-              </span>
-            </td>
-          </tr>
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
           <tr>
             <td class="drag-col">
               <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
                 <i data-lucide="grip-vertical"></i>
-              </button>
-            </td>
-            <td>应用</td>
-            <td><span class="switch" aria-hidden="true"></span></td>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">研发自测</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">标签筛选</a></span></span></td>
             <td><span class="status-pill is-normal">正常</span></td>
             <td>2026-05-15 17:20</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
             <td>
               <span class="actions">
-                <button class="fc-ghost-primary-xs">Edit</button>
-                <button class="fc-ghost-primary-xs">Clone</button>
-                <button class="fc-ghost-primary-xs">Preview</button>
-                <button class="fc-ghost-quaternary-xs" aria-label="更多">
-                  <i data-lucide="more-vertical"></i>
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
                 </button>
-              </span>
-            </td>
-          </tr>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">研发自测</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">标签筛选</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">高级过滤配置规则</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">安全审计</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">操作日志</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">成本管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">资源账单</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">发布系统</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">灰度策略</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">用户管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">权限控制</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">角色绑定</a></span></span></td>
+            <td><span class="status-pill is-normal">正常</span></td>
+            <td>2026-05-15 11:30</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
+            <td>
+              <span class="actions">
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">安全审计</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">操作日志</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">资源管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">集群</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">节点池</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">我的空间</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">北极星蜂窝图关联灭火图</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">成本管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">资源账单</a></span></span></td>
+            <td><span class="status-pill is-warning">警告</span></td>
+            <td>2026-05-14 08:15</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
+            <td>
+              <span class="actions">
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">资源管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">集群</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">节点池</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">配置管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">环境变量</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">发布系统</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">灰度策略</a></span></span></td>
+            <td><span class="status-pill is-error">异常</span></td>
+            <td>2026-05-13 16:45</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
+            <td>
+              <span class="actions">
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">成本管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">资源账单</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">链路追踪</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">服务拓扑</a></span></span></td>
+            <td><span class="status-pill is-normal">正常</span></td>
+            <td>2026-05-12 10:00</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
+            <td>
+              <span class="actions">
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">告警管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">规则管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">告警规则</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">我的空间</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">北极星蜂窝图关联灭火图</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">成本管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">资源账单</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">配置管理</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">环境变量</a></span></span></td>
+            <td><span class="status-pill is-maintenance">维护中</span></td>
+            <td>2026-05-11 14:22</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
+            <td>
+              <span class="actions">
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
+          <tr>
+            <td class="drag-col">
+              <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序">
+                <i data-lucide="grip-vertical"></i>
+              </button></td>
+            <td>
+              <span class="cell-op">
+                <a class="fc-link" data-hierarchy="secondary-brand" href="#">K8s 生产集群资源大盘</a>
+                <button class="cell-op-btn fc-soft-quaternary-xs" aria-label="编辑名称" title="编辑名称">
+                  <i data-lucide="pencil"></i>
+                </button>
+              </span></td>
+            <td><span class="biz-tags"><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">研发自测</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">标签筛选</a></span><span class="biz-tag"><a class="fc-link" data-hierarchy="tertiary" href="#">日志服务</a><span class="biz-sep">/</span><a class="fc-link" data-hierarchy="tertiary" href="#">查询分析</a></span></span></td>
+            <td><span class="status-pill is-normal">正常</span></td>
+            <td>2026-05-05 20:50</td>
+            <td><label class="switch"><input type="checkbox" checked><span class="switch-knob"></span></label></td>
+            <td>
+              <span class="actions">
+                <button class="fc-text-primary-xs">AI巡检</button>
+                <span class="action-menu-wrap">
+                  <button class="fc-ghost-quaternary-xs menu-trigger" aria-label="更多" aria-haspopup="menu" aria-expanded="false">
+                    <i data-lucide="more-vertical"></i>
+                  </button>
+                  <span class="table-dropdown" role="menu" aria-label="常用操作">
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="eye"></i>
+                      <span>查看详情</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="copy"></i>
+                      <span>复制</span>
+                    </span>
+                    <span class="shadcn-menu-item" role="menuitem">
+                      <i data-lucide="settings"></i>
+                      <span>配置</span>
+                    </span>
+                    <span class="shadcn-menu-separator" role="separator"></span>
+                    <span class="shadcn-menu-item is-danger" role="menuitem">
+                      <i data-lucide="trash-2"></i>
+                      <span>删除</span>
+                    </span>
+                  </span>
+                </span>
+              </span></td>
+          
         </tbody>
       </table>
     </section>
 
-    <section class="state-strip" aria-label="Button states">
-      <div class="state-card">
-        <div class="state-title">default</div>
-        <div class="state-actions">
-          <button class="fc-ghost-primary-xs">Clone</button>
-          <button class="fc-ghost-quaternary-xs" aria-label="更多"><i data-lucide="more-vertical"></i></button>
-          <button class="fc-ghost-quaternary-xs" aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
-        </div>
-      </div>
-      <div class="state-card">
-        <div class="state-title">hover</div>
-        <div class="state-actions">
-          <button class="fc-ghost-primary-xs is-hover">Clone</button>
-          <button class="fc-ghost-quaternary-xs is-hover" aria-label="更多"><i data-lucide="more-vertical"></i></button>
-          <button class="fc-ghost-quaternary-xs is-hover" aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
-        </div>
-      </div>
-      <div class="state-card">
-        <div class="state-title">pressed</div>
-        <div class="state-actions">
-          <button class="fc-ghost-primary-xs is-active">Clone</button>
-          <button class="fc-ghost-quaternary-xs is-active" aria-label="更多"><i data-lucide="more-vertical"></i></button>
-          <button class="fc-ghost-quaternary-xs is-active" aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
-        </div>
-      </div>
-      <div class="state-card">
-        <div class="state-title">disabled</div>
-        <div class="state-actions">
-          <button class="fc-ghost-primary-xs" disabled>Clone</button>
-          <button class="fc-ghost-quaternary-xs" disabled aria-label="更多"><i data-lucide="more-vertical"></i></button>
-          <button class="fc-ghost-quaternary-xs" disabled aria-label="拖拽排序"><i data-lucide="grip-vertical"></i></button>
-        </div>
-      </div>
-    </section>
+    
 
     <section class="dropdown-demo" aria-label="Dropdown menu preview">
       <div class="demo-surface">
@@ -1039,12 +1682,312 @@
       });
     });
 
+    /* ── Filter logic ── */
+    function applyFilters() {
+      const wrap = document.querySelector('.filter-menu-wrap');
+      const checked = [...wrap.querySelectorAll('input[type="checkbox"]:checked')]
+        .map(cb => cb.closest('.filter-option').getAttribute('data-filter-option'));
+      const thContent = wrap.closest('.th-content');
+      const filterBtn = wrap.querySelector('.filter-trigger');
+      const rows = document.querySelectorAll('table tbody tr');
+      rows.forEach(row => {
+        const pill = row.querySelector('.status-pill');
+        if (!pill) return;
+        if (checked.length === 0) {
+          row.hidden = false;
+        } else {
+          row.hidden = !checked.includes(pill.textContent.trim());
+        }
+      });
+      if (checked.length > 0) {
+        filterBtn.classList.add('is-active');
+        thContent.classList.add('is-filtered');
+      } else {
+        filterBtn.classList.remove('is-active');
+        thContent.classList.remove('is-filtered');
+      }
+    }
+
     document.querySelectorAll('.filter-confirm').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.stopPropagation();
         const wrap = button.closest('.filter-menu-wrap');
         wrap.classList.remove('is-open');
         wrap.querySelector('.filter-trigger')?.setAttribute('aria-expanded', 'false');
+        applyFilters();
+      });
+    });
+
+
+    /* ── Sort logic (per table spec 5.1) ── */
+    (function() {
+      const tbody = document.querySelector('table tbody');
+      if (!tbody) return;
+      const theadRow = document.querySelector('thead tr');
+      if (!theadRow) return;
+
+      // State per sort button: null | 'asc' | 'desc'
+      const sortState = new Map();
+
+      function doSort(btn) {
+        const th = btn.closest('th');
+        const thContent = btn.closest('.th-content');
+        const colIdx = [...theadRow.querySelectorAll('th')].indexOf(th);
+
+        const current = sortState.get(btn);
+        const next = !current ? 'desc' : current === 'desc' ? 'asc' : null;
+
+        // Reset all OTHER sort buttons
+        document.querySelectorAll('.sort-entry').forEach(other => {
+          if (other !== btn) {
+            sortState.set(other, null);
+            updateIcon(other, null);
+            other.classList.remove('is-active');
+            other.closest('.th-content')?.classList.remove('is-sorted');
+          }
+        });
+
+        sortState.set(btn, next);
+        updateIcon(btn, next);
+
+        if (next) {
+          btn.classList.add('is-active');
+          if (thContent) thContent.classList.add('is-sorted');
+        } else {
+          btn.classList.remove('is-active');
+          if (thContent) thContent.classList.remove('is-sorted');
+        }
+
+        if (next) {
+          const rows = [...tbody.querySelectorAll('tr')];
+          rows.sort((a, b) => {
+            const aTd = a.querySelectorAll('td')[colIdx];
+            const bTd = b.querySelectorAll('td')[colIdx];
+            if (colIdx === 5) {
+              const aChecked = aTd?.querySelector('input')?.checked || false;
+              const bChecked = bTd?.querySelector('input')?.checked || false;
+              const cmp = aChecked === bChecked ? 0 : aChecked ? -1 : 1;
+              return next === 'asc' ? cmp : -cmp;
+            }
+            const aVal = (aTd?.textContent || '').trim();
+            const bVal = (bTd?.textContent || '').trim();
+            const aD = Date.parse(aVal), bD = Date.parse(bVal);
+            const cmp = (!isNaN(aD) && !isNaN(bD))
+              ? aD - bD
+              : aVal.localeCompare(bVal, 'zh-CN');
+            return next === 'asc' ? cmp : -cmp;
+          });
+          rows.forEach(r => tbody.appendChild(r));
+        }
+      }
+
+      document.querySelectorAll('.sort-entry').forEach(btn => {
+        const initial = btn.classList.contains('is-active') ? 'desc' : null;
+        sortState.set(btn, initial);
+        updateIcon(btn, initial);
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          doSort(btn);
+        });
+
+        // Click on the entire header cell also triggers sort
+        const th = btn.closest('th');
+        if (th) {
+          th.style.cursor = 'pointer';
+          th.addEventListener('click', (e) => {
+            // Skip if click was on the sort button itself (already handled)
+            if (e.target.closest('.sort-entry')) return;
+            doSort(btn);
+          });
+        }
+      });
+
+      function updateIcon(btn, state) {
+        const pathMap = {
+          asc: '<path d="M12 19V5"/><path d="M5 12l7-7 7 7"/>',
+          desc: '<path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/>',
+          none: '<path d="M21 16l-4 4-4-4"/><path d="M17 20V4"/><path d="M3 8l4-4 4 4"/><path d="M7 4v16"/>'
+        };
+        const svg = btn.querySelector('svg');
+        if (svg) svg.innerHTML = pathMap[state] || pathMap.none;
+      }
+    })();
+
+    /* ── Biz tag folding ── */
+    document.querySelectorAll('.biz-tags').forEach(tags => {
+      const tagEls = [...tags.querySelectorAll('.biz-tag')];
+      const total = tagEls.length;
+      if (total === 0) return;
+
+
+
+      // Create +N button and popover once
+      const more = document.createElement('span');
+      more.className = 'biz-tag-more';
+      more.title = '显示全部标签';
+      tags.appendChild(more);
+
+      // Create popover with header + separator + tags
+      const popover = document.createElement('span');
+      popover.className = 'biz-popover';
+
+      const header = document.createElement('div');
+      header.className = 'biz-popover-header';
+      const countLabel = document.createElement('span');
+      countLabel.textContent = total + ' \u4e2a\u6807\u7b7e';
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-all-btn';
+      copyBtn.title = '\u590d\u5236\u5168\u90e8';
+      copyBtn.setAttribute('aria-label', '\u590d\u5236\u5168\u90e8');
+      copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      copyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const paths = [...popover.querySelectorAll('.biz-popover-tags .biz-tag')]
+          .map(t => t.textContent.replace(/\//g, ' / ').trim()).join('\n');
+        navigator.clipboard?.writeText(paths);
+      });
+      header.appendChild(countLabel);
+      header.appendChild(copyBtn);
+
+      const sep = document.createElement('div');
+      sep.className = 'biz-popover-sep';
+
+      const tagArea = document.createElement('div');
+      tagArea.className = 'biz-popover-tags';
+      tagEls.forEach(t => {
+        const clone = t.cloneNode(true);
+        clone.style.display = 'inline-flex';
+        tagArea.appendChild(clone);
+      });
+
+      popover.appendChild(header);
+      popover.appendChild(sep);
+      popover.appendChild(tagArea);
+
+      const wrap = document.createElement('span');
+      wrap.className = 'biz-tags-wrap';
+      tags.parentNode.insertBefore(wrap, tags);
+      wrap.appendChild(tags);
+      wrap.appendChild(popover);
+
+      let hoverTimer = null;
+
+      more.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popover.classList.toggle('is-open');
+      });
+
+      more.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimer);
+        popover.classList.add('is-open');
+      });
+
+      more.addEventListener('mouseleave', () => {
+        hoverTimer = setTimeout(() => {
+          if (!popover.matches(':hover')) {
+            popover.classList.remove('is-open');
+          }
+        }, 150);
+      });
+
+      popover.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimer);
+      });
+
+      popover.addEventListener('mouseleave', () => {
+        popover.classList.remove('is-open');
+      });
+
+      // Overflow detection: show tags sequentially, hide overflow into +N
+      function recalc() {
+        const containerWidth = tags.clientWidth;
+        if (containerWidth === 0) return;
+        const MIN_TAG = 28; // ~4 English chars minimum
+        const MORE_W = 30;  // +N button width reserve
+        const GAP = 4;
+        const MORE_SLOT = MORE_W + GAP;
+
+        // Force-show all tags to measure accurate scrollWidth
+        for (let i = 0; i < tagEls.length; i++) {
+          tagEls[i].style.display = '';
+        }
+        const widths = tagEls.map(t => t.scrollWidth);
+
+        // PASS 1: try to fit ALL tags without +N reserve
+        let used1 = 0;
+        let allFit = true;
+        for (let i = 0; i < tagEls.length; i++) {
+          const needW = widths[i] + (i > 0 ? GAP : 0);
+          if (used1 + needW <= containerWidth) {
+            used1 += needW;
+          } else {
+            allFit = false;
+            break;
+          }
+        }
+
+        // Reset display for re-layout
+        for (let i = 0; i < tagEls.length; i++) {
+          tagEls[i].style.display = 'none';
+        }
+
+        let used = 0;
+        let hidden = 0;
+
+        if (allFit) {
+          // All tags fit — show everything, no +N
+          for (let i = 0; i < tagEls.length; i++) {
+            tagEls[i].style.display = '';
+            tagEls[i].style.setProperty('text-overflow', 'clip', 'important');
+          }
+        } else {
+          // PASS 2: reserve +N space, first tag only truncates as last resort
+          const availBase = containerWidth - MORE_SLOT;
+          for (let i = 0; i < tagEls.length; i++) {
+            const fullW = widths[i];
+            const gappedW = fullW + (i > 0 ? GAP : 0);
+            const avail = availBase - used;
+
+            if (gappedW <= avail) {
+              // Fits fully
+              tagEls[i].style.display = '';
+              tagEls[i].style.setProperty('text-overflow', 'clip', 'important');
+              used += gappedW;
+            } else if (i === 0) {
+              // First tag can't fit fully even after all others hidden.
+              // Truncate as last resort.
+              if (avail >= MIN_TAG) {
+                tagEls[i].style.display = '';
+                tagEls[i].style.setProperty('text-overflow', 'ellipsis', 'important');
+                used += avail;
+              } else {
+                hidden++;
+              }
+            } else {
+              hidden++;
+            }
+          }
+        }
+
+        if (hidden > 0) {
+          more.style.display = 'inline-flex';
+          more.textContent = '+' + hidden;
+          tags.classList.add('has-more');
+        } else {
+          more.style.display = 'none';
+          tags.classList.remove('has-more');
+        }
+      }
+
+            // Initial calc after layout
+      setTimeout(recalc, 50);
+      window.addEventListener('resize', recalc);
+
+      document.addEventListener('click', (e) => {
+        if (!popover.contains(e.target) && e.target !== more) {
+          popover.classList.remove('is-open');
+        }
       });
     });
 
@@ -1058,6 +2001,23 @@
         node.querySelector('.filter-trigger')?.setAttribute('aria-expanded', 'false');
       });
     });
+    /* ── AntD drag sort ── */
+    (function(){var t=document.querySelector("table tbody");if(!t)return;var s=null,g=null,si=-1,oi=-1;
+    function R(){if(s){s.classList.remove("drag-source");s=null}if(g){g.remove();g=null}
+    t.querySelectorAll("tr").forEach(function(r){r.classList.remove("drag-indicator","drag-hover")});si=oi=-1}
+    t.querySelectorAll(".drag-col button").forEach(function(b){b.addEventListener("mousedown",function(e){e.preventDefault();
+    s=b.closest("tr");si=[].slice.call(t.querySelectorAll("tr")).indexOf(s);s.classList.add("drag-source");
+    g=s.cloneNode(true);g.classList.add("drag-ghost");var r=s.getBoundingClientRect();
+    g.style.cssText="position:fixed;z-index:1000;pointer-events:none;opacity:.85;width:"+r.width+"px;left:"+r.left+"px;top:"+(e.clientY-20)+"px";
+    document.body.appendChild(g)})});
+    document.addEventListener("mousemove",function(e){if(!s)return;if(g)g.style.top=(e.clientY-20)+"px";
+    var rs=[].slice.call(t.querySelectorAll("tr"));rs.forEach(function(r){r.classList.remove("drag-indicator","drag-hover")});
+    for(var i=0;i<rs.length;i++){if(rs[i]===s)continue;var r=rs[i].getBoundingClientRect();
+    if(e.clientY>r.top&&e.clientY<r.bottom){var m=r.top+r.height/2;
+    if(e.clientY<m){rs[i].classList.add("drag-indicator");oi=i}else{oi=i+1;if(i+1<rs.length)rs[i+1].classList.add("drag-indicator")}break}}});
+    document.addEventListener("mouseup",function(){if(!s)return;var rs=[].slice.call(t.querySelectorAll("tr"));
+    if(oi>=0&&oi!==si&&oi!==si+1){var tg=oi>si?oi:oi;if(tg>=rs.length)t.appendChild(s);else t.insertBefore(s,rs[tg])}R()})})();
+
   </script>
 </body>
 </html>
