@@ -11,7 +11,7 @@
   <symbol id="icon-funnel" viewBox="0 -2 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20a1 1 0 0 0 .553.895l3.447 1.724V14.87l5.446-5.446A.5.5 0 0 0 19.093 8.5H4.907a.5.5 0 0 0-.353.924L10 14.87Z"/></symbol>
 </svg>
 
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <style>
     :root {
       --fc-text-1: #0c1018;
@@ -1612,9 +1612,11 @@
   </main>
 
   <script>
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    });
 
     document.querySelectorAll('.menu-trigger').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
