@@ -552,7 +552,7 @@ icon-only 操作必须有 tooltip。
 - 操作列宽度按内容收窄，常规三点菜单列建议 `width: 64`，不要保留横向按钮时期的宽列。
 - 如果表格使用 resizable column 并持久化列宽，调整默认操作列宽时需要同步更新 `persistenceKey` 或清理对应存储，避免旧列宽继续覆盖新配置。
 - 图标优先使用 lucide，并按系统内已有同语义图标做映射，避免同一操作语义混用不一致的图形语言；只有 lucide 不能准确表达时再复用现有 AntD icon。
-- 触发按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标，例如 `more-horizontal` / `more-vertical`，icon 尺寸固定为 `14px × 14px`，按钮尺寸固定为 `24px × 24px`。
+- 触发按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标，例如 `ellipsis-vertical`，icon 尺寸固定为 `14px × 14px`，按钮尺寸固定为 `24px × 24px`。
 - 行首拖拽排序 handle 使用 `ghost-quaternary-xs`，icon 从 lucide 选择，例如 `grip-vertical`。
 - 外露文字操作使用 `text-primary-xs`，例如 `Edit`、`Clone`、`Preview`；多个文字操作之间保持轻量间距，不使用实底按钮堆叠。
 - dropdown menu 采用 shadcn/Radix `DropdownMenu` 的结构骨架：`Content` 承载浮层，`Item` 承载单个动作，`Separator` 分组高危操作。不要继续使用 AntD Menu 的默认视觉。
@@ -650,7 +650,7 @@ icon-only 操作必须有 tooltip。
 **两个及以上操作**：
 
 - 通过「三点更多」按钮统一收纳，点击或 hover 展开下拉菜单。
-- 三点按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标（`more-horizontal` / `more-vertical`），icon 尺寸 `14px × 14px`，按钮尺寸 `24px × 24px`。
+- 三点按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标（`ellipsis-vertical`），icon 尺寸 `14px × 14px`，按钮尺寸 `24px × 24px`。
 - 下拉菜单的样式、交互规则与下拉菜单项与操作列 dropdown 完全一致，参见 [12.1 操作列 dropdown](#121-操作列-dropdown) 中的推荐实现约束及参考样式。
 - 三点按钮同样**必须**附带 Tooltip，例如「更多操作」。
 
