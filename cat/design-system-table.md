@@ -135,22 +135,8 @@ sort active: rgb(var(--fc-fill-5-rgb) / 0.4)
 
 ### 5.2 表头过滤入口
 
-表头过滤图标使用与排序入口相同的尺寸规则：复用 `ghost-quaternary-xs` 的尺寸体系，尺寸见 [12.1.1 ghost-quaternary-xs](#1211-ghost-quaternary-xs)。icon 从 lucide 图标库选择，优先使用能表达过滤的图标，例如 `Funnel`。注意：已过滤常态不展示按钮底色；funnel icon 描边使用 `var(--fc-violet-9)`，闭合 path 填充使用 `var(--fc-violet-4)`。过滤按钮 hover 背景仍使用 `ghost-quaternary-xs` 的 hover 背景，即 `rgb(var(--fc-fill-5-rgb) / 0.4)`。
+表头过滤图标使用与排序入口相同的尺寸规则：复用 `ghost-quaternary-xs` 的尺寸体系，尺寸见 [12.1.1 ghost-quaternary-xs](#1211-ghost-quaternary-xs)。icon 从 lucide 图标库选择，优先使用能表达过滤的图标，例如 `funnel`。注意：已过滤常态不展示按钮底色；funnel icon 描边使用 `var(--fc-violet-9)`。过滤按钮 hover 背景仍使用 `ghost-quaternary-xs` 的 hover 背景，即 `rgb(var(--fc-fill-5-rgb) / 0.4)`。
 
-已过滤状态的 funnel icon 需要使用闭合 path，以便同时支持描边和内部填充。SVG 色值必须使用 token，禁止写死 hex 或 rgb，确保深色模式可适配：
-
-```tsx
-<svg width='14' height='14' viewBox='0 0 14 14' fill='none' aria-hidden>
-  <path
-    d='M5.92074 10.8068C5.86376 10.7146 5.8336 10.6083 5.83365 10.4999V7.58322C5.83365 7.30116 5.73147 7.02866 5.54602 6.81614L2.48415 3.30742C2.40857 3.22367 2.35889 3.1198 2.34113 3.0084C2.32338 2.89699 2.33831 2.78282 2.38411 2.67973C2.42992 2.57664 2.50464 2.48904 2.59921 2.42754C2.69379 2.36604 2.80417 2.33329 2.91699 2.33325H11.0837C11.1964 2.33352 11.3066 2.36643 11.401 2.42802C11.4954 2.4896 11.5699 2.57721 11.6156 2.68026C11.6613 2.78331 11.6761 2.89738 11.6583 3.00868C11.6405 3.11998 11.5908 3.22374 11.5153 3.30742L8.45449 6.81618C8.26912 7.02867 8.16699 7.30112 8.16699 7.58311V11.0833C8.16703 11.1827 8.14165 11.2805 8.09326 11.3674C8.04487 11.4543 7.97508 11.5273 7.8905 11.5796C7.80593 11.6319 7.70939 11.6618 7.61004 11.6663C7.5107 11.6708 7.41186 11.6498 7.3229 11.6053L6.15624 11.022C6.05927 10.9735 5.97772 10.899 5.92074 10.8068Z'
-    fill='var(--fc-violet-4)'
-    stroke='var(--fc-violet-9)'
-    strokeWidth={1.16667}
-    strokeLinecap='round'
-    strokeLinejoin='round'
-  />
-</svg>
-```
 
 显隐规则：
 
@@ -558,21 +544,20 @@ icon-only 操作必须有 tooltip。
 - 按钮尺寸 `24px × 24px`，`border-radius: 6px`。
 - icon 尺寸 `14px × 14px`。
 - default / hover / pressed / disabled 状态完全复用 `ghost-quaternary-xs`。
-- icon 必须从 lucide 图标库选择，优先使用能表达拖拽排序的 grip 类图标，例如 `GripVertical`。
+- icon 必须从 lucide 图标库选择，优先使用能表达拖拽排序的 grip 类图标，例如 `grip-vertical`。
 - 行首拖拽列只承载拖拽 handle，不放文字；icon-only 必须有 tooltip 或可访问标签，例如 `aria-label='拖拽排序'`。
-- 拖拽中可使用 `is-active` / pressed 态，让用户感知当前行正在被拖动。
 
 推荐实现约束：
 
 - 操作列宽度按内容收窄，常规三点菜单列建议 `width: 64`，不要保留横向按钮时期的宽列。
 - 如果表格使用 resizable column 并持久化列宽，调整默认操作列宽时需要同步更新 `persistenceKey` 或清理对应存储，避免旧列宽继续覆盖新配置。
 - 图标优先使用 lucide，并按系统内已有同语义图标做映射，避免同一操作语义混用不一致的图形语言；只有 lucide 不能准确表达时再复用现有 AntD icon。
-- 触发按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标，例如 `MoreHorizontal` / `MoreVertical`，icon 尺寸固定为 `14px × 14px`，按钮尺寸固定为 `24px × 24px`。
-- 行首拖拽排序 handle 使用 `ghost-quaternary-xs`，icon 从 lucide 选择，例如 `GripVertical`。
+- 触发按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标，例如 `more-horizontal` / `more-vertical`，icon 尺寸固定为 `14px × 14px`，按钮尺寸固定为 `24px × 24px`。
+- 行首拖拽排序 handle 使用 `ghost-quaternary-xs`，icon 从 lucide 选择，例如 `grip-vertical`。
 - 外露文字操作使用 `text-primary-xs`，例如 `Edit`、`Clone`、`Preview`；多个文字操作之间保持轻量间距，不使用实底按钮堆叠。
 - dropdown menu 采用 shadcn/Radix `DropdownMenu` 的结构骨架：`Content` 承载浮层，`Item` 承载单个动作，`Separator` 分组高危操作。不要继续使用 AntD Menu 的默认视觉。
 - dropdown 菜单项统一左对齐，且每项包含 lucide icon + 文字说明；同一菜单内避免不同操作使用重复 icon，避免某个业务组件内置按钮 padding 导致文本缩进不一致。
-- 常见操作建议映射：预览 `Eye`，设置 `Settings`，克隆/复制 `Copy`，删除 `Trash2`；空间/可见性这类权限范围操作可用 `Network`，不要和预览重复使用 `Eye`。
+- 常见操作建议映射：预览 `eye`，设置 `settings`，克隆/复制 `copy`，删除 `trash-2`；空间/可见性这类权限范围操作可用 `network`，不要和预览重复使用 `eye`。
 - dropdown menu 宽度按内容自适应，最小宽度 `100px`。
 - 菜单外层圆角 `10px`；菜单项高度固定 `32px`，菜单项圆角 `8px`；没给出的 padding、阴影等值暂时沿用当前 shadcn 骨架，等待设计 token 补齐。
 - 菜单项文字字号 `12px`，行高 `18px`，普通文字颜色使用 `var(--fc-text-2)`。
@@ -665,7 +650,7 @@ icon-only 操作必须有 tooltip。
 **两个及以上操作**：
 
 - 通过「三点更多」按钮统一收纳，点击或 hover 展开下拉菜单。
-- 三点按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标（`MoreHorizontal` / `MoreVertical`），icon 尺寸 `14px × 14px`，按钮尺寸 `24px × 24px`。
+- 三点按钮使用 `ghost-quaternary-xs`，icon 使用 lucide 三点图标（`more-horizontal` / `more-vertical`），icon 尺寸 `14px × 14px`，按钮尺寸 `24px × 24px`。
 - 下拉菜单的样式、交互规则与下拉菜单项与操作列 dropdown 完全一致，参见 [12.1 操作列 dropdown](#121-操作列-dropdown) 中的推荐实现约束及参考样式。
 - 三点按钮同样**必须**附带 Tooltip，例如「更多操作」。
 
